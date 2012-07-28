@@ -1,0 +1,30 @@
+body{
+	font-size:16pt;
+}
+h1,h2{
+	margin:5px 0;
+}
+ul#nav{
+	list-style-type:none;
+	margin:0;
+	padding:.2em 0 0 0;
+	background:#EEE;
+	height:1.4em;
+}
+ul#nav li{
+	float:left;
+	display:block;
+	margin:0 5px;
+}
+ul#nav li a, ul#nav li a:visited{
+	color:blue;
+}
+
+#wrap{
+	width:700px;
+	margin:10px auto;
+}
+
+#content{
+	clear:both;
+}
