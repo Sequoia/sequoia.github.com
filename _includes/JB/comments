@@ -3,4 +3,5 @@
 {% case site.JB.comments.provider %}
 {% when "disqus" %}
   {% include JB/comments-providers/disqus %}
+{% endcase %}
 {% endif %}

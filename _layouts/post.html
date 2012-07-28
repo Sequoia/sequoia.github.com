@@ -11,6 +11,7 @@ layout: default
   <div class="span8">
     {{ content }}
     <hr>
+		{% comment %}
     <div class="pagination">
       <ul>
       {% if page.previous %}
@@ -27,6 +28,7 @@ layout: default
       </ul>
     </div>
     <hr>
+		{% endcomment %}
     {% include JB/comments %}
   </div>
   
