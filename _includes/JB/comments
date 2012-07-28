@@ -1,7 +1,9 @@
 {% if site.JB.comments.provider and page.comments != false %}
 
 {% case site.JB.comments.provider %}
-{% when "disqus" %}
-  {% include JB/comments-providers/disqus %}
-{% endcase %}
+	window.disqus_no_style = true;
+	$.getScript("http://disqus.com/forums/sequoiasblog/embed.js")
+{% comment %}{% when "disqus" %}{% endcomment %}
+  {% comment %}{% include JB/comments-providers/disqus %}{% endcomment %}
+{% comment %}{% endcase %}{% endcomment %}
 {% endif %}
