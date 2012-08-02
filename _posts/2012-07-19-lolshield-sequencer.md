@@ -65,17 +65,20 @@ Much simpler!  I let people mess around with it and they did! I was very happy.
 ![Young man using the LSS in the browser with the Arduino shield updating in real time](/img/lss_hi.jpg)
 ![A small group of people messing with the LSS](/img/lss_group.jpg)
 What heartwarming hacker-con moments!  Later I added a ```localStorage``` component so people could make little animations & save them, then see what others had done.  I'll have that up and running next con for sure.
+
 ## Tools & Technologies I used
 * Arduino & soldering iron
 * Arduino IDE & C
 * underscore, jquery & require.js & Jam.js
 * Mousetrap.js (ok not yet but soon!)
 * PHP & Linux
+
 ## What I learned
 * Serial programming is much harder than I expected! It turns out the software can read faster than the hardware can write so if you write your code wrong your reads will actually "overtake" the serial buffer on the Arduino.
 * Require.js seems useful but jam.js doesn't really offer much.  The latter doesn't keep an up-to-date version of the former, which makes it much less useful (lost a lot of time figuring out why my shims didn't work)
 * Linux writes to serial port at 9600 baud by default
 * Learned to solder
+
 ## Next steps
 * Add a few more functions: shift right, left, up, & down; invert (yay more bitwise math!)
 * Abstract the DOM interactions (writing to DOM, listening for events) to its own module so one could conceivably use the LSS module without the browser
