@@ -54,6 +54,7 @@ Well I didn't get the diamonds animations done ready in time for [HOPE](http://h
 2. Receive the state on server (same box) and write it to a file (I used PHP in the interest of expediency)
 3. Read the file with Processing and write the state to the serial port
 4. Receive the state on the Arduino and draw it to the shield.
+
 That's a lot of steps!  On a lark, I tried writing some text directly to the USB device (```echo "1" > /dev/ttyUSB0```) and what's this? It worked! It turns out the Linux kernel writes to the USB port at 9600 baud by default (I'm not sure exactly where this default is set but it is set by U-Boot; see ```man termios``` for info on changing it). So I can cut step 3 and write directly from PHP to the USB port.  The initial PHP script, in its entirety:
 {% highlight php %}
 <?php
