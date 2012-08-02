@@ -1,0 +1,3 @@
+[submodule "assets/themes/sequoia/css/pygments-css"]
+	path = assets/themes/sequoia/css/pygments-css
+	url = git://github.com/richleland/pygments-css.git

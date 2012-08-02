@@ -1,5 +1,6 @@
 body{
 	font-size:16pt;
+	font-family:"Trebuchet MS", Arial, sans-serif;
 }
 h1,h2{
 	margin:5px 0;
@@ -21,12 +22,22 @@ ul#nav li a, ul#nav li a:visited{
 }
 
 #wrap{
-	width:700px;
+	width:900px;
 	margin:10px auto;
 }
 
 #content{
 	clear:both;
+}
+/*code*/
+.highlight{
+	font-size:.9em;
+}
+
+img{
+	width:98%;
+	border:outset 3px #CCC;
+	
 }
 
 .post{
