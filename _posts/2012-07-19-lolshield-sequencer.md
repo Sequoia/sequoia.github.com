@@ -46,8 +46,10 @@ The impetus for the project was as follows: I wanted to do an Arduino project an
 {18000}
 {% endhighlight %}
 What was all this?! The numbers go up and down and somehow this turns the lights on and off.  I had to learn more.  I looked into it a bit, it turns out its actually not that complicated: there are 9 rows of 14 lights, so each number represents one row, each array of 9 numbers represents one shield state.  Each row of lights on the shield is just a binary number with the least significant bit on the left!  So to turn the first light on, flip the first bit (1), to turn the last light on, flip the 14th bit (8192) etc. (if the dec->bin conversion isn't clear, [read here](http://www.wikihow.com/Convert-from-Decimal-to-Binary)).  Sequencing out these animations manually, row by row, light by light, was obviously impractical, so I set out building a tool to make it easier.  I also wanted an excuse to use bitwise operators, which I never have occasion to use at work. :p
+
 Please take a break now to look at the [LoL Shield Sequencer](http://t.co/1LEBEesa
 ), if you haven't already.
+
 Well I didn't get the diamonds animations done ready in time for [HOPE](http://hopenumbernine.net/), but I did get the sequencer working.  I switched tack and decided to make the browser tool drive the physical shield directly, rather than requiring one to cut & paste into the sketch and load it onto the Arduino.  This required transmitting the shield states to the Arduino via the USB port.  I was following [this tutorial](http://arduinobasics.blogspot.com/2011/06/reading-text-or-csv-file-using.html) which told how to read a file with [Processing](http://processing.org/) and transmit the data to the Arduino with the serial library.  So I need to write to the file, which obviously the browser can't do.  My steps are now
 1. Send shield state from browser (ajax-wise)
 2. Receive the state on server (same box) and write it to a file (I used PHP in the interest of expediency)
@@ -77,5 +79,5 @@ What heartwarming hacker-con moments!  Later I added a ```localStorage``` compon
 ## Next steps
 * Add a few more functions: shift right, left, up, & down; invert (yay more bitwise math!)
 * Abstract the DOM interactions (writing to DOM, listening for events) to its own module so one could conceivably use the LSS module without the browser
-* Get Jimmy Rodgers to link to the tool instead of the google doc!!!
+* Get Jimmie Rodgers to link to the tool instead of the Google doc!!!
 * Tests? ehh... we'll see :)
