@@ -32,3 +32,8 @@ ul#nav li a, ul#nav li a:visited{
 .post{
 	
 }
+
+#metainfo{
+	padding:.2em 0 0 .2em ;
+	background:#EEE;
+}
