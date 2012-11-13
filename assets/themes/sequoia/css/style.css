@@ -37,6 +37,11 @@ ul#nav li a, ul#nav li a:visited{
 pre{
 	margin:.1em
 }
+p code{
+	background:#f8f8f8;
+	padding-left:4px;
+	padding-right:4px;
+}
 
 img{
 	width:98%;
