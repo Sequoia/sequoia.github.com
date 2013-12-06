@@ -5,6 +5,9 @@ body{
 h1,h2{
 	margin:5px 0;
 }
+h3{
+	margin:10px 0;
+}
 ul#nav{
 	list-style-type:none;
 	margin:0;
@@ -47,6 +50,14 @@ img{
 	width:98%;
 	border:outset 3px #CCC;
 	
+}
+
+h2+p, h3+p{
+	margin-top:0;
+}
+
+li>p{
+	margin:0;
 }
 
 .post{

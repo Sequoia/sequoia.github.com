@@ -33,7 +33,8 @@ ascii12.tlf
 
 Toilet also comes with options to further transform or decorate your text, called "filters."  The following command will will output the name of each filter followed by an example, as above.  This command outputs to the terminal rather than a file because the filters that add color may not come thru in the saved file
 {% highlight bash %}
-for filt in $(toilet -F list | sed -n 's/\"\(.*\)\".*/\1/p'); do echo $filt; toilet -f mono12 $(echo $USER) -F $filt; done;
+for filt in $(toilet -F list | sed -n 's/\"\(.*\)\".*/\1/p'); \
+do echo $filt; toilet -f mono12 $(echo $USER) -F $filt; done;
 {% endhighlight %}
 
 I like border, flip, and left, but the best filter is of course "gay".
