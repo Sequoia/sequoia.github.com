@@ -1,3 +1,0 @@
-[submodule "assets/themes/sequoia/css/pygments"]
-	path = assets/themes/sequoia/css/pygments
-	url = git://github.com/icco/pygments-css.git
