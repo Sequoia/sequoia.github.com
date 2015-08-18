@@ -1,7 +1,7 @@
 {
   "scripts": {
     "gen": "node --harmony index.js",
-    "deploy": "git subtree push --prefix build origin master"
+    "deploy": "git subtree push --prefix site origin master"
   },
   "dependencies": {
     "debug": "^2.2.0",
@@ -9,6 +9,7 @@
     "highland": "^2.5.1",
     "markdown": "^0.5.0",
     "metalsmith": "^2.0.1",
+    "metalsmith-collections": "^0.7.0",
     "metalsmith-ignore": "^0.1.2",
     "metalsmith-layouts": "^1.4.0",
     "metalsmith-less": "^2.0.0",

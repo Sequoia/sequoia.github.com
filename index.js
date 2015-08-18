@@ -1,6 +1,7 @@
 /* jshint esnext: true */
 var Metalsmith = require('metalsmith');
 var markdown   = require('metalsmith-markdown');
+var collections= require('metalsmith-collections');
 var ignore     = require('metalsmith-ignore');
 var less       = require('metalsmith-less');
 var layouts    = require('metalsmith-layouts');
@@ -11,6 +12,13 @@ var path       = require('path');
 
 Metalsmith(__dirname)
   //CONTENTS & LAYOUT
+    .use(collections())
+    .use((files, meta, next) => {
+      _.pairs(files)
+        .find(f => f[1].layout === 'home.hbs')
+        .each(f => files[f[0]].posts = meta._metadata.posts)
+        .done(next);
+    })
     .use(markdown())
     .use(myLayouts())
 
@@ -26,6 +34,7 @@ Metalsmith(__dirname)
     .use(ignore(['less/**', 'css/includes/*']))
 
   //END
+    .use(logFilenames)
     .destination('site')
     .build(handleError);
 
@@ -41,12 +50,15 @@ function myLayouts(){
 
 function logFilenames(files, met, next){
   filesdebug('=============');
+  _.pairs(met)
+    .each(filesdebug);
+      //filesdebug(met);
   _.keys(files)
     //.each(console.log.bind(console))
-    //.filter(file => /\.html$/.test(file))
+    .filter(file => /index\.html$/.test(file))
     .each(file => {
-      //filesdebug(file, files[file].contents.toString('utf8'));
-      filesdebug(file);
+      filesdebug(file, files[file]);
+      //filesdebug(file);
     })
     .done(next);
 }
