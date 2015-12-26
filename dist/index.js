@@ -20,11 +20,22 @@ var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);
 
+var _frontMatter = require('front-matter');
+
+var _frontMatter2 = _interopRequireDefault(_frontMatter);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var fs = _bluebird2.default.promisifyAll(require('fs'));
 
+//utils for transforming a part of a [name, contents, {attributes}] array
+var onFilename = (0, _util.justIndex)(0);
+var onContents = (0, _util.justIndex)(1);
+
 //get posts
 var posts = (0, _getFiles2.default)((0, _rootPath2.default)('_content/posts'));
-//process posts
-posts.then(_util.l);
+////process posts
+posts.map(onFilename(_path.basename)).map(onContents(_frontMatter2.default)).map(function (f) {
+  return [f[0], f[1].body, f[1].attributes];
+}) //move attribs into array
+.then(_util.l);

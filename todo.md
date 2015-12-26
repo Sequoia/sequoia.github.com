@@ -1,6 +1,6 @@
 ## Posts
-* [ ] read posts
-* [ ] frontmatter
+* [x] read posts
+* [x] frontmatter
 * [ ] pygments
 * [ ] md parser
 * [ ] slugify dirname
