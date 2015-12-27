@@ -3,7 +3,7 @@
 * [x] frontmatter
 * [x] pygments
 * [x] md parser
-* [ ] slugify dirname
+* [x] slugify dirname
 * [ ] write to out dir
 
 ## Templates
