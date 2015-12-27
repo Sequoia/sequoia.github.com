@@ -1,8 +1,8 @@
 ## Posts
 * [x] read posts
 * [x] frontmatter
-* [ ] pygments
-* [ ] md parser
+* [x] pygments
+* [x] md parser
 * [ ] slugify dirname
 * [ ] write to out dir
 

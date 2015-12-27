@@ -25,7 +25,7 @@ done > ~/toilet_fonts.txt
 
 Now you have a file with all the fonts, useful for reference.
 
-```
+```nohighlight
 $ head ~/toilet_fonts.txt
 ascii12.tlf
 

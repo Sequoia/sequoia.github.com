@@ -1,0 +1,11 @@
+import marked from 'marked';
+import highlight from 'highlight.js';
+
+marked.setOptions({
+  sanitize: false,
+  highlight: function (code) {
+    return highlight.highlightAuto(code).value;
+  }
+});
+
+export default marked;
