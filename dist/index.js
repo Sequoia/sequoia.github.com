@@ -2,13 +2,11 @@
 
 var _path = require('path');
 
+var _path2 = _interopRequireDefault(_path);
+
 var _rootPath = require('root-path');
 
 var _rootPath2 = _interopRequireDefault(_rootPath);
-
-var _ramda = require('ramda');
-
-var _ramda2 = _interopRequireDefault(_ramda);
 
 var _util = require('./util');
 
@@ -36,21 +34,27 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var fs = _bluebird2.default.promisifyAll(require('fs'));
 
-//utils for transforming a part of a [name, contents, {attributes}] array
-var onFilename = (0, _util.justIndex)(0);
-var onContents = (0, _util.justIndex)(1);
-
 //get posts
 var posts = (0, _getFiles2.default)((0, _rootPath2.default)('_content/posts'));
 
-var addAttributesToArray = function addAttributesToArray(f) {
-  return [f[0], f[1].body, f[1].attributes];
+var makeTitleSlug = function makeTitleSlug(attrs) {
+  return (0, _string2.default)(attrs.title).slugify().s;
 };
-var addSlugifiedTitleToArray = function addSlugifiedTitleToArray(f) {
-  return f.concat((0, _string2.default)(f[2].title).slugify().s);
+var addSlug = (0, _util.addPropFn)('slug')(makeTitleSlug);
+//creates an index.html file in dirname based on slug
+//TODO: need to create out dirs to use this
+var makeIndexHTMLOutPath = function makeIndexHTMLOutPath(slug) {
+  return (0, _path2.default)((0, _rootPath2.default)('out'), slug, 'index.html');
+};
+var writeToOutDir = function writeToOutDir(f) {
+  return fs.writeFile(makeIndexHTMLOutPath(f.attributes.slug), f.body);
 };
 
 ////process posts
-posts.map(onFilename(_path.basename)).map(onContents(_frontMatter2.default)).map(addAttributesToArray).map(onContents(_marker2.default)).map(addSlugifiedTitleToArray)
-//.map(R.prop(3))
-.map(_ramda2.default.unary(_util.l));
+posts.map(_frontMatter2.default) // => { body, attributes }
+.map((0, _util.onProp)('body')(_marker2.default)).map((0, _util.onProp)('attributes')(addSlug)).map(function (x) {
+  return x.attributes;
+}).map(_util.l);
+//.map(writeToOutDir)
+//.catch(e)
+//.finally((res) => l('all done!', res));

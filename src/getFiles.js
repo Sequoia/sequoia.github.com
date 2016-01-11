@@ -1,13 +1,11 @@
 import Promise from 'bluebird';
 import {readFiles} from 'node-dir';
-import {basename} from 'path';
-import {zip, unary} from 'ramda';
 import {l} from './util';
 
 /**
  * @param root path
  * @param options see: https://www.npmjs.com/package/node-dir
- * @return Promise : array of [filename, contents] tuples
+ * @return Promise : array [contents]
  */
 export default function getFiles(root, options){
   let contents = [];
@@ -18,10 +16,10 @@ export default function getFiles(root, options){
         contents.push(content);
         next();
       },
-      function(err, files){
+      function(err, filenames){
         if (err) return reject(err);
-        console.log('finished reading files');
-        resolve(zip(files.map(unary(basename)),contents));
+        l('finished reading files');
+        resolve(contents);
       });
   });
 }
