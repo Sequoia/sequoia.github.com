@@ -4,7 +4,10 @@
 * [x] pygments
 * [x] md parser
 * [x] slugify dirname
-* [ ] write to out dir
+* [x] write to out dir
+
+## Markup
+* [ ] ui framework... :(
 
 ## Templates
 * [ ] layout.jade

@@ -1,8 +1,6 @@
 'use strict';
 
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
+var _ramda = require('ramda');
 
 var _rootPath = require('root-path');
 
@@ -32,7 +30,11 @@ var _string2 = _interopRequireDefault(_string);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var join = require('path').join;
+
 var fs = _bluebird2.default.promisifyAll(require('fs'));
+
+var mkdirp = _bluebird2.default.promisify(require('mkdirp'));
 
 //get posts
 var posts = (0, _getFiles2.default)((0, _rootPath2.default)('_content/posts'));
@@ -41,10 +43,13 @@ var makeTitleSlug = function makeTitleSlug(attrs) {
   return (0, _string2.default)(attrs.title).slugify().s;
 };
 var addSlug = (0, _util.addPropFn)('slug')(makeTitleSlug);
+
+//takes dirname, makes it in "out" dir
+var mkoutdir = (0, _ramda.compose)(mkdirp, (0, _ramda.curryN)(2, join)((0, _rootPath2.default)('out')));
+
 //creates an index.html file in dirname based on slug
-//TODO: need to create out dirs to use this
 var makeIndexHTMLOutPath = function makeIndexHTMLOutPath(slug) {
-  return (0, _path2.default)((0, _rootPath2.default)('out'), slug, 'index.html');
+  return join((0, _rootPath2.default)('out'), slug, 'index.html');
 };
 var writeToOutDir = function writeToOutDir(f) {
   return fs.writeFile(makeIndexHTMLOutPath(f.attributes.slug), f.body);
@@ -52,9 +57,13 @@ var writeToOutDir = function writeToOutDir(f) {
 
 ////process posts
 posts.map(_frontMatter2.default) // => { body, attributes }
-.map((0, _util.onProp)('body')(_marker2.default)).map((0, _util.onProp)('attributes')(addSlug)).map(function (x) {
-  return x.attributes;
-}).map(_util.l);
-//.map(writeToOutDir)
-//.catch(e)
-//.finally((res) => l('all done!', res));
+.map((0, _util.onProp)('body')(_marker2.default)).map((0, _util.onProp)('attributes')(addSlug)).each(function (post) {
+  return mkoutdir(post.attributes.slug);
+})
+//.map(x => x.attributes)
+//.map(l)
+.each(writeToOutDir).catch(function (err) {
+  throw err;
+}).finally(function () {
+  return (0, _util.l)('all done!');
+});
