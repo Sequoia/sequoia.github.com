@@ -4,10 +4,12 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
+    "copy-assets": "cp -r site_assets/* out/",
+    "watch-assets": "watch --wait=1 'npm run copy-assets' site_assets",
     "bbl-build": "babel src --out-dir dist",
     "bbl-watch": "npm run bbl-build -- --watch",
-    "build": "npm run bbl-build",
-    "watch": "npm run bbl-watch",
+    "build": "npm run bbl-build && npm run copy-assets",
+    "watch": "npm run bbl-watch & npm run watch-assets",
     "postinstall": "npm run build",
     "push": "git subtree push --prefix out origin gh-pages",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -31,9 +33,11 @@
     "highlight.js": "^9.0.0",
     "marked": "^0.3.5",
     "mkdirp": "^0.5.1",
+    "months": "^1.0.1",
     "node-dir": "^0.1.11",
     "ramda": "^0.19.0",
     "root-path": "^0.2.0",
-    "string": "^3.3.1"
+    "string": "^3.3.1",
+    "watch": "^0.17.1"
   }
 }

@@ -1,0 +1,15 @@
+-
+  menu = [
+    { name : 'Home', url : '/' },
+    { name : 'Projects', url : '/projects' },
+    { name : 'Twitter', url : 'https://twitter.com/_sequoia' },
+    { name : 'Github', url : 'https://github.com/Sequoia/' }
+  ]
+mixin menuitem(name, url)
+  //- todo: set current item? just not enough menu items rn
+  li: a(href=url)= name
+
+nav
+  ul#nav
+    each item in menu
+      +menuitem(item.name, item.url)

@@ -7,7 +7,14 @@
 * [x] write to out dir
 
 ## Markup
-* [ ] ui framework... :(
+* [x] ui framework... :(
+  * [x] css
+  * [x] js
+  * [x] fonts
+
+### Reqs:
+* [x] Menu (normal & mobile)
+* [ ] code
 
 ## Templates
 * [ ] layout.jade

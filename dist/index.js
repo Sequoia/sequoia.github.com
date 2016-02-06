@@ -35,6 +35,10 @@ var join = require('path').join;
 var fs = _bluebird2.default.promisifyAll(require('fs'));
 
 var mkdirp = _bluebird2.default.promisify(require('mkdirp'));
+var months = require('months');
+
+//config
+var outDir = (0, _rootPath2.default)('out');
 
 //get posts
 var posts = (0, _getFiles2.default)((0, _rootPath2.default)('_content/posts'));
@@ -45,24 +49,31 @@ var makeTitleSlug = function makeTitleSlug(attrs) {
 var addSlug = (0, _util.addPropFn)('slug')(makeTitleSlug);
 
 //takes dirname, makes it in "out" dir
-var mkoutdir = (0, _ramda.compose)(mkdirp, (0, _ramda.curryN)(2, join)((0, _rootPath2.default)('out')));
+var mkoutdir = (0, _ramda.compose)(mkdirp, (0, _ramda.curryN)(2, join)(outDir));
 
 //creates an index.html file in dirname based on slug
 var makeIndexHTMLOutPath = function makeIndexHTMLOutPath(slug) {
-  return join((0, _rootPath2.default)('out'), slug, 'index.html');
+  return join(outDir, slug, 'index.html');
 };
-var writeToOutDir = function writeToOutDir(f) {
-  return fs.writeFile(makeIndexHTMLOutPath(f.attributes.slug), f.body);
+var writeToOutDir = function writeToOutDir(p) {
+  return fs.writeFile(makeIndexHTMLOutPath(p.slug), p.body);
 };
+
+function formatDate(d) {
+  d = new Date(d);
+  return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+}
 
 ////process posts
 posts.map(_frontMatter2.default) // => { body, attributes }
-.map((0, _util.onProp)('body')(_marker2.default)).map((0, _util.onProp)('attributes')(addSlug)).each(function (post) {
-  return mkoutdir(post.attributes.slug);
-})
-//.map(x => x.attributes)
-//.map(l)
-.each(writeToOutDir).catch(function (err) {
+//merge attributes to top level
+.map(function (p) {
+  p.attributes.body = p.body;return p.attributes;
+}).map((0, _util.onProp)('body')(_marker2.default)).map(addSlug).each(function (post) {
+  return mkoutdir(post.slug);
+}).map((0, _util.onProp)('date')(formatDate)).tap(_util.l)
+//.each(writeToOutDir)
+.catch(function (err) {
   throw err;
 }).finally(function () {
   return (0, _util.l)('all done!');

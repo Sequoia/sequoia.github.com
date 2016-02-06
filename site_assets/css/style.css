@@ -1,0 +1,144 @@
+/*color*/
+header, #wrap>footer{
+  background-color: lavender;
+}
+
+body{
+  text-rendering: optimizeLegibility;
+	font-size:16pt;
+	font-family:sans-serif;
+}
+h1,h2{
+	margin:5px 0;
+}
+h3{
+	margin:10px 0;
+}
+header{
+  position:relative;
+  padding:.5em 1em;
+  margin-bottom:.5em;
+}
+header h1{
+
+}
+header h2{
+  text-transform:uppercase;
+  font-style:oblique;
+  font-size:1em;
+  color: #333;
+  margin-bottom:0;
+}
+nav{
+	min-height:1.4em;
+  position:absolute;
+  right:1em;
+  bottom:.5em;
+}
+  nav ul{
+    margin:0;
+    padding:.2em 0 0 0;
+    list-style-type:none;
+  }
+    nav ul li{
+      float:left;
+      display:block;
+      margin:0 5px;
+    }
+    nav ul li a, nav ul nav li a:visited{
+      color:blue;
+    }
+
+@media (max-width: 48em) {
+    /* Only apply this when the window is small. Otherwise, the following
+    case results in extra padding on the left:
+        * Make the window small.
+        * Tap the menu to trigger the active state.
+        * Make the window large again.
+    */
+  header{
+    padding:.3em;
+  }
+  nav {
+    margin-top:1em;
+    position: relative;
+    right:inherit;
+    bottom:inherit;
+  }
+  nav ul{
+    padding:0;
+  }
+  nav ul li{
+    padding:0;
+    /*display:block;*/
+    /*float:none;*/
+    /*width:80%;*/
+  }
+  nav ul li:first-child{
+    margin-left:0;
+  }
+  nav ul li:last-child{
+    margin-right:0;
+  }
+  /*nav ul li a{*/
+    /*background-color:lavender;*/
+    /*padding:.4444em;*/
+    /*border-radius:20px;*/
+  /*}*/
+  /*nav ul li:nth-child(even){*/
+    /*text-align:right;*/
+  /*}*/
+  /*nav ul li:nth-child(odd){*/
+    /*text-align:left;*/
+  /*}*/
+}
+
+
+#wrap{
+	max-width:900px;
+	margin:10px auto;
+}
+
+#content{
+	clear:both;
+}
+
+/*code*/
+.highlight{
+	font-size:.9em;
+	padding:.5em;
+}
+pre{
+	margin:.1em
+}
+p code{
+	background:#f8f8f8;
+	padding-left:4px;
+	padding-right:4px;
+}
+
+img{
+	width:98%;
+	border:outset 3px #CCC;
+	
+}
+
+h2+p, h3+p{
+	margin-top:0;
+}
+
+li>p{
+	margin:0;
+}
+
+.post{
+	
+}
+
+#content footer{
+	padding:.2em 0 0 .2em ;
+}
+#wrap>footer{
+  margin-top:.5em;
+	padding:.5em;
+}
