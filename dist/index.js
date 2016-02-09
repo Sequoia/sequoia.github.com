@@ -36,9 +36,16 @@ var fs = _bluebird2.default.promisifyAll(require('fs'));
 
 var mkdirp = _bluebird2.default.promisify(require('mkdirp'));
 var months = require('months');
+var jade = require('jade');
 
 //config
 var outDir = (0, _rootPath2.default)('out');
+var tmplDir = (0, _rootPath2.default)('templates');
+var jadeGlobals = {
+  thisYear: new Date().getYear()
+};
+
+var renderPost = jade.compileFile(join(tmplDir, 'post.jade'));
 
 //get posts
 var posts = (0, _getFiles2.default)((0, _rootPath2.default)('_content/posts'));
@@ -71,9 +78,11 @@ posts.map(_frontMatter2.default) // => { body, attributes }
   p.attributes.body = p.body;return p.attributes;
 }).map((0, _util.onProp)('body')(_marker2.default)).map(addSlug).each(function (post) {
   return mkoutdir(post.slug);
-}).map((0, _util.onProp)('date')(formatDate)).tap(_util.l)
-//.each(writeToOutDir)
-.catch(function (err) {
+}).map((0, _util.onProp)('date')(formatDate)).map(function (page) {
+  page.body = renderPost(page);return page;
+}).each(function (post) {
+  return (0, _util.l)('building... ' + post.title);
+}).each(writeToOutDir).catch(function (err) {
   throw err;
 }).finally(function () {
   return (0, _util.l)('all done!');

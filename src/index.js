@@ -11,9 +11,16 @@ import marked from './marker';
 import string from 'string';
 const mkdirp = Promise.promisify(require('mkdirp'));
 const months = require('months');
+const jade = require('jade');
 
 //config
 const outDir = root('out');
+const tmplDir = root('templates');
+const jadeGlobals = {
+  thisYear : (new Date()).getYear()
+};
+
+const renderPost = jade.compileFile(join(tmplDir, 'post.jade'));
 
 //get posts
 const posts = getFiles(root('_content/posts'));
@@ -42,7 +49,8 @@ posts
   .map(addSlug)
   .each(post => mkoutdir(post.slug))
   .map(onProp('date')(formatDate))
-  .tap(l)
-  //.each(writeToOutDir)
+  .map(page => { page.body = renderPost(page); return page; } )
+  .each(post => l(`building... ${post.title}`))
+  .each(writeToOutDir)
   .catch(err => { throw err; })
   .finally(() => l('all done!'));
