@@ -20,6 +20,7 @@ const tmplDir = root('templates');
 function makeRenderer(tmplName){ return jade.compileFile( join(tmplDir, tmplName)); }
 const renderPost = makeRenderer('post.jade');
 const renderIndex = makeRenderer('index.jade');
+const renderProjects = makeRenderer('projects.jade');
 
 const makeTitleSlug = attrs => string(attrs.title).slugify().s;
 const addSlug = addPropFn('slug')(makeTitleSlug);
@@ -37,11 +38,12 @@ function formatDate(d){
   return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 }
 
-////process posts
-getPosts()
-  .tap(writeIndexPage)
-  //.tap(l)
-  .then(writePosts);
+Promise.all([
+  getPosts()
+    .tap(writeIndexPage)
+    .then(writePosts),
+  writeProjectsPage()
+]).then(() => l('EVERYTHING done :)'));
 
 ////homepage
 /**
@@ -88,4 +90,13 @@ function writePosts(posts){
     .each(writeToOutDir) //write
     .catch(err => { throw err; })
     .finally(() => l('all done!'));
+}
+
+function writeProjectsPage(){
+  return Promise.resolve({
+      slug : 'projects',
+      body : renderProjects()
+    })
+    .tap(page => mkoutdir(page.slug))
+    .then(writeToOutDir);
 }

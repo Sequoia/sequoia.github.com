@@ -47,6 +47,7 @@ function makeRenderer(tmplName) {
 }
 var renderPost = makeRenderer('post.jade');
 var renderIndex = makeRenderer('index.jade');
+var renderProjects = makeRenderer('projects.jade');
 
 var makeTitleSlug = function makeTitleSlug(attrs) {
   return (0, _string2.default)(attrs.title).slugify().s;
@@ -72,10 +73,9 @@ function formatDate(d) {
   return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 }
 
-////process posts
-getPosts().tap(writeIndexPage)
-//.tap(l)
-.then(writePosts);
+_bluebird2.default.all([getPosts().tap(writeIndexPage).then(writePosts), writeProjectsPage()]).then(function () {
+  return (0, _util.l)('EVERYTHING done :)');
+});
 
 ////homepage
 /**
@@ -131,4 +131,13 @@ function writePosts(posts) {
   }).finally(function () {
     return (0, _util.l)('all done!');
   });
+}
+
+function writeProjectsPage() {
+  return _bluebird2.default.resolve({
+    slug: 'projects',
+    body: renderProjects()
+  }).tap(function (page) {
+    return mkoutdir(page.slug);
+  }).then(writeToOutDir);
 }
