@@ -1,0 +1,202 @@
+/*color*/
+header, #wrap>footer{
+  background-color: lavender;
+}
+
+#wrap>*{
+  padding-right:1em;
+  padding-left:1em;
+}
+
+body{
+  text-rendering: optimizeLegibility;
+	font-size:16pt;
+	font-family:sans-serif;
+}
+
+p{
+  line-height: 1.3em;
+}
+
+#content h1{
+  font-size:2em;
+}
+
+#content h2{
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: dashed 6px lavender;
+}
+
+h3{
+	margin:10px 0;
+}
+
+header{
+  position:relative;
+  padding-top:.5em;
+  padding-bottom:.5em;
+  margin-bottom:.5em;
+}
+
+  header h1{
+    margin:5px 0;
+    font-size: 3em;
+  }
+  header h2{
+    text-transform:uppercase;
+    font-style:oblique;
+    color: #333;
+    margin-bottom:0;
+  }
+  nav{
+    min-height:1.4em;
+    position:absolute;
+    right:1em;
+    bottom:.5em;
+    font-size: 1.2em;
+  }
+    nav ul{
+      margin:0;
+      padding:.2em 0 0 0;
+      list-style-type:none;
+    }
+      nav ul li{
+        display:block;
+        text-align: right;
+        margin: .2em 0;
+      }
+      nav ul li a, nav ul nav li a:visited{
+        color:blue;
+      }
+
+
+
+#wrap{
+	max-width: 960px;
+	margin:10px auto;
+	padding: 0 1em;
+}
+
+#content{
+	clear:both;
+}
+
+/*code*/
+.highlight{
+	font-size:.9em;
+	padding:.5em;
+}
+pre{
+	margin:.1em;
+}
+pre code.hljs{
+	padding-left:4px;
+	padding-right:4px;
+	border-right: solid 8px lavender;
+	background: lavenderblush;
+	/* padding-bottom: 5px; */
+}
+
+pre code.lang-nohighlight>*{
+  color:inherit;
+}
+
+img{
+	width:98%;
+	border:outset 3px #CCC;
+	
+}
+
+h2+p, h3+p{
+	margin-top:0;
+}
+
+li>p{
+	margin:0;
+}
+
+section.blog-posts{
+  
+}
+  section.blog-posts time, footer.byline{
+    font-style:oblique;
+  }
+  section.blog-posts p{
+    margin-top:.1em;
+  }
+
+#content footer{
+	padding:.2em 0 0 .2em ;
+}
+#wrap>footer{
+  margin-top:.5em;
+	padding:.5em;
+}
+
+@media (max-width: 400px) {
+}
+@media (max-width: 48em) {
+    /* Only apply this when the window is small. Otherwise, the following
+    case results in extra padding on the left:
+        * Make the window small.
+        * Tap the menu to trigger the active state.
+        * Make the window large again.
+    */
+  #wrap{
+    padding: 0 .2em;
+  }
+    #wrap>*{
+      padding-right:.3em;
+      padding-left:.3em;
+    }
+    #content {
+      font-size:.8em;
+    }
+
+    pre code.hljs{
+      overflow-x:scroll;
+    }
+
+    header h1{
+      font-size: 1.5em;
+    }
+    header h2{
+      margin-top:.2em;
+      font-size: .9em;
+    }
+    nav {
+      margin-top:.5em;
+      position: relative;
+      right:inherit;
+      bottom:inherit;
+    }
+    nav ul{
+      padding:0;
+      font-size: .9em;
+    }
+    nav ul li{
+      margin: .2em;
+      display:block;
+      float:left;
+      font-size:.9em;
+      /*width:80%;*/
+    }
+    nav ul li:first-child{
+      margin-left:0;
+    }
+    nav ul li:last-child{
+      margin-right:0;
+    }
+  /*nav ul li a{*/
+    /*background-color:lavender;*/
+    /*padding:.4444em;*/
+    /*border-radius:20px;*/
+  /*}*/
+  /*nav ul li:nth-child(even){*/
+    /*text-align:right;*/
+  /*}*/
+  /*nav ul li:nth-child(odd){*/
+    /*text-align:left;*/
+  /*}*/
+}
