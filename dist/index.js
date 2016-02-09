@@ -41,19 +41,20 @@ var jade = require('jade');
 //config
 var outDir = (0, _rootPath2.default)('out');
 var tmplDir = (0, _rootPath2.default)('templates');
-var jadeGlobals = {
-  thisYear: new Date().getYear()
-};
 
-var renderPost = jade.compileFile(join(tmplDir, 'post.jade'));
-
-//get posts
-var posts = (0, _getFiles2.default)((0, _rootPath2.default)('_content/posts'));
+function makeRenderer(tmplName) {
+  return jade.compileFile(join(tmplDir, tmplName));
+}
+var renderPost = makeRenderer('post.jade');
+var renderIndex = makeRenderer('index.jade');
 
 var makeTitleSlug = function makeTitleSlug(attrs) {
   return (0, _string2.default)(attrs.title).slugify().s;
 };
 var addSlug = (0, _util.addPropFn)('slug')(makeTitleSlug);
+var addTimestamp = (0, _util.addPropFn)('timestamp')(function (p) {
+  return new Date(p.date).getTime();
+});
 
 //takes dirname, makes it in "out" dir
 var mkoutdir = (0, _ramda.compose)(mkdirp, (0, _ramda.curryN)(2, join)(outDir));
@@ -63,7 +64,7 @@ var makeIndexHTMLOutPath = function makeIndexHTMLOutPath(slug) {
   return join(outDir, slug, 'index.html');
 };
 var writeToOutDir = function writeToOutDir(p) {
-  return fs.writeFile(makeIndexHTMLOutPath(p.slug), p.body);
+  return fs.writeFileAsync(makeIndexHTMLOutPath(p.slug), p.body);
 };
 
 function formatDate(d) {
@@ -72,18 +73,62 @@ function formatDate(d) {
 }
 
 ////process posts
-posts.map(_frontMatter2.default) // => { body, attributes }
-//merge attributes to top level
-.map(function (p) {
-  p.attributes.body = p.body;return p.attributes;
-}).map((0, _util.onProp)('body')(_marker2.default)).map(addSlug).each(function (post) {
-  return mkoutdir(post.slug);
-}).map((0, _util.onProp)('date')(formatDate)).map(function (page) {
-  page.body = renderPost(page);return page;
-}).each(function (post) {
-  return (0, _util.l)('building... ' + post.title);
-}).each(writeToOutDir).catch(function (err) {
-  throw err;
-}).finally(function () {
-  return (0, _util.l)('all done!');
-});
+getPosts().tap(writeIndexPage)
+//.tap(l)
+.then(writePosts);
+
+////homepage
+/**
+ * @param Promise<Array[post object]>
+ * @return Promise
+ */
+function writeIndexPage(posts) {
+  fs.readFileAsync((0, _rootPath2.default)('_content/index.md'), 'utf-8').then(_frontMatter2.default) // => { body, attributes }
+  //merge attributes to top level
+  .then(function (p) {
+    p.attributes.body = p.body;return p.attributes;
+  })
+  //add posts to template data
+  .then(function (page) {
+    page.posts = posts;return page;
+  }).then((0, _util.onProp)('body')(_marker2.default)) //markdown
+  .then(renderIndex) //template
+  .then(function (rendered) {
+    return fs.writeFile(join(outDir, 'index.html'), rendered);
+  });
+}
+
+/**
+ * gets posts & adds metadata as needed
+ * @return Promise<Array[post object]>
+ */
+function getPosts() {
+  return (0, _getFiles2.default)((0, _rootPath2.default)('_content/posts')).map(_frontMatter2.default) // => { body, attributes }
+  //merge attributes to top level
+  .map(function (p) {
+    p.attributes.body = p.body;return p.attributes;
+  }).map(addSlug).each(function (post) {
+    return mkoutdir(post.slug);
+  })
+  //sort them
+  .map(addTimestamp).then((0, _ramda.sortBy)((0, _ramda.prop)('timestamp'))).then(_ramda.reverse).map((0, _util.onProp)('date')(formatDate));
+}
+
+/**
+ * @param Promise<Array[post object]>
+ * @return Promise
+ */
+function writePosts(posts) {
+  return _bluebird2.default.resolve(posts).map((0, _util.onProp)('body')(_marker2.default)) //markdown
+  .map(function (page) {
+    page.body = renderPost(page);return page;
+  }) //template
+  .each(function (post) {
+    return (0, _util.l)('building... ' + post.title);
+  }).each(writeToOutDir) //write
+  .catch(function (err) {
+    throw err;
+  }).finally(function () {
+    return (0, _util.l)('all done!');
+  });
+}

@@ -1,8 +1,7 @@
 ---
 title: "Building to Github Pages with Grunt"
-layout: post.hbs
-collection: posts
 date: 2013-12-02
+description: "Wherein I document my Grunt+github-pages+bookmarklet build which required templating, switching branches, rebasing, commit, and all sorts of craziness."
 tags: [grunt, github, javascript]
 ---
 A while ago I created a [bookmarklet](https://en.wikipedia.org/wiki/Bookmarklet) to anonymize Facebook for screenshots, [the Afonigizer](http://sequoia.github.io/afonigizer/). To distribute it, I chose to use [Github Pages](http://pages.github.com/), Github's free hosting service.  To automate the process of getting updates to my bookmarklet from a javascipt file in my repository to a page on `github.io`, I used [Grunt](http://gruntjs.com/).  Besides building and distributing distributing bookmarklets, I am sure there are other reasons to build to github pages (or another branch on your repo), so I'm sharing my workflow here.

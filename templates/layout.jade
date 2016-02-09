@@ -1,3 +1,4 @@
+- var thisYear = (new Date()).getFullYear();
 doctype html
 html(lang='en')
   include ./includes/head.jade
@@ -11,4 +12,5 @@ html(lang='en')
 
       section#content
         block content
-      footer &copy; Sequoia McDowell 2023
+
+      footer &copy; Sequoia McDowell #{thisYear}

@@ -1,8 +1,10 @@
 extends ./layout.jade
 block content
   h1= title
+  //-span.time Published&nbsp;
+    //-time= date
   | !{body}
 
-  footer
-    | Published
+  footer.byline
+    | Published&nbsp;
     span= date

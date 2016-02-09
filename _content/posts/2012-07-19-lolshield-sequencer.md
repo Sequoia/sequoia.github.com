@@ -1,8 +1,7 @@
 ---
 title: "LoLshield Sequencer"
-layout: post.hbs
-collection: posts
 date: 2012-07-19
+description: "How do you encode animations for a 9x14 LED matrix? By building a web-app, of course!"
 ---
 The goal of this project was to create a tool to make it easier to create "animations" on the [LoL Shield](http://jimmieprodgers.com/kits/lolshield/makelolshield/), an [Arduino](http://arduino.cc/) shield with a bunch of LEDs.  [The existing tool](https://docs.google.com/spreadsheet/ccc?key=0Aj5ldW_o2jR3dEJXMnI2Q1V4dkNQa0x5U0J2QVdyWHc&hl=en#gid=0) that was offered to assist in mapping out the shield states was a Google spreadsheet which I could never figure out how to use.  I wanted a tool that:
 * was point & click (& generally easy to use)

@@ -16,6 +16,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 _marked2.default.setOptions({
   sanitize: false,
+  langPrefix: 'hljs lang-',
   highlight: function highlight(code) {
     return _highlight3.default.highlightAuto(code).value;
   }

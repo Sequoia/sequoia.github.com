@@ -11,6 +11,8 @@
     "build": "npm run bbl-build && npm run copy-assets",
     "watch": "npm run bbl-watch & npm run watch-assets",
     "postinstall": "npm run build",
+    "blog-copy-imgs": "cp -r _content/img out/img",
+    "blog" : "node . & npm run blog-copy-imgs",
     "push": "git subtree push --prefix out origin gh-pages",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

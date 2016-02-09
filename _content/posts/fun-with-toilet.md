@@ -1,10 +1,8 @@
 ---
-layout: post
 title: "Fun With Toilet"
-layout: post.hbs
-collection: posts
 date: 2012-11-03
-tags: []
+description: "Shell feeling shabby? Spice things up with Toilet, the ASCII generator!"
+
 ---
 Shell feeling shabby? Let Toilet spice it up! [Toilet](http://caca.zoy.org/wiki/toilet) is a shell utility from [caca labs](http://caca.zoy.org/) that outputs text in large block type.  It is modeled after [figlet](http://www.figlet.org/), adding color and Unicode support.<br>
 *Note: some examples given here are non-POSIX. I use bash and have confirmed the examples work in zsh.*

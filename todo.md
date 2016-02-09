@@ -17,17 +17,17 @@
 * [ ] code
 
 ## Templates
-* [ ] layout.jade
-  * [ ] head.jade
-  * [ ] menu.jade (static)
-  * [ ] foot.jade
-* [ ] post.jade
+* [x] layout.jade
+  * [x] head.jade
+  * [x] menu.jade (static)
+  * [x] foot.jade
+* [x] post.jade
 
 ## Lists
 * [ ] posts
 
 ## Pages
-* [ ] blog page (listing)
+* [ ] front page (listing)
 
 # Later
 ## Projects
