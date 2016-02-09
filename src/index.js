@@ -93,10 +93,14 @@ function writePosts(posts){
 }
 
 function writeProjectsPage(){
-  return Promise.resolve({
-      slug : 'projects',
-      body : renderProjects()
-    })
+  let page = {
+    title: 'Projects',
+    slug : 'projects'
+  };
+
+  //@TODO lol w/e
+  return Promise.resolve(page)
+    .then(addPropFn('body')(renderProjects))
     .tap(page => mkoutdir(page.slug))
     .then(writeToOutDir);
 }

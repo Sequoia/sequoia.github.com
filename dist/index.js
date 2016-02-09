@@ -134,10 +134,13 @@ function writePosts(posts) {
 }
 
 function writeProjectsPage() {
-  return _bluebird2.default.resolve({
-    slug: 'projects',
-    body: renderProjects()
-  }).tap(function (page) {
+  var page = {
+    title: 'Projects',
+    slug: 'projects'
+  };
+
+  //@TODO lol w/e
+  return _bluebird2.default.resolve(page).then((0, _util.addPropFn)('body')(renderProjects)).tap(function (page) {
     return mkoutdir(page.slug);
   }).then(writeToOutDir);
 }
