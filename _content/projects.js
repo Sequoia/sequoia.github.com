@@ -1,0 +1,57 @@
+[
+  {
+    "name" : "Error Throwing Middleware",
+    "url"  : ,
+    "description":
+  },
+  {
+    "name" : "RADO",
+    "url"  : ,
+    "description":
+    "links" : [
+      { "name" : "Slides", "url"  : "bit.ly/ejs-cli-talk" },
+      { "name" : "Talk video", "url"  : "https://www.youtube.com/watch?v=LJgbx8yIBL8" },
+  },
+  {
+    "name" : "checkrunning",
+    "url"  : ,
+    "description":
+  },
+  {
+    "name" : "repostats",
+    "url"  : ,
+    "description":
+  },
+  {
+    "name" : "cluck",
+    "url"  : ,
+    "description":
+  },
+  {
+    "name" : "trello-toy",
+    "url"  : ,
+    "description": 
+  },
+  {
+    "name" : "Hack for Western Mass",
+    "url"  : ,
+    "description":
+  },
+  {
+    "name" : "LoLshield Sequencer",
+    "url"  : ,
+    "description":
+  },
+  {
+    "name" : "Afonigizer",
+    "url"  : ,
+    "description": ,
+    "links" : [
+      { "name" : "Slides", "url"  : "" }
+    ]
+  },
+  {
+    "name" : "FTWin (For The Windows)",
+    "url"  : ,
+  },
+]

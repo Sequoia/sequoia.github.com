@@ -83,16 +83,17 @@ header{
 }
 
 /*code*/
-.highlight{
+.hljs{
 	font-size:.9em;
 	padding:.5em;
 }
 pre{
 	margin:.1em;
 }
+code{
+	background: lavenderblush;
+}
 pre code.hljs{
-	padding-left:4px;
-	padding-right:4px;
 	border-right: solid 8px lavender;
 	background: lavenderblush;
 	/* padding-bottom: 5px; */
