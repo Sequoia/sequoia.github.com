@@ -1,0 +1,171 @@
+<!DOCTYPE html><html lang="en"><head><title>Higher Order Functions in ES6: Easy as a =&gt; b =&gt; c; &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="New language features can make an expression that was cumbersome to write in ES5 easy in ES6, enabling and encouraging the use of this type of expression. We’re going to look at one such case here: how arrow functions make it easier to write higher-order functions in ES6."><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects">Projects</a></li><li><a href="https://twitter.com/_sequoia">Twitter</a></li><li><a href="https://github.com/Sequoia/">Github</a></li></ul></nav></header><section id="content"><h1>Higher Order Functions in ES6: Easy as a =&gt; b =&gt; c;</h1><p>ES6 is nigh! As more and more libraries &amp; Thought Leaders start incorporating ES6 into their code, what used to be nice-to-know ES6 features are becoming required knowledge. And it’s not just new syntax – in many cases, new language features can make an expression that was cumbersome to write in ES5 easy in ES6, enabling and encouraging the use of this type of expression. We’re going to look at one such case here: how arrow functions make it easier to write higher-order functions in ES6.</p>
+<p>A higher order function is a function that does one or both of the following:</p>
+<ol>
+<li>takes one or more functions as arguments</li>
+<li>returns a function as its result.</li>
+</ol>
+<p>The purpose of this post is not to convince you to adopt this new style right
+away, although I certainly encourage you to give it a try! The purpose is to
+familiarize you with this style, so that when you run into it in someone’s
+ES6-based library, you won’t sit scratching your head wondering what you’re
+looking at as I did the first time I saw it. If you need a refresher in arrow
+syntax, check out <a href="https://strongloop.com/strongblog/an-introduction-to-javascript-es6-arrow-functions/">this
+post</a> first.</p>
+<p>Hopefully you’re familiar with arrow functions that return a value:</p>
+<pre><code class="hljs lang-javascript">const square = <span class="hljs-keyword">x</span> =&gt; <span class="hljs-keyword">x</span> * <span class="hljs-keyword">x</span><span class="hljs-comment">;</span>
+</code></pre>
+<p>But what’s going on in the code below?</p>
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> has = p =&gt; o =&gt; o.hasOwnProperty(p);
+<span class="hljs-keyword">const</span> sortBy = p =&gt; (a, b) =&gt; a[p] &gt; b[p];
+</code></pre>
+<p>What’s this “p returns o returns o.hasOwnProperty…”? How can we use <code>has</code>?</p>
+<h2 id="understanding-the-syntax">Understanding the syntax</h2>
+<p>To illustrate writing higher order functions with arrows, let’s look at a classic example: add.  In ES5 that would look like this:</p>
+<pre><code class="hljs lang-javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">add</span><span class="hljs-params">(x)</span></span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(y)</span></span>{
+    <span class="hljs-keyword">return</span> y + x;
+  };
+}
+
+<span class="hljs-keyword">var</span> addTwo = add(<span class="hljs-number">2</span>);
+addTwo(<span class="hljs-number">3</span>);          <span class="hljs-comment">// =&gt; 5</span>
+add(<span class="hljs-number">10</span>)(<span class="hljs-number">11</span>);        <span class="hljs-comment">// =&gt; 21</span>
+</code></pre>
+<p>Our add function takes x and returns a function that takes y which returns y + x. How would we write this with arrow functions? We know that…</p>
+<ol>
+<li>an arrow function definition is an expression, and</li>
+<li>an arrow function <em>implicitly returns</em> the results of a single expression</li>
+</ol>
+<p>…so all we must do is make the body of our arrow function another arrow function, thus:</p>
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> add = x =&gt; y =&gt; y + x;
+// outer <span class="hljs-function"><span class="hljs-keyword">function</span>:</span> x =&gt; [inner <span class="hljs-function"><span class="hljs-keyword">function</span>, <span class="hljs-title">uses</span> <span class="hljs-title">x</span>]</span>
+// inner <span class="hljs-function"><span class="hljs-keyword">function</span>:</span> y =&gt; y + x;
+</code></pre>
+<p>Now we can create inner functions with a value bound to x:</p>
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> add2 = <span class="hljs-keyword">add</span>(<span class="hljs-number">2</span>);<span class="hljs-comment">// returns [inner function] where x = 2</span>
+add2(<span class="hljs-number">4</span>);            <span class="hljs-comment">// returns 6: exec inner with y = 4, x = 2</span>
+<span class="hljs-keyword">add</span>(<span class="hljs-number">8</span>)(<span class="hljs-number">7</span>);          <span class="hljs-comment">// 15</span>
+</code></pre>
+<p>Our <code>add</code> function isn’t terribly useful, but it should illustrate how an outer
+function can take an argument <code>(x)</code> and reference it in a function it returns.</p>
+<h2 id="sorting-our-users">Sorting our users</h2>
+<p>So you’re looking at an ES6 library on github and encounter code that looks like this:</p>
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> has = p =&gt; o =&gt; o.hasOwnProperty(p);
+<span class="hljs-keyword">const</span> sortBy = p =&gt; (a, b) =&gt; a[p] &gt; b[p];
+
+<span class="hljs-keyword">let</span> <span class="hljs-literal">result</span>;
+<span class="hljs-keyword">let</span> users = [
+  { name: '<span class="hljs-type">Qian</span>', age: <span class="hljs-number">27</span>, pets : ['<span class="hljs-type">Bao</span>'], title : '<span class="hljs-type">Consultant</span>' },
+  { name: '<span class="hljs-type">Zeynep</span>', age: <span class="hljs-number">19</span>, pets : ['<span class="hljs-type">Civelek</span>', '<span class="hljs-type">Muazzam</span>'] },
+  { name: '<span class="hljs-type">Yael</span>', age: <span class="hljs-number">52</span>, title : '<span class="hljs-type">VP</span> <span class="hljs-keyword">of</span> <span class="hljs-type">Engineering</span>'}
+];
+
+<span class="hljs-literal">result</span> = users
+  .filter(has('pets'))
+  .sort(sortBy('age'));
+</code></pre>
+<p>What’s going on here? We’re calling the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/prototype#Methods">Array prototype’s sort and filter
+methods</a>, each of which take a single function argument, but instead of writing function expressions and passing them to filter and sort, we’re calling functions that return functions, and passing those to filter and sort.</p>
+<p>Let’s take a look, with the expression that returns a function underlined in each case.</p>
+<h4 id="without-higher-order-functions">Without higher order functions</h4>
+<pre><code class="hljs lang-javascript"><span class="hljs-literal">result</span> = users
+  .filter(x =&gt; x.hasOwnProperty('pets')) //pass <span class="hljs-type">Function</span> to filter
+  .sort((a, b) =&gt; a.age &gt; b.age);        //pass <span class="hljs-type">Function</span> to sort
+</code></pre>
+<h4 id="with-higher-order-functions">With higher order functions</h4>
+<pre><code class="hljs lang-javascript"><span class="hljs-literal">result</span> = users
+  .filter(has('pets'))  //pass <span class="hljs-type">Function</span> to filter
+  .sort(sortBy('age')); //pass <span class="hljs-type">Function</span> to sort
+</code></pre>
+<p>In each case, <code>filter</code> is passed a function that checks if an object has a property called “pets.”</p>
+<h2 id="why-is-this-useful-">Why is this useful?</h2>
+<p>This is useful for a few reasons:</p>
+<ul>
+<li>It reduces repetitive code</li>
+<li>It allows for easier reuse of code</li>
+<li>It increases clarity of code meaning</li>
+</ul>
+<p>Imagine we want only users with pets <strong>and with titles</strong>. We could add another function in:</p>
+<pre><code class="hljs lang-javascript"><span class="hljs-literal">result</span> = users
+  .filter(x =&gt; x.hasOwnProperty('pets'))
+  .filter(x =&gt; x.hasOwnProperty('title'))
+  ...
+</code></pre>
+<p>The repetition here is just clutter: it doesn’t add clarity, it’s just more to read and write. Compare with the same code using our <code>has</code> function:</p>
+<pre><code class="hljs lang-javascript"><span class="hljs-literal">result</span> = users
+  .filter(has('pets'))
+  .filter(has('title'))
+  ...
+</code></pre>
+<p>This is shorter and easier to write, and that makes for fewer typos. I consider this code to have greater clarity as well, as it’s easy to understand its purpose at a glance.</p>
+<p>As for reuse, if you have to filter to pet users or people with job titles in many places, you can create function to do this and reuse them as needed:</p>
+<pre><code class="hljs lang-javascript">const hasPets = <span class="hljs-built_in">has</span>(<span class="hljs-string">'pets'</span>);
+const isEmployed = <span class="hljs-built_in">has</span>(<span class="hljs-string">'title'</span>);
+const byAge = sortBy(<span class="hljs-string">'age'</span>);
+
+<span class="hljs-keyword">let</span> workers = users.<span class="hljs-built_in">filter</span>(isEmployed);
+<span class="hljs-keyword">let</span> petOwningWorkers = workers.<span class="hljs-built_in">filter</span>(hasPets);
+<span class="hljs-keyword">let</span> workersByAge = workers.<span class="hljs-built_in">sort</span>(byAge);
+</code></pre>
+<p>We can use some of our functions for single values as well, not just for filtering arrays:</p>
+<pre><code class="hljs lang-javascript">let user = {<span class="hljs-string">name:</span> <span class="hljs-string">'Assata'</span>, <span class="hljs-string">age:</span> <span class="hljs-number">68</span>, <span class="hljs-string">title:</span> <span class="hljs-string">'VP of Operations'</span>};
+<span class="hljs-keyword">if</span>(isEmployed(user)){   <span class="hljs-comment">// true</span>
+  <span class="hljs-comment">//do employee action</span>
+}
+hasPets(user);          <span class="hljs-comment">// false</span>
+has(<span class="hljs-string">'age'</span>)(user);       <span class="hljs-comment">//true</span>
+</code></pre>
+<h2 id="a-step-further">A Step Further</h2>
+<p>Let’s make a function that will produce a filter function that checks that an
+object has a <strong>key</strong> with a certain <strong>value</strong>. Our <code>has</code> function checked for a key, but to check value as well our filter function will need to know two things (key and value), not just one. Let’s take a look at one approach:</p>
+<pre><code class="hljs lang-javascript"><span class="hljs-comment">//[p]roperty, [v]alue, [o]bject:</span>
+<span class="hljs-keyword">const</span> <span class="hljs-keyword">is</span> = p =&gt; v =&gt; o =&gt; o.hasOwnProperty(p) &amp;&amp; o[p] == v;
+
+<span class="hljs-comment">// broken down:</span>
+<span class="hljs-comment">// outer:  p =&gt; [inner1 function, uses p]</span>
+<span class="hljs-comment">// inner1: v =&gt; [inner2 function, uses p and v]</span>
+<span class="hljs-comment">// inner2: o =&gt; o.hasOwnProperty(p) &amp;&amp; o[p] = v;</span>
+</code></pre>
+<p>So our new function called “is” does three things:</p>
+<ol>
+<li>Takes a <strong>property</strong> name and returns a function that…</li>
+<li>Takes a <strong>value</strong> and returns a function that…</li>
+<li>Takes an <strong>object</strong> and tests whether the object has the property specified with the value specified, finally returning a boolean.</li>
+</ol>
+<p>Here is an example of using this <code>is</code> to filter our users:</p>
+<pre><code class="hljs lang-javascript">const titleIs = is(<span class="hljs-string">'title'</span>);
+<span class="hljs-regexp">//</span> titleIs == v =&gt; o =&gt; o.hasOwnProperty(<span class="hljs-string">'title'</span>) &amp;&amp; o[<span class="hljs-string">'title'</span>] == v;
+
+const isContractor = titleIs(<span class="hljs-string">'Contractor'</span>);
+<span class="hljs-regexp">//</span> isContractor == o =&gt; o.hasOwnProperty(<span class="hljs-string">'contractor'</span>) &amp;&amp; o[<span class="hljs-string">'title'</span>] == <span class="hljs-string">'Contractor'</span>;
+
+let contractors = users.filter(isContractor);
+let developers  = users.filter(titleIs(<span class="hljs-string">'Developer'</span>));
+
+let user = {<span class="hljs-symbol">name:</span> <span class="hljs-string">'Viola'</span>, <span class="hljs-symbol">age:</span> <span class="hljs-number">50</span>, <span class="hljs-symbol">title:</span> <span class="hljs-string">'Actress'</span>, <span class="hljs-symbol">pets:</span> [<span class="hljs-string">'Zak'</span>]};
+isEmployed(user);   <span class="hljs-regexp">//</span> <span class="hljs-keyword">true</span>
+isContractor(user); <span class="hljs-regexp">//</span> <span class="hljs-keyword">false</span>
+</code></pre>
+<h2 id="a-note-on-style">A note on style</h2>
+<p>Scan this function, and note the time it takes you to figure out what’s going on:</p>
+<pre><code class="hljs lang-javascript">const i = <span class="hljs-keyword">x</span> =&gt; y =&gt; z =&gt; <span class="hljs-keyword">h</span>(<span class="hljs-keyword">x</span>)(y) &amp;&amp; y[<span class="hljs-keyword">x</span>] == z<span class="hljs-comment">;</span>
+</code></pre>
+<p>Now take a look at this same function, written slightly differently:</p>
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> <span class="hljs-keyword">is</span> = prop =&gt; val =&gt; obj =&gt; has(prop)(obj) &amp;&amp; obj[prop] == val;
+</code></pre>
+<p>There is a tendency when writing one line functions to be as terse as possible,
+at the expense of readability. Fight this urge! Short, meaningless names make
+for cute-looking, <strong>hard to understand</strong> functions. Do yourself and your fellow coders a favor and spend the extra few characters for meaningful variable and function names.</p>
+<h2 id="one-more-thing-">One more thing. . .</h2>
+<p>What if you want to sort by age in descending order rather than ascending? Or find out who’s not an employee? Do we have to write new utility functions <code>sortByDesc</code> and <code>notHas</code>? No we do not! We can wrap our functions, which return Booleans, with a function that inverts that boolean, true to false and vice versa:</p>
+<pre><code class="hljs lang-javascript">//take <span class="hljs-keyword">args</span>, pass them thru <span class="hljs-keyword">to</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">x</span>, <span class="hljs-title">invert</span> <span class="hljs-title">the</span> <span class="hljs-title">result</span> <span class="hljs-title">of</span> <span class="hljs-title">x</span></span>
+const <span class="hljs-built_in">invert</span> = <span class="hljs-keyword">x</span> =&gt; (...<span class="hljs-keyword">args</span>) =&gt; !x(...<span class="hljs-keyword">args</span>);
+const noPets = <span class="hljs-built_in">invert</span>(hasPets);
+
+<span class="hljs-keyword">let</span> petlessUsersOldestFirst = users
+  .<span class="hljs-built_in">filter</span>(noPets)
+  .<span class="hljs-built_in">sort</span>(<span class="hljs-built_in">invert</span>(sortBy(<span class="hljs-string">'age'</span>)));
+</code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>Functional programming has been gaining momentum throughout the programming world and ES6 arrow functions make it easier to use this style in JavaScript. If you haven’t encountered FP style code in JavaScript yet, it’s likely you will in the coming months. This means that even if you don’t love the style, it’s important to understand the basics of this style, some of which we’ve gone over here. Hopefully the concepts outlined in this post have helped prepare you for when you see this code in the wild, and maybe even inspired you to give this style a try!</p>
+<footer class="byline">Published&nbsp;<span>January 11, 2016</span></footer></section><footer>&copy; Sequoia McDowell 2016</footer></div></body></html>
