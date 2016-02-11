@@ -4,18 +4,21 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "blog" : "node . && npm run blog-copy-imgs && npm run blog-copy-assets",
-    "watch": "npm run bbl-watch & npm run blog-watch-assets",
+    "blog" : "npm-run-all blog:*",
+    "watch": "npm-run-all --parallel watch:**",
     "push" : "git subtree push --prefix out origin master",
-    "build": "npm run bbl-build",
 
-    "bbl-build": "babel src --out-dir dist",
-    "bbl-watch": "npm run bbl-build -- --watch",
-    "postinstall": "npm run build",
-    "blog-copy-assets": "cp -r site_assets/* out/",
-    "blog-watch-assets": "watch --wait=1 'npm run blog-copy-assets' site_assets",
-    "blog-copy-imgs": "mkdirp out/img && cp -r _content/img/* out/img/",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "bbl:build": "babel src --out-dir dist",
+
+    "blog:stuff": "mkdirp out/s/ && cp -r _content/static/* out/s",
+    "blog:assets": "cp -r site_assets/* out/",
+    "blog:markdowns" : "node .",
+    "blog:imgs": "mkdirp out/img && cp -r _content/img/* out/img/",
+
+    "watch:bbl:build": "npm run bbl:build -- --watch",
+    "watch:blog:assets": "watch --wait=1 'npm run blog:assets' site_assets",
+
+    "postinstall": "npm run bbl:build"
   },
   "repository": {
     "type": "git",
