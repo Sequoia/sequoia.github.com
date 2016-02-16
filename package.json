@@ -17,6 +17,7 @@
 
     "watch:bbl:build": "npm run bbl:build -- --watch",
     "watch:blog:assets": "watch --wait=1 'npm run blog:assets' site_assets",
+    "watch:blog:contentANDtmpl": "watch --wait=1 'npm run blog:markdowns' _content templates",
 
     "postinstall": "npm run bbl:build"
   },

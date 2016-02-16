@@ -24,15 +24,22 @@
 * [x] post.jade
 
 ## Lists
-* [ ] posts
+* [x] posts
 
 ## Pages
-* [ ] front page (listing)
+* [x] front page (listing)
 
 # Later
 ## Projects
-* [ ] list
-* [ ] page
+* [x] list
+* ~~page~~ not gonna do page-per-project
+* [ ] styles (float left blocks?)
+
 ## Talks
 * [ ] list
 * [ ] page
+
+## Contact form
+* [ ] https://getsimpleform.com/
+* [ ] html of form
+* [ ] thanks page/message

@@ -93,13 +93,21 @@ function writePosts(posts){
 }
 
 function writeProjectsPage(){
+  //no md page for this just putting the values here
   let page = {
     title: 'Projects',
     slug : 'projects'
   };
 
+  function getProjectJson(){
+    let jsonRoute = root('_content/projects.json');
+    return require(jsonRoute)
+      .map(onProp('description')(marked)); //markdown
+  }
+
   //@TODO lol w/e
   return Promise.resolve(page)
+    .then(addPropFn('projects')(getProjectJson))
     .then(addPropFn('body')(renderProjects))
     .tap(page => mkoutdir(page.slug))
     .then(writeToOutDir);

@@ -134,13 +134,19 @@ function writePosts(posts) {
 }
 
 function writeProjectsPage() {
+  //no md page for this just putting the values here
   var page = {
     title: 'Projects',
     slug: 'projects'
   };
 
+  function getProjectJson() {
+    var jsonRoute = (0, _rootPath2.default)('_content/projects.json');
+    return require(jsonRoute).map((0, _util.onProp)('description')(_marker2.default)); //markdown
+  }
+
   //@TODO lol w/e
-  return _bluebird2.default.resolve(page).then((0, _util.addPropFn)('body')(renderProjects)).tap(function (page) {
+  return _bluebird2.default.resolve(page).then((0, _util.addPropFn)('projects')(getProjectJson)).then((0, _util.addPropFn)('body')(renderProjects)).tap(function (page) {
     return mkoutdir(page.slug);
   }).then(writeToOutDir);
 }

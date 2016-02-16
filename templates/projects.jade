@@ -2,5 +2,9 @@ extends ./layout.jade
 block content
   h1 Projects
 
-  h2 @TODO 
-  img(src='/img/YosemiteRapids2787constconstruction.gif')
+  for project in projects
+    h2= project.name
+    p!= project.description
+    ul
+      for link in project.links
+        li: a(href=link[1])= link[0]
