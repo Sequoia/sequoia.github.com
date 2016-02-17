@@ -50,6 +50,7 @@ var renderPost = makeRenderer('post.jade');
 var renderIndex = makeRenderer('index.jade');
 var renderProjects = makeRenderer('projects.jade');
 var renderContact = makeRenderer('contact.jade');
+var renderThanks = makeRenderer('thanks.jade');
 
 var makeTitleSlug = function makeTitleSlug(attrs) {
   return (0, _string2.default)(attrs.title).slugify().s;
@@ -73,7 +74,7 @@ var writeToOutDir = function writeToOutDir(p) {
 //@TODO try this version
 var writePage = function writePage(page) {
   return _bluebird2.default.resolve(page).tap(function (post) {
-    return mkoutdir(p.slug);
+    return mkoutdir(page.slug);
   }).then(writeToOutDir);
 };
 
@@ -82,7 +83,7 @@ function formatDate(d) {
   return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 }
 
-_bluebird2.default.all([getPosts().tap(writeIndexPage).then(writePosts), writeProjectsPage(), writeContactsPage()]).then(function () {
+_bluebird2.default.all([getPosts().tap(writeIndexPage).then(writePosts), writeProjectsPage(), writeContactsPage(), writeThanksPage()]).then(function () {
   return (0, _util.l)('EVERYTHING done :)');
 });
 
@@ -116,9 +117,7 @@ function getPosts() {
   //merge attributes to top level
   .map(function (p) {
     p.attributes.body = p.body;return p.attributes;
-  }).map(addSlug).each(function (post) {
-    return mkoutdir(post.slug);
-  })
+  }).map(addSlug)
   //sort them
   .map(addTimestamp).then((0, _ramda.sortBy)((0, _ramda.prop)('timestamp'))).then(_ramda.reverse).map((0, _util.onProp)('date')(formatDate));
 }
@@ -134,7 +133,7 @@ function writePosts(posts) {
   }) //template
   .each(function (post) {
     return (0, _util.l)('building... ' + post.title);
-  }).each(writeToOutDir) //write
+  }).each(writePage) //write
   .catch(function (err) {
     throw err;
   }).finally(function () {
@@ -155,6 +154,10 @@ function writeContactsPage() {
   return createPage({ title: 'Contact Me', slug: 'contact' }, renderContact);
 }
 
+function writeThanksPage() {
+  return createPage({ title: 'Thanks!', slug: 'thanks' }, renderThanks);
+}
+
 /**
  * @param {object}    meta
  * @param {string}    meta.title
@@ -169,17 +172,12 @@ function createPage(meta, renderer, extraData) {
   assert(meta.title, 'title required');
   assert(meta.slug, 'slug required');
 
-  //@TODO lol w/e
-  return _bluebird2.default.resolve(meta)
-  //.then(addPropFn('projects')(getProjectJson))
-  .then(function (page) {
+  return _bluebird2.default.resolve(meta).then(function (page) {
     if (extraData) {
       extraData.forEach(function (prop) {
         (0, _util.addProp)(prop[0])(prop[1])(page);
       });
     }
     return page;
-  }).then((0, _util.addPropFn)('body')(renderer)).tap(function (page) {
-    return mkoutdir(page.slug);
-  }).then(writeToOutDir);
+  }).then((0, _util.addPropFn)('body')(renderer)).then(writePage);
 }

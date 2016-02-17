@@ -23,6 +23,7 @@ const renderPost = makeRenderer('post.jade');
 const renderIndex = makeRenderer('index.jade');
 const renderProjects = makeRenderer('projects.jade');
 const renderContact = makeRenderer('contact.jade');
+const renderThanks = makeRenderer('thanks.jade');
 
 const makeTitleSlug = attrs => string(attrs.title).slugify().s;
 const addSlug = addPropFn('slug')(makeTitleSlug);
@@ -37,7 +38,7 @@ const writeToOutDir = p => fs.writeFileAsync(makeIndexHTMLOutPath(p.slug), p.bod
 
 //@TODO try this version
 const writePage = page => Promise.resolve(page)
-                                 .tap(post => mkoutdir(p.slug))
+                                 .tap(post => mkoutdir(page.slug))
                                  .then(writeToOutDir);
 
 function formatDate(d){
@@ -50,7 +51,8 @@ Promise.all([
     .tap(writeIndexPage)
     .then(writePosts),
   writeProjectsPage(),
-  writeContactsPage()
+  writeContactsPage(),
+  writeThanksPage()
 ]).then(() => l('EVERYTHING done :)'));
 
 ////homepage
@@ -80,7 +82,6 @@ function getPosts(){
     //merge attributes to top level
     .map(p => { p.attributes.body = p.body; return p.attributes; })
     .map(addSlug)
-    .each(post => mkoutdir(post.slug))
     //sort them
     .map(addTimestamp).then(sortBy(prop('timestamp'))).then(reverse)
     .map(onProp('date')(formatDate));
@@ -95,7 +96,7 @@ function writePosts(posts){
     .map(onProp('body')(marked)) //markdown
     .map(page => { page.body = renderPost(page); return page; } ) //template
     .each(post => l(`building... ${post.title}`))
-    .each(writeToOutDir) //write
+    .each(writePage) //write
     .catch(err => { throw err; })
     .finally(() => l('all done!'));
 }
@@ -121,6 +122,13 @@ function writeContactsPage(){
   );
 }
 
+function writeThanksPage(){
+  return createPage(
+    { title: 'Thanks!', slug : 'thanks' },
+    renderThanks
+  );
+}
+
 /**
  * @param {object}    meta
  * @param {string}    meta.title
@@ -135,9 +143,7 @@ function createPage(meta, renderer, extraData){
   assert(meta.title,  'title required');
   assert(meta.slug,   'slug required');
 
-  //@TODO lol w/e
   return Promise.resolve(meta)
-    //.then(addPropFn('projects')(getProjectJson))
     .then(function(page){
       if(extraData){
         extraData.forEach(function(prop){
@@ -147,6 +153,5 @@ function createPage(meta, renderer, extraData){
       return page;
     })
     .then(addPropFn('body')(renderer))
-    .tap(page => mkoutdir(page.slug))
-    .then(writeToOutDir);
+    .then(writePage);
 }
