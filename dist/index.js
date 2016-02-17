@@ -31,6 +31,7 @@ var _string2 = _interopRequireDefault(_string);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var join = require('path').join;
+var assert = require('assert');
 
 var fs = _bluebird2.default.promisifyAll(require('fs'));
 
@@ -142,32 +143,43 @@ function writePosts(posts) {
 }
 
 function writeProjectsPage() {
-  //no md page for this just putting the values here
-  var page = {
-    title: 'Projects',
-    slug: 'projects'
-  };
+  return createPage({ title: 'Projects', slug: 'projects' }, renderProjects, [['projects', getProjectJson()]]);
 
   function getProjectJson() {
     var jsonRoute = (0, _rootPath2.default)('_content/projects.json');
     return require(jsonRoute).map((0, _util.onProp)('description')(_marker2.default)); //markdown
   }
-
-  //@TODO lol w/e
-  return _bluebird2.default.resolve(page).then((0, _util.addPropFn)('projects')(getProjectJson)).then((0, _util.addPropFn)('body')(renderProjects)).tap(function (page) {
-    return mkoutdir(page.slug);
-  }).then(writeToOutDir);
 }
 
-//@TODO merge this with writeProjectPage
 function writeContactsPage() {
-  //no md page for this just putting the values here
-  var page = {
-    title: 'Contact Me',
-    slug: 'contact'
-  };
+  return createPage({ title: 'Contact Me', slug: 'contact' }, renderContact);
+}
 
-  return _bluebird2.default.resolve(page).then((0, _util.addPropFn)('body')(renderContact)).tap(function (page) {
+/**
+ * @param {object}    meta
+ * @param {string}    meta.title
+ * @param {string}    meta.slug  Used to build output path
+ * @param {function}  renderer   Jade compiled template
+ * @param {array}     extraData  [ [ name, value ] ] tuples, tmpl data
+ *                               name: string name of property
+ *                               value: data
+ * @return {Promise}
+ */
+function createPage(meta, renderer, extraData) {
+  assert(meta.title, 'title required');
+  assert(meta.slug, 'slug required');
+
+  //@TODO lol w/e
+  return _bluebird2.default.resolve(meta)
+  //.then(addPropFn('projects')(getProjectJson))
+  .then(function (page) {
+    if (extraData) {
+      extraData.forEach(function (prop) {
+        (0, _util.addProp)(prop[0])(prop[1])(page);
+      });
+    }
+    return page;
+  }).then((0, _util.addPropFn)('body')(renderer)).tap(function (page) {
     return mkoutdir(page.slug);
   }).then(writeToOutDir);
 }
