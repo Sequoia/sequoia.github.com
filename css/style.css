@@ -1,3 +1,7 @@
+.clearfix{
+  clear:both;
+  display:block;
+}
 /*color*/
 header, #wrap>footer{
   background-color: lavender;
@@ -135,8 +139,58 @@ section.blog-posts{
 	padding:.5em;
 }
 
+#wrap aside.announce{
+  border-radius:10px;
+  padding: 15px;
+  margin: 20px;
+  background-size: 50px 10px, 50px 10px, 10px 50px, 10px 50px;
+  background-position: 0 0,  0 100%,  0 0,  100% 0;
+  background-repeat: repeat-x,  repeat-x,  repeat-y,  repeat-y;
+  -webkit-animation: marching-ants 2s;
+          animation: marching-ants 2s;
+  -webkit-animation-timing-function: linear;
+          animation-timing-function: linear;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  background-image: -webkit-linear-gradient(left, white 50%, lightgreen 50%), -webkit-linear-gradient(left, white 50%, lightgreen 50%), -webkit-linear-gradient(top, white 50%, lightgreen 50%), -webkit-linear-gradient(top, white 50%, lightgreen 50%);
+  background-image: linear-gradient(to right, white 50%, lightgreen 50%), linear-gradient(to right, white 50%, lightgreen 50%), linear-gradient(to bottom, white 50%, lightgreen 50%), linear-gradient(to bottom, white 50%, lightgreen 50%);
+}
+
+#wrap aside.announce h2{
+  text-align:center;
+  vertical-align:center;
+  margin:.1em 0;
+}
+#wrap aside.announce p{
+  margin:0;
+}
+
+#wrap aside.announce:hover{
+  -webkit-animation-direction: reverse;
+          animation-direction: reverse;
+}
+
+@-webkit-keyframes marching-ants {
+  0% {
+    background-position: 0 0,  0 100%,  0 0,  100% 0;
+  }
+  100% {
+    background-position: 100px 0, -100px 100%, 0 -100px, 100% 100px;
+  }
+}
+
+@keyframes marching-ants {
+  0% {
+    background-position: 0 0,  0 100%,  0 0,  100% 0;
+  }
+  100% {
+    background-position: 100px 0, -100px 100%, 0 -100px, 100% 100px;
+  }
+}
+
 @media (max-width: 400px) {
 }
+
 @media (max-width: 48em) {
     /* Only apply this when the window is small. Otherwise, the following
     case results in extra padding on the left:
