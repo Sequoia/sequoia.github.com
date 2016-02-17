@@ -129,7 +129,7 @@ are based on 10px sizing. So basically 1.5rem = 15px :) */
 
 
 /*/* Typography*/
-/*–––––––––––––––––––––––––––––––––––––––––––––––––– */*/
+/*–––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*h1, h2, h3, h4, h5, h6 {*/
   /*margin-top: 0;*/
   /*margin-bottom: 2rem;*/
@@ -156,7 +156,7 @@ are based on 10px sizing. So basically 1.5rem = 15px :) */
 
 
 /*/* Links*/
-/*–––––––––––––––––––––––––––––––––––––––––––––––––– */*/
+/*–––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*a {*/
   /*color: #1EAEDB; }*/
 /*a:hover {*/
@@ -164,7 +164,7 @@ are based on 10px sizing. So basically 1.5rem = 15px :) */
 
 
 /*/* Buttons*/
-/*–––––––––––––––––––––––––––––––––––––––––––––––––– */*/
+/*–––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*.button,*/
 /*button,*/
 /*input[type="submit"],*/
@@ -223,70 +223,69 @@ are based on 10px sizing. So basically 1.5rem = 15px :) */
   /*border-color: #1EAEDB; }*/
 
 
-/*/* Forms*/
-/*–––––––––––––––––––––––––––––––––––––––––––––––––– */*/
-/*input[type="email"],*/
-/*input[type="number"],*/
-/*input[type="search"],*/
-/*input[type="text"],*/
-/*input[type="tel"],*/
-/*input[type="url"],*/
-/*input[type="password"],*/
-/*textarea,*/
-/*select {*/
-  /*height: 38px;*/
-  /*padding: 6px 10px; [> The 6px vertically centers text on FF, ignored by Webkit <]*/
-  /*background-color: #fff;*/
-  /*border: 1px solid #D1D1D1;*/
-  /*border-radius: 4px;*/
-  /*box-shadow: none;*/
-  /*box-sizing: border-box; }*/
-/*[> Removes awkward default styles on some inputs for iOS <]*/
-/*input[type="email"],*/
-/*input[type="number"],*/
-/*input[type="search"],*/
-/*input[type="text"],*/
-/*input[type="tel"],*/
-/*input[type="url"],*/
-/*input[type="password"],*/
-/*textarea {*/
-  /*-webkit-appearance: none;*/
-     /*-moz-appearance: none;*/
-          /*appearance: none; }*/
-/*textarea {*/
-  /*min-height: 65px;*/
-  /*padding-top: 6px;*/
-  /*padding-bottom: 6px; }*/
-/*input[type="email"]:focus,*/
-/*input[type="number"]:focus,*/
-/*input[type="search"]:focus,*/
-/*input[type="text"]:focus,*/
-/*input[type="tel"]:focus,*/
-/*input[type="url"]:focus,*/
-/*input[type="password"]:focus,*/
-/*textarea:focus,*/
-/*select:focus {*/
-  /*border: 1px solid #33C3F0;*/
-  /*outline: 0; }*/
-/*label,*/
-/*legend {*/
-  /*display: block;*/
-  /*margin-bottom: .5rem;*/
-  /*font-weight: 600; }*/
-/*fieldset {*/
-  /*padding: 0;*/
-  /*border-width: 0; }*/
-/*input[type="checkbox"],*/
-/*input[type="radio"] {*/
-  /*display: inline; }*/
-/*label > .label-body {*/
-  /*display: inline-block;*/
-  /*margin-left: .5rem;*/
-  /*font-weight: normal; }*/
-
+/* Forms
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="text"],
+input[type="tel"],
+input[type="url"],
+input[type="password"],
+textarea,
+select {
+  height: 38px;
+  padding: 6px 10px; /* The 6px vertically centers text on FF, ignored by Webkit */
+  background-color: #fff;
+  border: 1px solid #D1D1D1;
+  border-radius: 4px;
+  box-shadow: none;
+  box-sizing: border-box; }
+/* Removes awkward default styles on some inputs for iOS */
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="text"],
+input[type="tel"],
+input[type="url"],
+input[type="password"],
+textarea {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none; }
+textarea {
+  min-height: 65px;
+  padding-top: 6px;
+  padding-bottom: 6px; }
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="search"]:focus,
+input[type="text"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  border: 1px solid #33C3F0;
+  outline: 0; }
+label,
+legend {
+  display: block;
+  margin-bottom: .5rem;
+  font-weight: 600; }
+fieldset {
+  padding: 0;
+  border-width: 0; }
+input[type="checkbox"],
+input[type="radio"] {
+  display: inline; }
+label > .label-body {
+  display: inline-block;
+  margin-left: .5rem;
+  font-weight: normal; }
 
 /*/* Lists*/
-/*–––––––––––––––––––––––––––––––––––––––––––––––––– */*/
+/*–––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*ul {*/
   /*list-style: circle inside; }*/
 /*ol {*/
@@ -305,7 +304,7 @@ are based on 10px sizing. So basically 1.5rem = 15px :) */
 
 
 /*/* Code*/
-/*–––––––––––––––––––––––––––––––––––––––––––––––––– */*/
+/*–––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*code {*/
   /*padding: .2rem .5rem;*/
   /*margin: 0 .2rem;*/
@@ -321,7 +320,7 @@ are based on 10px sizing. So basically 1.5rem = 15px :) */
 
 
 /*/* Tables*/
-/*–––––––––––––––––––––––––––––––––––––––––––––––––– */*/
+/*–––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*th,*/
 /*td {*/
   /*padding: 12px 15px;*/
@@ -336,43 +335,45 @@ are based on 10px sizing. So basically 1.5rem = 15px :) */
 
 
 /*/* Spacing*/
-/*–––––––––––––––––––––––––––––––––––––––––––––––––– */*/
-/*button,*/
-/*.button {*/
-  /*margin-bottom: 1rem; }*/
-/*input,*/
-/*textarea,*/
-/*select,*/
-/*fieldset {*/
-  /*margin-bottom: 1.5rem; }*/
-/*pre,*/
-/*blockquote,*/
-/*dl,*/
-/*figure,*/
-/*table,*/
+/*–––––––––––––––––––––––––––––––––––––––––––––––––– */
+button,
+.button {
+  margin-bottom: 1rem; }
+input,
+textarea,
+select,
+fieldset {
+  margin-bottom: 1.5rem; }
+/* @TODO disabled these as I already handle these elems;
+ * I should look into using the styles here instead of my own perhaps*/
+/*pre*/
+blockquote,
+dl,
+figure,
+table,
 /*p,*/
 /*ul,*/
 /*ol,*/
-/*form {*/
-  /*margin-bottom: 2.5rem; }*/
+form {
+  margin-bottom: 2.5rem; }
 
 
-/*/* Utilities*/
-/*–––––––––––––––––––––––––––––––––––––––––––––––––– */*/
-/*.u-full-width {*/
-  /*width: 100%;*/
-  /*box-sizing: border-box; }*/
-/*.u-max-full-width {*/
-  /*max-width: 100%;*/
-  /*box-sizing: border-box; }*/
-/*.u-pull-right {*/
-  /*float: right; }*/
-/*.u-pull-left {*/
-  /*float: left; }*/
+/* Utilities
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.u-full-width {
+  width: 100%;
+  box-sizing: border-box; }
+.u-max-full-width {
+  max-width: 100%;
+  box-sizing: border-box; }
+.u-pull-right {
+  float: right; }
+.u-pull-left {
+  float: left; }
 
 
 /*/* Misc*/
-/*–––––––––––––––––––––––––––––––––––––––––––––––––– */*/
+/*–––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*hr {*/
   /*margin-top: 3rem;*/
   /*margin-bottom: 3.5rem;*/
@@ -381,7 +382,7 @@ are based on 10px sizing. So basically 1.5rem = 15px :) */
 
 
 /*/* Clearing*/
-/*–––––––––––––––––––––––––––––––––––––––––––––––––– */*/
+/*–––––––––––––––––––––––––––––––––––––––––––––––––– */
 
 /*[> Self Clearing Goodness <]*/
 /*.container:after,*/
@@ -393,13 +394,13 @@ are based on 10px sizing. So basically 1.5rem = 15px :) */
 
 
 /*/* Media Queries*/
-/*–––––––––––––––––––––––––––––––––––––––––––––––––– */*/
+/*–––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*/**/
 /*Note: The best way to structure the use of media queries is to create the queries*/
 /*near the relevant code. For example, if you wanted to change the styles for buttons*/
 /*on small devices, paste the mobile query code up in the buttons section and style it*/
 /*there.*/
-/**/*/
+/**/
 
 
 /*[> Larger than mobile <]*/
