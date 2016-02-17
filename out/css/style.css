@@ -139,6 +139,7 @@ section.blog-posts{
 	padding:.5em;
 }
 
+<<<<<<< HEAD
 #wrap aside.announce{
   border-radius:10px;
   padding: 15px;
@@ -154,6 +155,22 @@ section.blog-posts{
           animation-iteration-count: infinite;
   background-image: -webkit-linear-gradient(left, white 50%, lightgreen 50%), -webkit-linear-gradient(left, white 50%, lightgreen 50%), -webkit-linear-gradient(top, white 50%, lightgreen 50%), -webkit-linear-gradient(top, white 50%, lightgreen 50%);
   background-image: linear-gradient(to right, white 50%, lightgreen 50%), linear-gradient(to right, white 50%, lightgreen 50%), linear-gradient(to bottom, white 50%, lightgreen 50%), linear-gradient(to bottom, white 50%, lightgreen 50%);
+=======
+/* http://codepen.io/Sequoia/pen/zrXrdj?editors=1100 */
+#wrap aside.announce{
+  /*border-radius:10px;*/
+  padding: 15px;
+  margin: -21px 0 20px;
+  background-size: 37px 6px, 37px 6px, 6px 37px, 6px 37px;
+  background-position: 0 0,  0 100%,  0 0,  100% 0;
+  background-repeat: repeat-x,  repeat-x,  repeat-y,  repeat-y;
+  animation-name: marching-ants;
+  animation-duration: 2s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  background-image: linear-gradient(to right, white 50%, lavender 50%), linear-gradient(to right, white 50%, lavender 50%), linear-gradient(to bottom, white 50%, lavender 50%), linear-gradient(to bottom, white 50%, lavender 50%);
+  animation-direction: reverse;
+>>>>>>> 08d8b33d22793bb9c995daced9f1eb12c9ffce26
 }
 
 #wrap aside.announce h2{
@@ -166,6 +183,7 @@ section.blog-posts{
 }
 
 #wrap aside.announce:hover{
+<<<<<<< HEAD
   -webkit-animation-direction: reverse;
           animation-direction: reverse;
 }
@@ -177,6 +195,9 @@ section.blog-posts{
   100% {
     background-position: 100px 0, -100px 100%, 0 -100px, 100% 100px;
   }
+=======
+  animation-duration: 1s;
+>>>>>>> 08d8b33d22793bb9c995daced9f1eb12c9ffce26
 }
 
 @keyframes marching-ants {
@@ -184,7 +205,11 @@ section.blog-posts{
     background-position: 0 0,  0 100%,  0 0,  100% 0;
   }
   100% {
+<<<<<<< HEAD
     background-position: 100px 0, -100px 100%, 0 -100px, 100% 100px;
+=======
+    background-position: 74px 0, -74px 100%, 0 -74px, 100% 74px;
+>>>>>>> 08d8b33d22793bb9c995daced9f1eb12c9ffce26
   }
 }
 
