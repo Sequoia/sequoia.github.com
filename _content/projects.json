@@ -98,7 +98,7 @@
   },
   {
     "name" : "FTWin (For The Windows)",
-    "description"  : "My first ever node.js project!! It's very rudimentary, was written oringally for node version... 0.3 maybe? Description: This project is something I created because I wanted to open links on my host windows machine web browser from an ssh session in putty. A friend ([Darcy](https://www.linkedin.com/in/darcy-parker-a18804)) suggested a node server et voilà, ForTheWindows was born. It's a node.js server that accepts requests (from curl in my case) and performs an action in windows.",
+    "description"  : "My first ever node.js project!! It's very rudimentary, was written oringally for node version... 0.3 maybe? Also I never got it to work fully. README excerpt: \n\n > This project is something I created because I wanted to open links on my host windows machine web browser from an ssh session in putty. A friend ([Darcy](https://www.linkedin.com/in/darcy-parker-a18804)) suggested a node server et voilà, ForTheWindows was born. It's a node.js server that accepts requests (from curl in my case) and performs an action in windows.",
     "links" : [
       [ "Repo" , "https://github.com/Sequoia/FTWin" ]
     ]

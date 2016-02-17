@@ -17,6 +17,7 @@
 
     "watch:bbl:build": "npm run bbl:build -- --watch",
     "watch:blog:assets": "watch --wait=1 'npm run blog:assets' site_assets",
+    "watch:blog:liveserver": "live-server out",
     "watch:blog:contentANDtmpl": "watch --wait=1 'npm run blog:markdowns' _content templates",
 
     "postinstall": "npm run bbl:build"
@@ -39,6 +40,7 @@
     "front-matter": "^2.0.1",
     "highlight.js": "^9.0.0",
     "jade": "^1.11.0",
+    "live-server": "^0.9.2",
     "marked": "^0.3.5",
     "mkdirp": "^0.5.1",
     "months": "^1.0.1",
