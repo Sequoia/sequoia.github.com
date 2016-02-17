@@ -1,5 +1,15 @@
 extends ./layout.jade
+
 block content
+  h1= title
+
+  p You can find me on the following sites:
+  ul
+    li: a(href='https://twitter.com/_sequoia') Twitter
+    li: a(href='https://github.com/Sequoia/') Github
+    li: a(href='https://linkedin.com/in/smcdowell') LinkedIn
+
+  p Alternately, you can write me from here:
   form(
     action='https://getsimpleform.com/messages?form_api_token=e223807ca3a8b7a28aaf3d66e306d759'
     method='POST'
@@ -13,10 +23,10 @@ block content
         input.u-full-width(type='text', name='name' placeholder='Slim Pickens')
       .six.columns
         label(for='email') Your email
-        input.u-full-width(type='email', name='email' placeholder='test@mailbox.com')
+        input.u-full-width(type='email', name='email' placeholder='you@good.stuff')
 
     label(for='message') Message
-    textarea.u-full-width(name='message' placeholder='Hi Dave …')
+    textarea.u-full-width(name='message' placeholder='Hi Sequoia …')
 
     input.button-primary(type='submit', value='Submit')
   // Always wrap checkbox and radio inputs in a label and use a <span class="label-body"> inside of it
