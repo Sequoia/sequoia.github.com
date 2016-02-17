@@ -1,10 +1,17 @@
 [
   {
+    "name" : "This Website",
+    "description":"I was using Jekyll (with automatic github build), but when they updated the Jekyll version on github my blog exploded. :( I evaluated maaannnyyyy options for a blog/website, eventually deciding to build my own as it's mostly just reading `md` files & shoving them in a template! Take a look at the repo `src/index.js` file for the meat of this website builder.",
+    "links": [
+      ["Repo", "https://github.com/Sequoia/sequoia.github.com"]
+    ]
+  },
+  {
     "name" : "Error Throwing Middleware",
     "description":"Express middleware that randomly throws errors. I made this primarily for workshops teaching [Express](http://expressjs.com/), but it could be useful if you have need for random errors in your site!",
     "links": [
       ["NPM", "https://www.npmjs.com/package/error-throwing-middleware"],
-      ["Repo", "https://www.npmjs.com/package/error-throwing-middleware"]
+      ["Repo", "https://github.com/Sequoia/error-throwing-middleware"]
     ]
   },
   {

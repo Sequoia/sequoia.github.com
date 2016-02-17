@@ -37,20 +37,9 @@ var fs = _bluebird2.default.promisifyAll(require('fs'));
 
 var mkdirp = _bluebird2.default.promisify(require('mkdirp'));
 var months = require('months');
-var jade = require('jade');
+var tmpl = require('./renderers');
 
-//config
 var outDir = (0, _rootPath2.default)('out');
-var tmplDir = (0, _rootPath2.default)('templates');
-
-function makeRenderer(tmplName) {
-  return jade.compileFile(join(tmplDir, tmplName));
-}
-var renderPost = makeRenderer('post.jade');
-var renderIndex = makeRenderer('index.jade');
-var renderProjects = makeRenderer('projects.jade');
-var renderContact = makeRenderer('contact.jade');
-var renderThanks = makeRenderer('thanks.jade');
 
 var makeTitleSlug = function makeTitleSlug(attrs) {
   return (0, _string2.default)(attrs.title).slugify().s;
@@ -60,9 +49,6 @@ var addTimestamp = (0, _util.addPropFn)('timestamp')(function (p) {
   return new Date(p.date).getTime();
 });
 
-//takes dirname, makes it in "out" dir
-var mkoutdir = (0, _ramda.compose)(mkdirp, (0, _ramda.curryN)(2, join)(outDir));
-
 //creates an index.html file in dirname based on slug
 var makeIndexHTMLOutPath = function makeIndexHTMLOutPath(slug) {
   return join(outDir, slug, 'index.html');
@@ -70,8 +56,9 @@ var makeIndexHTMLOutPath = function makeIndexHTMLOutPath(slug) {
 var writeToOutDir = function writeToOutDir(p) {
   return fs.writeFileAsync(makeIndexHTMLOutPath(p.slug), p.body);
 };
+//takes dirname, makes it in "out" dir
+var mkoutdir = (0, _ramda.compose)(mkdirp, (0, _ramda.curryN)(2, join)(outDir));
 
-//@TODO try this version
 var writePage = function writePage(page) {
   return _bluebird2.default.resolve(page).tap(function (post) {
     return mkoutdir(page.slug);
@@ -102,7 +89,7 @@ function writeIndexPage(posts) {
   .then(function (page) {
     page.posts = posts;return page;
   }).then((0, _util.onProp)('body')(_marker2.default)) //markdown
-  .then(renderIndex) //template
+  .then(tmpl.index) //template
   .then(function (rendered) {
     return fs.writeFile(join(outDir, 'index.html'), rendered);
   });
@@ -129,7 +116,7 @@ function getPosts() {
 function writePosts(posts) {
   return _bluebird2.default.resolve(posts).map((0, _util.onProp)('body')(_marker2.default)) //markdown
   .map(function (page) {
-    page.body = renderPost(page);return page;
+    page.body = tmpl.post(page);return page;
   }) //template
   .each(function (post) {
     return (0, _util.l)('building... ' + post.title);
@@ -142,7 +129,7 @@ function writePosts(posts) {
 }
 
 function writeProjectsPage() {
-  return createPage({ title: 'Projects', slug: 'projects' }, renderProjects, [['projects', getProjectJson()]]);
+  return createPage({ title: 'Projects', slug: 'projects' }, tmpl.projects, [['projects', getProjectJson()]]);
 
   function getProjectJson() {
     var jsonRoute = (0, _rootPath2.default)('_content/projects.json');
@@ -151,11 +138,11 @@ function writeProjectsPage() {
 }
 
 function writeContactsPage() {
-  return createPage({ title: 'Contact Me', slug: 'contact' }, renderContact);
+  return createPage({ title: 'Contact Me', slug: 'contact' }, tmpl.contact);
 }
 
 function writeThanksPage() {
-  return createPage({ title: 'Thanks!', slug: 'thanks' }, renderThanks);
+  return createPage({ title: 'Thanks!', slug: 'thanks' }, tmpl.thanks);
 }
 
 /**

@@ -12,31 +12,20 @@ import marked from './marker';
 import string from 'string';
 const mkdirp = Promise.promisify(require('mkdirp'));
 const months = require('months');
-const jade = require('jade');
+const tmpl = require('./renderers');
 
-//config
 const outDir = root('out');
-const tmplDir = root('templates');
-
-function makeRenderer(tmplName){ return jade.compileFile( join(tmplDir, tmplName)); }
-const renderPost = makeRenderer('post.jade');
-const renderIndex = makeRenderer('index.jade');
-const renderProjects = makeRenderer('projects.jade');
-const renderContact = makeRenderer('contact.jade');
-const renderThanks = makeRenderer('thanks.jade');
 
 const makeTitleSlug = attrs => string(attrs.title).slugify().s;
 const addSlug = addPropFn('slug')(makeTitleSlug);
 const addTimestamp = addPropFn('timestamp')(p => (new Date(p.date)).getTime());
 
-//takes dirname, makes it in "out" dir
-const mkoutdir = compose(mkdirp, curryN(2, join)(outDir));
-
 //creates an index.html file in dirname based on slug
 const makeIndexHTMLOutPath = slug => join(outDir, slug, 'index.html');
 const writeToOutDir = p => fs.writeFileAsync(makeIndexHTMLOutPath(p.slug), p.body);
+//takes dirname, makes it in "out" dir
+const mkoutdir = compose(mkdirp, curryN(2, join)(outDir));
 
-//@TODO try this version
 const writePage = page => Promise.resolve(page)
                                  .tap(post => mkoutdir(page.slug))
                                  .then(writeToOutDir);
@@ -68,7 +57,7 @@ function writeIndexPage(posts){
     //add posts to template data
     .then(page => { page.posts = posts; return page; })
     .then(onProp('body')(marked)) //markdown
-    .then(renderIndex) //template
+    .then(tmpl.index) //template
     .then(rendered => fs.writeFile(join(outDir, 'index.html'), rendered));
 }
 
@@ -94,7 +83,7 @@ function getPosts(){
 function writePosts(posts){
   return Promise.resolve(posts)
     .map(onProp('body')(marked)) //markdown
-    .map(page => { page.body = renderPost(page); return page; } ) //template
+    .map(page => { page.body = tmpl.post(page); return page; } ) //template
     .each(post => l(`building... ${post.title}`))
     .each(writePage) //write
     .catch(err => { throw err; })
@@ -104,7 +93,7 @@ function writePosts(posts){
 function writeProjectsPage(){
   return createPage(
     { title: 'Projects', slug : 'projects' },
-    renderProjects,
+    tmpl.projects,
     [ [ 'projects', getProjectJson() ] ]
   );
 
@@ -118,14 +107,14 @@ function writeProjectsPage(){
 function writeContactsPage(){
   return createPage(
     { title: 'Contact Me', slug : 'contact' },
-    renderContact
+    tmpl.contact
   );
 }
 
 function writeThanksPage(){
   return createPage(
     { title: 'Thanks!', slug : 'thanks' },
-    renderThanks
+    tmpl.thanks
   );
 }
 
