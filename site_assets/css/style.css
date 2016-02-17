@@ -141,6 +141,7 @@ section.blog-posts{
 
 /* http://codepen.io/Sequoia/pen/zrXrdj?editors=1100 */
 #wrap aside.announce{
+  background-color:lightgreen;
   /*border-radius:10px;*/
   padding: 15px;
   margin: -21px 0 20px;
@@ -151,7 +152,7 @@ section.blog-posts{
   animation-duration: 2s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
-  background-image: linear-gradient(to right, white 50%, lavender 50%), linear-gradient(to right, white 50%, lavender 50%), linear-gradient(to bottom, white 50%, lavender 50%), linear-gradient(to bottom, white 50%, lavender 50%);
+  background-image: linear-gradient(to right, lightgreen 50%, lavender 50%), linear-gradient(to right, lightgreen 50%, lavender 50%), linear-gradient(to bottom, lightgreen 50%, lavender 50%), linear-gradient(to bottom, lightgreen 50%, lavender 50%);
   animation-direction: reverse;
 }
 

@@ -21,6 +21,7 @@ function makeRenderer(tmplName){ return jade.compileFile( join(tmplDir, tmplName
 const renderPost = makeRenderer('post.jade');
 const renderIndex = makeRenderer('index.jade');
 const renderProjects = makeRenderer('projects.jade');
+const renderContact = makeRenderer('contact.jade');
 
 const makeTitleSlug = attrs => string(attrs.title).slugify().s;
 const addSlug = addPropFn('slug')(makeTitleSlug);
@@ -33,6 +34,11 @@ const mkoutdir = compose(mkdirp, curryN(2, join)(outDir));
 const makeIndexHTMLOutPath = slug => join(outDir, slug, 'index.html');
 const writeToOutDir = p => fs.writeFileAsync(makeIndexHTMLOutPath(p.slug), p.body);
 
+//@TODO try this version
+const writePage = page => Promise.resolve(page)
+                                 .tap(post => mkoutdir(p.slug))
+                                 .then(writeToOutDir);
+
 function formatDate(d){
   d = new Date(d);
   return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
@@ -42,7 +48,8 @@ Promise.all([
   getPosts()
     .tap(writeIndexPage)
     .then(writePosts),
-  writeProjectsPage()
+  writeProjectsPage(),
+  writeContactsPage()
 ]).then(() => l('EVERYTHING done :)'));
 
 ////homepage
@@ -109,6 +116,20 @@ function writeProjectsPage(){
   return Promise.resolve(page)
     .then(addPropFn('projects')(getProjectJson))
     .then(addPropFn('body')(renderProjects))
+    .tap(page => mkoutdir(page.slug))
+    .then(writeToOutDir);
+}
+
+//@TODO merge this with writeProjectPage
+function writeContactsPage(){
+  //no md page for this just putting the values here
+  let page = {
+    title: 'Contact Me',
+    slug : 'contact'
+  };
+
+  return Promise.resolve(page)
+    .then(addPropFn('body')(renderContact))
     .tap(page => mkoutdir(page.slug))
     .then(writeToOutDir);
 }

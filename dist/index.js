@@ -48,6 +48,7 @@ function makeRenderer(tmplName) {
 var renderPost = makeRenderer('post.jade');
 var renderIndex = makeRenderer('index.jade');
 var renderProjects = makeRenderer('projects.jade');
+var renderContact = makeRenderer('contact.jade');
 
 var makeTitleSlug = function makeTitleSlug(attrs) {
   return (0, _string2.default)(attrs.title).slugify().s;
@@ -68,12 +69,19 @@ var writeToOutDir = function writeToOutDir(p) {
   return fs.writeFileAsync(makeIndexHTMLOutPath(p.slug), p.body);
 };
 
+//@TODO try this version
+var writePage = function writePage(page) {
+  return _bluebird2.default.resolve(page).tap(function (post) {
+    return mkoutdir(p.slug);
+  }).then(writeToOutDir);
+};
+
 function formatDate(d) {
   d = new Date(d);
   return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 }
 
-_bluebird2.default.all([getPosts().tap(writeIndexPage).then(writePosts), writeProjectsPage()]).then(function () {
+_bluebird2.default.all([getPosts().tap(writeIndexPage).then(writePosts), writeProjectsPage(), writeContactsPage()]).then(function () {
   return (0, _util.l)('EVERYTHING done :)');
 });
 
@@ -147,6 +155,19 @@ function writeProjectsPage() {
 
   //@TODO lol w/e
   return _bluebird2.default.resolve(page).then((0, _util.addPropFn)('projects')(getProjectJson)).then((0, _util.addPropFn)('body')(renderProjects)).tap(function (page) {
+    return mkoutdir(page.slug);
+  }).then(writeToOutDir);
+}
+
+//@TODO merge this with writeProjectPage
+function writeContactsPage() {
+  //no md page for this just putting the values here
+  var page = {
+    title: 'Contact Me',
+    slug: 'contact'
+  };
+
+  return _bluebird2.default.resolve(page).then((0, _util.addPropFn)('body')(renderContact)).tap(function (page) {
     return mkoutdir(page.slug);
   }).then(writeToOutDir);
 }
