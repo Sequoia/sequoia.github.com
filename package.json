@@ -4,22 +4,18 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "blog" : "npm-run-all blog:*",
+    "blog": "npm-run-all blog:*",
     "watch": "npm-run-all --parallel watch:**",
-    "push" : "git subtree push --prefix out origin master",
-
+    "push": "git subtree push --prefix out origin master",
     "bbl:build": "babel src --out-dir dist",
-
     "blog:stuff": "mkdirp out/s/ && cp -r _content/static/* out/s",
     "blog:assets": "cp -r site_assets/* out/",
-    "blog:markdowns" : "node .",
+    "blog:markdowns": "node .",
     "blog:imgs": "mkdirp out/img && cp -r _content/img/* out/img/",
-
     "watch:bbl:build": "npm run bbl:build -- --watch",
     "watch:blog:assets": "watch --wait=1 'npm run blog:assets' site_assets",
     "watch:blog:liveserver": "live-server out",
     "watch:blog:contentANDtmpl": "watch --wait=1 'npm run blog:markdowns' _content templates",
-
     "postinstall": "npm run bbl:build"
   },
   "repository": {
@@ -49,5 +45,8 @@
     "root-path": "^0.2.0",
     "string": "^3.3.1",
     "watch": "^0.17.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.6.5"
   }
 }
