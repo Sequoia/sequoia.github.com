@@ -164,6 +164,9 @@ section.blog-posts{
 #wrap aside.announce p{
   margin:0;
 }
+#wrap aside.announce ul{
+  margin: .2em;
+}
 
 #wrap aside.announce:hover{
   animation-duration: 1s;
