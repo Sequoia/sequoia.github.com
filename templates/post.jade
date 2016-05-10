@@ -1,6 +1,9 @@
 extends ./layout.jade
 block content
   h1= title
+  if originalUrl
+    h2.linkback Originally published at 
+      a(href=originalUrl)= originalBlog
   //-span.time Published&nbsp;
     //-time= date
   | !{body}

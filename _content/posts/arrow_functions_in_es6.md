@@ -5,7 +5,8 @@ description: "New language features can make an expression that was cumbersome
 to write in ES5 easy in ES6, enabling and encouraging the use of this type of
 expression. We’re going to look at one such case here: how arrow functions make
 it easier to write higher-order functions in ES6."
-originalPost: "https://strongloop.com/strongblog/an-introduction-to-javascript-es6-arrow-functions/"
+originalUrl: "https://strongloop.com/strongblog/an-introduction-to-javascript-es6-arrow-functions/"
+originalBlog: "StrongBlog"
 ---
 
 ES6 is nigh! As more and more libraries & Thought Leaders start incorporating ES6 into their code, what used to be nice-to-know ES6 features are becoming required knowledge. And it’s not just new syntax – in many cases, new language features can make an expression that was cumbersome to write in ES5 easy in ES6, enabling and encouraging the use of this type of expression. We’re going to look at one such case here: how arrow functions make it easier to write higher-order functions in ES6.
