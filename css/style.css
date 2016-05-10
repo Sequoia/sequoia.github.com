@@ -31,6 +31,13 @@ p{
   padding-top: 30px;
   border-top: dashed 6px lavender;
 }
+#content h2.linkback{
+  padding:.2em;
+  font-size:1em;
+  font-style:oblique;
+  font-weight:normal;
+  background:lavenderblush;
+}
 
 h3{
 	margin:10px 0;
