@@ -1,11 +1,12 @@
 const jade = require('jade');
 const root = require('root-path');
-const join = require('path').join;
+const path = require('path');
 
 //config
 const tmplDir = root('templates');
 
-function makeRenderer(tmplName){ return jade.compileFile( join(tmplDir, tmplName)); }
+const getTmplPath = path.join.bind(path, tmplDir);
+function makeRenderer(tmplName){ return jade.compileFile( getTmplPath(tmplName)); }
 
 module.exports = {
   post : makeRenderer('post.jade'),

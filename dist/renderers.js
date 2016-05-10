@@ -2,13 +2,14 @@
 
 var jade = require('jade');
 var root = require('root-path');
-var join = require('path').join;
+var path = require('path');
 
 //config
 var tmplDir = root('templates');
 
+var getTmplPath = path.join.bind(path, tmplDir);
 function makeRenderer(tmplName) {
-  return jade.compileFile(join(tmplDir, tmplName));
+  return jade.compileFile(getTmplPath(tmplName));
 }
 
 module.exports = {
