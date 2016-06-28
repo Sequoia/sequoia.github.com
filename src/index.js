@@ -3,7 +3,6 @@ const assert = require('assert');
 import {reverse, compose, curryN, prop, sortBy} from 'ramda';
 import root from 'root-path';
 import {l, e, onProp, addPropFn, addProp} from './util';
-import './getFiles';
 import Promise from 'bluebird';
 const fs = Promise.promisifyAll(require('fs'));
 import getFiles from './getFiles';
@@ -66,7 +65,7 @@ function writeIndexPage(posts){
  * @return Promise<Array[post object]>
  */
 function getPosts(){
-  return getFiles(root('_content/posts'))
+  return getFiles(root('_content/posts'), {match: /.*\.md/)
     .map(frontmatter) // => { body, attributes }
     //merge attributes to top level
     .map(p => { p.attributes.body = p.body; return p.attributes; })
