@@ -161,11 +161,17 @@ section.blog-posts{
   animation-iteration-count: infinite;
   background-image: linear-gradient(to right, lightgreen 50%, lavender 50%), linear-gradient(to right, lightgreen 50%, lavender 50%), linear-gradient(to bottom, lightgreen 50%, lavender 50%), linear-gradient(to bottom, lightgreen 50%, lavender 50%);
   animation-direction: reverse;
+
+}
+
+#wrap aside.announce{
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #wrap aside.announce h2{
-  text-align:center;
-  vertical-align:center;
+  text-align:right;
   margin:.1em 0;
 }
 #wrap aside.announce p{
@@ -242,6 +248,12 @@ section.blog-posts{
     }
     nav ul li:last-child{
       margin-right:0;
+    }
+    #wrap aside.announce{
+      display: block;
+    }
+    #wrap aside.announce h2{
+      text-align:left;
     }
   /*nav ul li a{*/
     /*background-color:lavender;*/
