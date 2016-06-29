@@ -87,7 +87,7 @@ function writeIndexPage(posts) {
   })
   //add posts to template data
   .then(function (page) {
-    page.posts = posts;return page;
+    page.posts = (0, _ramda.reject)((0, _ramda.has)('hidden'))(posts);return page;
   }).then((0, _util.onProp)('body')(_marker2.default)) //markdown
   .then(tmpl.index) //template
   .then(function (rendered) {

@@ -1,6 +1,6 @@
 const join = require('path').join;
 const assert = require('assert');
-import {reverse, compose, curryN, prop, sortBy} from 'ramda';
+import {reverse, compose, curryN, prop, has, sortBy, reject} from 'ramda';
 import root from 'root-path';
 import {l, e, onProp, addPropFn, addProp} from './util';
 import Promise from 'bluebird';
@@ -54,7 +54,7 @@ function writeIndexPage(posts){
     //merge attributes to top level
     .then(p => { p.attributes.body = p.body; return p.attributes; })
     //add posts to template data
-    .then(page => { page.posts = posts; return page; })
+    .then(page => { page.posts = reject(has('hidden'))(posts); return page; })
     .then(onProp('body')(marked)) //markdown
     .then(tmpl.index) //template
     .then(rendered => fs.writeFile(join(outDir, 'index.html'), rendered));

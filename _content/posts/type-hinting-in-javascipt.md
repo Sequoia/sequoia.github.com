@@ -1,4 +1,5 @@
 ---
+hidden: true
 title: "Type Hinting in JavaScipt"
 date: June 8, 2016
 description: "What type is this object, what properties does it have, what arguments does this function take... there's a lot I don't miss about writing Java full-time, but boy do I miss this! Can we get these type hints in JavaScript? Let's find out!"
