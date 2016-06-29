@@ -8,13 +8,13 @@ var _rootPath2 = _interopRequireDefault(_rootPath);
 
 var _util = require('./util');
 
-var _getFiles = require('./getFiles');
-
-var _getFiles2 = _interopRequireDefault(_getFiles);
-
 var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);
+
+var _getFiles = require('./getFiles');
+
+var _getFiles2 = _interopRequireDefault(_getFiles);
 
 var _frontMatter = require('front-matter');
 
@@ -70,7 +70,7 @@ function formatDate(d) {
   return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 }
 
-_bluebird2.default.all([getPosts().tap(console.log).tap(writeIndexPage).then(writePosts), writeProjectsPage(), writeContactsPage(), writeThanksPage()]).then(function () {
+_bluebird2.default.all([getPosts().tap(writeIndexPage).then(writePosts), writeProjectsPage(), writeContactsPage(), writeThanksPage()]).then(function () {
   return (0, _util.l)('EVERYTHING done :)');
 });
 
@@ -100,7 +100,7 @@ function writeIndexPage(posts) {
  * @return Promise<Array[post object]>
  */
 function getPosts() {
-  return (0, _getFiles2.default)((0, _rootPath2.default)('_content/posts')).map(_frontMatter2.default) // => { body, attributes }
+  return (0, _getFiles2.default)((0, _rootPath2.default)('_content/posts'), { match: /.*\.md/ }).map(_frontMatter2.default) // => { body, attributes }
   //merge attributes to top level
   .map(function (p) {
     p.attributes.body = p.body;return p.attributes;

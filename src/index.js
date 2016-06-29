@@ -65,7 +65,7 @@ function writeIndexPage(posts){
  * @return Promise<Array[post object]>
  */
 function getPosts(){
-  return getFiles(root('_content/posts'), {match: /.*\.md/)
+  return getFiles(root('_content/posts'), {match: /.*\.md/})
     .map(frontmatter) // => { body, attributes }
     //merge attributes to top level
     .map(p => { p.attributes.body = p.body; return p.attributes; })
