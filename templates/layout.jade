@@ -10,12 +10,7 @@ html(lang='en')
         h2 Programmer, Educator
         include ./includes/navigation.jade
 
-      aside.announce.row
-        h2.three.columns News
-        ul.nine.columns
-          li I'm giving a #[a(href="http://midwestjs.com/speakers") Node.js workshop at MidwestJS] on August 10.
-          li I have a new #[a(href="https://strongloop.com/strongblog/type-hinting-in-javascript/") blog post] on StrongBlog.
-        span.clearfix
+      include ./includes/announcement.jade
 
       section#content
         block content
