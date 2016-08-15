@@ -85,12 +85,12 @@ DEBUG === [<span class="hljs-string">'database'</span>, <span class="hljs-string
 <p>Now we have an array of keys for debuggers we want enabled. The simplest way to allow us to enable just http or just database debugging would be to add an argument to the <code>log</code> function, specifying which &quot;key&quot; each debug statement should be associated with:</p>
 <pre><code class="hljs lang-js">
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">log</span><span class="hljs-params">(key, <span class="hljs-rest_arg">...items</span>)</span></span>{
-  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> DEBUG !== <span class="hljs-string">'undefined'</span> &amp;&amp; DEBUG.includes(key)){ <span class="hljs-comment">// assuming we're using </span>
+  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> DEBUG !== <span class="hljs-string">'undefined'</span> &amp;&amp; DEBUG.includes(key)){ 
     console.log(...items)
   }
 }
 
-log(<span class="hljs-string">'database'</span>,<span class="hljs-string">'results recieved'</span>);                 <span class="hljs-comment">// using database key</span>
+log(<span class="hljs-string">'database'</span>,<span class="hljs-string">'results recieved'</span>);             <span class="hljs-comment">// using database key</span>
 log(<span class="hljs-string">'http'</span>,<span class="hljs-string">'route not found'</span>, request.url);     <span class="hljs-comment">// using http key</span>
 </code></pre>
 <p><em>NB: <a href="http://kangax.github.io/compat-table/es2016plus/#test-Array.prototype.includes_Array.prototype.includes"><code>Array.prototype.includes</code></a> only exists in newer environments, used here for convenience</em></p>
@@ -108,16 +108,17 @@ logHttp(<span class="hljs-string">'foo'</span>); <span class="hljs-comment">// -
   }
 }
 </code></pre>
-<p>Now we can easily create new &quot;namespaced&quot; <code>log</code> functions and call them separately: </p>
-<pre><code class="hljs lang-js">const http = makeLogger(<span class="hljs-string">'http'</span>)<span class="hljs-comment">;</span>
-const dbDebug = makeLogger(<span class="hljs-string">'database'</span>)<span class="hljs-comment">;</span>
+<p>Now we can easily create new &quot;namespaced&quot; <code>log</code> functions and call them separately:</p>
+<pre><code class="hljs lang-js">const http = makeLogger(<span class="hljs-string">'http'</span>);
+const dbDebug = makeLogger(<span class="hljs-string">'database'</span>);
 
-dbDebug(<span class="hljs-string">'connection established'</span>)<span class="hljs-comment">;</span>
-dbDebug(<span class="hljs-string">'Results recieved'</span>)<span class="hljs-comment">;</span>
+dbDebug(<span class="hljs-string">'connection established'</span>);     <span class="hljs-regexp">//</span> runs <span class="hljs-keyword">if</span> <span class="hljs-string">"database"</span> <span class="hljs-keyword">is</span> enabled
+dbDebug(<span class="hljs-string">'Results recieved'</span>);           <span class="hljs-regexp">//</span> runs <span class="hljs-keyword">if</span> <span class="hljs-string">"database"</span> <span class="hljs-keyword">is</span> enabled
 
-http(`Request took ${requestTime} milliseconds`)<span class="hljs-comment">;</span>
+http(`<span class="javascript">Request took ${requestTime}ms</span>`); <span class="hljs-regexp">//</span> runs <span class="hljs-keyword">if</span> <span class="hljs-string">"http"</span> <span class="hljs-keyword">is</span> enabled
 </code></pre>
-<p>And that gets us just about all the way to the <a href="https://github.com/visionmedia/debug"><code>debug</code> module</a>! It has a couple more features than what we created here, but this covers the main bits. I use the <code>debug</code> module in basically all projects &amp; typically start using it from day 1: if you <em>never</em> put <code>console.log</code> statements in your code you have nothing to &quot;clean up,&quot; and those debug log statements you make during active development can be useful later on, so why not keep them?</p>
+<h2 id="that-s-it-">That&#39;s it!</h2>
+<p>That gets us just about all the way to the <a href="https://github.com/visionmedia/debug"><code>debug</code> module</a>! It has a couple more features than what we created here, but this covers the main bits. I use the <code>debug</code> module in basically all projects &amp; typically start using it from day 1: if you <em>never</em> put <code>console.log</code> statements in your code you have nothing to &quot;clean up,&quot; and those debug log statements you make during active development can be useful later on, so why not keep them?</p>
 <p>Next steps: go check out the the <a href="https://github.com/visionmedia/debug"><code>debug</code> module</a>. In the next post I&#39;ll go over some advanced usage. Thanks for reading!</p>
 <p>*<em><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/alert">second oldest</a> ;)</em></p>
 <footer class="byline">Published&nbsp;<span>August 1, 2016</span></footer></section><footer>&copy; Sequoia McDowell 2016</footer></div></body></html>
