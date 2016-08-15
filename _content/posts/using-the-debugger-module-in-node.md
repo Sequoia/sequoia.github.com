@@ -129,12 +129,12 @@ Now we have an array of keys for debuggers we want enabled. The simplest way to 
 ```js
 
 function log(key, ...items){
-  if(typeof DEBUG !== 'undefined' && DEBUG.includes(key)){ // assuming we're using 
+  if(typeof DEBUG !== 'undefined' && DEBUG.includes(key)){ 
     console.log(...items)
   }
 }
 
-log('database','results recieved');                 // using database key
+log('database','results recieved');             // using database key
 log('http','route not found', request.url);     // using http key
 ```
 *NB: [`Array.prototype.includes`](http://kangax.github.io/compat-table/es2016plus/#test-Array.prototype.includes_Array.prototype.includes) only exists in newer environments, used here for convenience*
@@ -159,18 +159,21 @@ function makeLogger(key){
 }
 ```
 
-Now we can easily create new "namespaced" `log` functions and call them separately: 
+Now we can easily create new "namespaced" `log` functions and call them separately:
+
 ```js
 const http = makeLogger('http');
 const dbDebug = makeLogger('database');
 
-dbDebug('connection established');
-dbDebug('Results recieved');
+dbDebug('connection established');     // runs if "database" is enabled
+dbDebug('Results recieved');           // runs if "database" is enabled
 
-http(`Request took ${requestTime} milliseconds`);
+http(`Request took ${requestTime}ms`); // runs if "http" is enabled 
 ``` 
 
-And that gets us just about all the way to the [`debug` module](https://github.com/visionmedia/debug)! It has a couple more features than what we created here, but this covers the main bits. I use the `debug` module in basically all projects & typically start using it from day 1: if you *never* put `console.log` statements in your code you have nothing to "clean up," and those debug log statements you make during active development can be useful later on, so why not keep them?
+## That's it!
+
+That gets us just about all the way to the [`debug` module](https://github.com/visionmedia/debug)! It has a couple more features than what we created here, but this covers the main bits. I use the `debug` module in basically all projects & typically start using it from day 1: if you *never* put `console.log` statements in your code you have nothing to "clean up," and those debug log statements you make during active development can be useful later on, so why not keep them?
 
 Next steps: go check out the the [`debug` module](https://github.com/visionmedia/debug). In the next post I'll go over some advanced usage. Thanks for reading!
 
