@@ -9,7 +9,7 @@ I did some fun stuff with the `debug` module recently for a web map project. I n
 
 ## A trip down memory lane...
 
-`console.log`: the JavaScript programmer's oldest friend. `console.log` was probably one of the first things you learned to use to debug JavaScript, and while there are [plenty](https://code.visualstudio.com/docs/runtimes/nodejs#_debugging-your-express-application) of [more powerful tools](https://developer.mozilla.org/en-US/docs/Tools/Debugger), `console.log` is still useful to say "event fired", "sending the following query to the database...", etc..
+`console.log`: the JavaScript programmer's oldest friend*. `console.log` was probably one of the first things you learned to use to debug JavaScript, and while there are [plenty](https://code.visualstudio.com/docs/runtimes/nodejs#_debugging-your-express-application) of [more powerful tools](https://developer.mozilla.org/en-US/docs/Tools/Debugger), `console.log` is still useful to say "event fired", "sending the following query to the database...", etc..
 
 So we write statements like ``console.log(`click fired on ${event.target}`)``. But then we're not working on that part of the application anymore and those log statements just make noise, so we delete them. But then we *are* working on that bit again later, so we put them back-- and this time when we're finished, we just comment them out, instead of moving them. Before we know it our code looks like this:
 
@@ -173,3 +173,5 @@ http(`Request took ${requestTime} milliseconds`);
 And that gets us just about all the way to the [`debug` module](https://github.com/visionmedia/debug)! It has a couple more features than what we created here, but this covers the main bits. I use the `debug` module in basically all projects & typically start using it from day 1: if you *never* put `console.log` statements in your code you have nothing to "clean up," and those debug log statements you make during active development can be useful later on, so why not keep them?
 
 Next steps: go check out the the [`debug` module](https://github.com/visionmedia/debug). In the next post I'll go over some advanced usage. Thanks for reading!
+
+\**[second oldest](https://developer.mozilla.org/en-US/docs/Web/API/Window/alert) ;)*
