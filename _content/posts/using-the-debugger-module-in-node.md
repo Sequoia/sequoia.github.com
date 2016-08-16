@@ -46,17 +46,18 @@ function log(...items){   //console.log can take multiple arguments!
   }
 }
 ```
+*NB: Using ES6 features [rest parameters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters) and [spread syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_operator) in this function*
 
-Now we can replace our `console.log()` statements with `log()`, and by setting `DEBUG=true` or `DEBUG=false` in our code, we can turn logging on or off as needed! Hooray! Well, actually, there are still a a couple problems...
+Now we can replace our `console.log()` statements with `log()`, and by setting `DEBUG=true` or `DEBUG=false` in our code, we can turn logging on or off as needed! Hooray! Well, actually, there are still a couple problems...
 
 ## Problem 1: Hardcoding
 
 In our current system, `DEBUG` must be hardcoded, which is bad because
 
-1. it can't be turned on or off without editing the codebase
-2. it can accidentally be checked into our code repository turned on
+1. it can't be enabled or disabled without editing the codebase
+2. it can accidentally be checked into our code repository enabled
 
-We can fix that by setting `DEBUG` to true or false somewhere outside our script, and reading it in. In node it would make sense to use an (environment variable)[https://nodejs.org/api/process.html] TODO add env hash to this url:
+We can fix that by setting `DEBUG` to true or false somewhere outside our script, and reading it in. In node it would make sense to use an [environment variable](https://nodejs.org/api/process.html):
 
 ```js
 const DEBUG = process.env.DEBUG; // read from environment
@@ -65,12 +66,12 @@ function log(...items){
 // ...
 ```
 
-Now we can `export DEBUG=true` on our dev machine to turn it on all the time. Alternately, we can turn it on by setting an environment variable (TODO: link to bash docs for this) just for one process when we launch it (shell command below):
+Now we can `export DEBUG=true` on our dev machine to turn it on all the time. Alternately, we can turn /j #it on by [setting an environment variable just for one process](http://manpages.ubuntu.com/manpages/precise/en/man1/bash.1.html#contenttoc22) when we launch it (shell command below):
 ```sh
 $ DEBUG=true node my-cool-script.js
 ```
 
-If we want to use our debugger in the browser, we don't have `process.env`, but we *do* have local storage:
+If we want to use our debugger in the browser, we don't have `process.env`, but we *do* have [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Storage/LocalStorage):
 
 ```js
 var localEnv; //where do we read DEBUG from?
@@ -87,7 +88,7 @@ function log(...items){
   // ...
 ```
 
-Now we can set `DEBUG` in local storage using our browser console (TODO link)...
+Now we can set `DEBUG` in `localStorage` using our browser console...
 
 ```
 > window.localStorage.DEBUG = true;
@@ -119,7 +120,7 @@ $ DEBUG=database,http node my-cool-script.js
 
 ```js
 // process.env.DEBUG = 'database,http'
-DEBUG = proccess.env.DEBUG.split(',');
+DEBUG = localEnv.DEBUG.split(',');
 
 DEBUG === ['database', 'http'] // => true 
 ```
@@ -127,7 +128,6 @@ DEBUG === ['database', 'http'] // => true
 Now we have an array of keys for debuggers we want enabled. The simplest way to allow us to enable just http or just database debugging would be to add an argument to the `log` function, specifying which "key" each debug statement should be associated with:
 
 ```js
-
 function log(key, ...items){
   if(typeof DEBUG !== 'undefined' && DEBUG.includes(key)){ 
     console.log(...items)
@@ -137,7 +137,7 @@ function log(key, ...items){
 log('database','results recieved');             // using database key
 log('http','route not found', request.url);     // using http key
 ```
-*NB: [`Array.prototype.includes`](http://kangax.github.io/compat-table/es2016plus/#test-Array.prototype.includes_Array.prototype.includes) only exists in newer environments, used here for convenience*
+*NB: [`Array.prototype.includes`](http://kangax.github.io/compat-table/es2016plus/#test-Array.prototype.includes_Array.prototype.includes) only exists in newer environments.*
 
 Now we can enable enable and disable http and database debug logging separately! Passing a key *each time* is a bit tedious however, so let's revisit the proposed solution above, "Multiple debug functions." To create a `logHttp` function, we basically need a pass-through that takes a message and adds the `http` "key" before sending it to log:
 
@@ -152,9 +152,9 @@ logHttp('foo'); // --> log('http', 'foo');
 Using [higher-order functions](https://strongloop.com/strongblog/higher-order-functions-in-es6easy-as-a-b-c/) (in this case a function that returns a function), we can make a "factory" to produce debugger functions bound to a certain key:
 
 ```js
-function makeLogger(key){
+function makeLogger(fixedKey){
   return function(...items){
-    log(key, ...items)
+    log(fixedKey, ...items)
   }
 }
 ```

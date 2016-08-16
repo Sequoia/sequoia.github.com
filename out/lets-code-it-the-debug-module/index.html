@@ -30,23 +30,24 @@
   }
 }
 </code></pre>
-<p>Now we can replace our <code>console.log()</code> statements with <code>log()</code>, and by setting <code>DEBUG=true</code> or <code>DEBUG=false</code> in our code, we can turn logging on or off as needed! Hooray! Well, actually, there are still a a couple problems...</p>
+<p><em>NB: Using ES6 features <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters">rest parameters</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_operator">spread syntax</a> in this function</em></p>
+<p>Now we can replace our <code>console.log()</code> statements with <code>log()</code>, and by setting <code>DEBUG=true</code> or <code>DEBUG=false</code> in our code, we can turn logging on or off as needed! Hooray! Well, actually, there are still a couple problems...</p>
 <h2 id="problem-1-hardcoding">Problem 1: Hardcoding</h2>
 <p>In our current system, <code>DEBUG</code> must be hardcoded, which is bad because</p>
 <ol>
-<li>it can&#39;t be turned on or off without editing the codebase</li>
-<li>it can accidentally be checked into our code repository turned on</li>
+<li>it can&#39;t be enabled or disabled without editing the codebase</li>
+<li>it can accidentally be checked into our code repository enabled</li>
 </ol>
-<p>We can fix that by setting <code>DEBUG</code> to true or false somewhere outside our script, and reading it in. In node it would make sense to use an (environment variable)[<a href="https://nodejs.org/api/process.html">https://nodejs.org/api/process.html</a>] TODO add env hash to this url:</p>
+<p>We can fix that by setting <code>DEBUG</code> to true or false somewhere outside our script, and reading it in. In node it would make sense to use an <a href="https://nodejs.org/api/process.html">environment variable</a>:</p>
 <pre><code class="hljs lang-js"><span class="hljs-keyword">const</span> DEBUG = process.env.DEBUG; <span class="hljs-comment">// read from environment</span>
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">log</span><span class="hljs-params">(<span class="hljs-rest_arg">...items</span>)</span></span>{
 <span class="hljs-comment">// ...</span>
 </code></pre>
-<p>Now we can <code>export DEBUG=true</code> on our dev machine to turn it on all the time. Alternately, we can turn it on by setting an environment variable (TODO: link to bash docs for this) just for one process when we launch it (shell command below):</p>
+<p>Now we can <code>export DEBUG=true</code> on our dev machine to turn it on all the time. Alternately, we can turn /j #it on by <a href="http://manpages.ubuntu.com/manpages/precise/en/man1/bash.1.html#contenttoc22">setting an environment variable just for one process</a> when we launch it (shell command below):</p>
 <pre><code class="hljs lang-sh">$ <span class="hljs-attr">DEBUG=</span><span class="hljs-literal">true</span> <span class="hljs-keyword">node</span> <span class="hljs-title">my-cool-script</span>.js
 </code></pre>
-<p>If we want to use our debugger in the browser, we don&#39;t have <code>process.env</code>, but we <em>do</em> have local storage:</p>
+<p>If we want to use our debugger in the browser, we don&#39;t have <code>process.env</code>, but we <em>do</em> have <a href="https://developer.mozilla.org/en-US/docs/Web/API/Storage/LocalStorage"><code>localStorage</code></a>:</p>
 <pre><code class="hljs lang-js"><span class="hljs-keyword">var</span> localEnv; <span class="hljs-comment">//where do we read DEBUG from?</span>
 
 <span class="hljs-keyword">if</span>(process &amp;&amp; process.env){                <span class="hljs-comment">//node</span>
@@ -60,7 +61,7 @@
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">log</span><span class="hljs-params">(<span class="hljs-rest_arg">...items</span>)</span></span>{
   <span class="hljs-comment">// ...</span>
 </code></pre>
-<p>Now we can set <code>DEBUG</code> in local storage using our browser console (TODO link)...</p>
+<p>Now we can set <code>DEBUG</code> in <code>localStorage</code> using our browser console...</p>
 <pre><code>&gt; <span class="hljs-built_in">window</span>.localStorage.DEBUG = <span class="hljs-literal">true</span>;
 </code></pre><p>...reload the page, and debugging is enabled! Set <code>window.localStorage.DEBUG</code> to false &amp; reload and it&#39;s disabled again.</p>
 <h2 id="problem-2-all-or-nothing">Problem 2: All or Nothing</h2>
@@ -78,13 +79,12 @@ DEBUG = <span class="hljs-literal">undefined</span>;           <span class="hljs
 <pre><code>$ <span class="hljs-attr">DEBUG=</span>database,http <span class="hljs-keyword">node</span> <span class="hljs-title">my-cool-script</span>.js
 </code></pre><p>...and it&#39;s easy to build an array from a string...</p>
 <pre><code class="hljs lang-js"><span class="hljs-comment">// process.env.DEBUG = 'database,http'</span>
-DEBUG = proccess.env.DEBUG.<span class="hljs-keyword">split</span>(<span class="hljs-string">','</span>)<span class="hljs-comment">;</span>
+DEBUG = localEnv.DEBUG.<span class="hljs-keyword">split</span>(<span class="hljs-string">','</span>)<span class="hljs-comment">;</span>
 
 DEBUG === [<span class="hljs-string">'database'</span>, <span class="hljs-string">'http'</span>] <span class="hljs-comment">// =&gt; true</span>
 </code></pre>
 <p>Now we have an array of keys for debuggers we want enabled. The simplest way to allow us to enable just http or just database debugging would be to add an argument to the <code>log</code> function, specifying which &quot;key&quot; each debug statement should be associated with:</p>
-<pre><code class="hljs lang-js">
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">log</span><span class="hljs-params">(key, <span class="hljs-rest_arg">...items</span>)</span></span>{
+<pre><code class="hljs lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">log</span><span class="hljs-params">(key, <span class="hljs-rest_arg">...items</span>)</span></span>{
   <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> DEBUG !== <span class="hljs-string">'undefined'</span> &amp;&amp; DEBUG.includes(key)){ 
     console.log(...items)
   }
@@ -93,7 +93,7 @@ DEBUG === [<span class="hljs-string">'database'</span>, <span class="hljs-string
 log(<span class="hljs-string">'database'</span>,<span class="hljs-string">'results recieved'</span>);             <span class="hljs-comment">// using database key</span>
 log(<span class="hljs-string">'http'</span>,<span class="hljs-string">'route not found'</span>, request.url);     <span class="hljs-comment">// using http key</span>
 </code></pre>
-<p><em>NB: <a href="http://kangax.github.io/compat-table/es2016plus/#test-Array.prototype.includes_Array.prototype.includes"><code>Array.prototype.includes</code></a> only exists in newer environments, used here for convenience</em></p>
+<p><em>NB: <a href="http://kangax.github.io/compat-table/es2016plus/#test-Array.prototype.includes_Array.prototype.includes"><code>Array.prototype.includes</code></a> only exists in newer environments.</em></p>
 <p>Now we can enable enable and disable http and database debug logging separately! Passing a key <em>each time</em> is a bit tedious however, so let&#39;s revisit the proposed solution above, &quot;Multiple debug functions.&quot; To create a <code>logHttp</code> function, we basically need a pass-through that takes a message and adds the <code>http</code> &quot;key&quot; before sending it to log:</p>
 <pre><code class="hljs lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">logHttp</span><span class="hljs-params">(<span class="hljs-rest_arg">...items</span>)</span></span>{
   log(<span class="hljs-string">'http'</span>, ...items);
@@ -102,9 +102,9 @@ log(<span class="hljs-string">'http'</span>,<span class="hljs-string">'route not
 logHttp(<span class="hljs-string">'foo'</span>); <span class="hljs-comment">// --&gt; log('http', 'foo');</span>
 </code></pre>
 <p>Using <a href="https://strongloop.com/strongblog/higher-order-functions-in-es6easy-as-a-b-c/">higher-order functions</a> (in this case a function that returns a function), we can make a &quot;factory&quot; to produce debugger functions bound to a certain key:</p>
-<pre><code class="hljs lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makeLogger</span><span class="hljs-params">(key)</span></span>{
+<pre><code class="hljs lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makeLogger</span><span class="hljs-params">(fixedKey)</span></span>{
   <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(<span class="hljs-rest_arg">...items</span>)</span></span>{
-    log(key, ...items)
+    log(fixedKey, ...items)
   }
 }
 </code></pre>
