@@ -28,6 +28,8 @@ Hopefully you’re familiar with arrow functions that return a value:
 
 ```javascript
 const square = x => x * x;
+
+square(9) === 81; // true
 ```
 
 But what’s going on in the code below?
@@ -201,7 +203,7 @@ const titleIs = is('title');
 // titleIs == v => o => o.hasOwnProperty('title') && o['title'] == v;
  
 const isContractor = titleIs('Contractor');
-// isContractor == o => o.hasOwnProperty('contractor') && o['title'] == 'Contractor';
+// isContractor == o => o.hasOwnProperty('title') && o['title'] == 'Contractor';
  
 let contractors = users.filter(isContractor);
 let developers  = users.filter(titleIs('Developer'));
