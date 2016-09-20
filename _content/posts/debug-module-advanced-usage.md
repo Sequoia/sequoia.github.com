@@ -3,6 +3,8 @@ hidden: true
 title: "The Node.js Debug Module: Advanced Usage"
 date: October 15, 2016
 description: "So you're familiar with the `debug` node module. Let's take a look at some more advanced uses and useful tricks!"
+originalUrl: "https://strongloop.com/?p=28095&preview=true"
+originalBlog: "StrongBlog"
 ---
 
 In [a previous post](https://strongloop.com/strongblog/lets-code-it-the-debug-module/), I mentioned having used the [`debug`](https://www.npmjs.com/package/debug) module to help me understand some complex interactions between events in [Leaflet](http://leafletjs.com) & [Leaflet.Editable](https://github.com/Leaflet/Leaflet.Editable). Before we go over that, however, let's lay the groundwork with a couple organizational tips that makes `debug` easier to use. This post assumes you have either used [`debug`](https://www.npmjs.com/package/debug) or read the [previous post](https://strongloop.com/strongblog/lets-code-it-the-debug-module/), so please do one of those first!
@@ -287,6 +289,8 @@ Conveniently, the [Leaflet.Editable events](https://github.com/Leaflet/Leaflet.E
 > localStorage.debug = 'event:editable:*' //enable all editable
 > localStorage.debug = 'event:editable:drawing:*'  //just editable:drawing events
 ```
+
+### Fine Tuning the output
 
 Let's enable all event debuggers and see what some interactions look like...
 

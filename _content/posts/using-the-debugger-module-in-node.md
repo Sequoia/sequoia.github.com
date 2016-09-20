@@ -3,6 +3,8 @@ hidden: true
 title: "Let's Code It: The `debug` Module"
 date: September 15, 2016
 description: "What if, instead of commenting out or deleting our useful log statements when we're not using them, we could turn them on when we need them and off when we don't? The `debug` module lets us do that-- but how does it work? Let's find out!"
+originalUrl: "https://strongloop.com/strongblog/type-hinting-in-javascript/"
+originalBlog: "StrongBlog"
 ---
 
 I did some fun stuff with the `debug` module recently for a web map project. I needed to understand the somewhat complex interactions between events in [Leaflet.js](http://leafletjs.com/) in order to figure out what events to attach to... but that's the next post. Before I get to that, I want to go over the `debug` module itself.
