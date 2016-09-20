@@ -251,7 +251,7 @@ debugEvents(mapObject, leafletEvents);
 
 Assuming we [set `localStorage.debug='*'` in our browser console](https://www.npmjs.com/package/debug#browser-support), we will now see a debug statement in the console when *any* of the Leaflet.Editable events fire on the map object!
 
-![debugger output](http://localhost:8080/img/debug_all_events.png)
+![debugger output](/img/debug_all_events.png)
 
 Note that whatever data is passed to an event handler attached with `.on()` is passed to the our debug functions. In this case it's the event object created by Leaflet, shown above in the console as `▶ Object`.
 
@@ -290,7 +290,7 @@ Conveniently, the [Leaflet.Editable events](https://github.com/Leaflet/Leaflet.E
 
 Let's enable all event debuggers and see what some interactions look like...
 
-![gif of debugger output with rapidly flowing debug statments during user interaction with map. Lots and lots of "event:map:mousemove" events.](http://localhost:8080/img/debug_events_1.gif)
+![gif of debugger output with rapidly flowing debug statments during user interaction with map. Lots and lots of "event:map:mousemove" events.](/img/debug_events_1.gif)
 
 Looks nice, but the `mousemove` events are coming so fast they push everything else out of the console, i.e. they are noise. Some trial and error taught me it that `drag` events are equally noisy and that I don't need to know the core map events most of the time, just the `editable` events.
 
@@ -300,7 +300,7 @@ With this info we can tune our logging down to just what we need, enabling only 
 > localStorage.debug = 'event:editable:*,-event:*:drag,-event:*:mousemove'
 ``` 
 
-![gif of debugger output with a smaller number of events. Console screen does not overflow](http://localhost:8080/img/debug_events_2.gif)
+![gif of debugger output with a smaller number of events. Console screen does not overflow](/img/debug_events_2.gif)
 
 Looks good!
 
