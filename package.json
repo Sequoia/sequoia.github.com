@@ -16,6 +16,7 @@
     "watch:blog:assets": "watch --wait=1 'npm run blog:assets' site_assets",
     "watch:blog:liveserver": "live-server out",
     "watch:blog:contentANDtmpl": "watch --wait=1 'npm run blog:markdowns' _content templates",
+    "watch:imgs": "watch --wait=1 'npm run blog:imgs' _content/img",
     "postinstall": "npm run bbl:build"
   },
   "repository": {
@@ -47,6 +48,7 @@
     "watch": "^0.17.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.6.5"
+    "babel-cli": "^6.6.5",
+    "npm-run-all": "^3.1.0"
   }
 }
