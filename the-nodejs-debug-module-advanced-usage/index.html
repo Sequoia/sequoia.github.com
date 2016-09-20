@@ -172,7 +172,7 @@ debugEvents(mapObject, leafletEditableEvents);
 debugEvents(mapObject, leafletEvents);
 </code></pre>
 <p>Assuming we <a href="https://www.npmjs.com/package/debug#browser-support">set <code>localStorage.debug=&#39;*&#39;</code> in our browser console</a>, we will now see a debug statement in the console when <em>any</em> of the Leaflet.Editable events fire on the map object!</p>
-<p><img src="http://localhost:8080/img/debug_all_events.png" alt="debugger output"></p>
+<p><img src="/img/debug_all_events.png" alt="debugger output"></p>
 <p>Note that whatever data is passed to an event handler attached with <code>.on()</code> is passed to the our debug functions. In this case it&#39;s the event object created by Leaflet, shown above in the console as <code>▶ Object</code>.</p>
 <p><code>mousemove</code> etc. are not in any namespace above, and it&#39;s best to always namespace debug functions so they don&#39;t collide, to add context, and to allow enabling/disabling by namespace. Let&#39;s improve our <code>debugEvents</code> function to use a namespace:</p>
 <pre><code class="hljs lang-js"><span class="hljs-selector-tag">function</span> <span class="hljs-selector-tag">debugEvents</span>(target, events, namespace){
@@ -199,12 +199,12 @@ debugEvents(mapObject, leafletEvents);
 &gt; localStorage<span class="hljs-selector-class">.debug</span> = <span class="hljs-string">'event:editable:drawing:*'</span>  <span class="hljs-comment">//just editable:drawing events</span>
 </code></pre>
 <p>Let&#39;s enable all event debuggers and see what some interactions look like...</p>
-<p><img src="http://localhost:8080/img/debug_events_1.gif" alt="gif of debugger output with rapidly flowing debug statments during user interaction with map. Lots and lots of &quot;event:map:mousemove&quot; events."></p>
+<p><img src="/img/debug_events_1.gif" alt="gif of debugger output with rapidly flowing debug statments during user interaction with map. Lots and lots of &quot;event:map:mousemove&quot; events."></p>
 <p>Looks nice, but the <code>mousemove</code> events are coming so fast they push everything else out of the console, i.e. they are noise. Some trial and error taught me it that <code>drag</code> events are equally noisy and that I don&#39;t need to know the core map events most of the time, just the <code>editable</code> events.</p>
 <p>With this info we can tune our logging down to just what we need, enabling only <code>editable:</code> events &amp; ignoring <em>all</em> drag &amp; mousemove events:</p>
 <pre><code class="hljs lang-js">&gt; localStorage<span class="hljs-selector-class">.debug</span> = <span class="hljs-string">'event:editable:*,-event:*:drag,-event:*:mousemove'</span>
 </code></pre>
-<p><img src="http://localhost:8080/img/debug_events_2.gif" alt="gif of debugger output with a smaller number of events. Console screen does not overflow"></p>
+<p><img src="/img/debug_events_2.gif" alt="gif of debugger output with a smaller number of events. Console screen does not overflow"></p>
 <p>Looks good!</p>
 <h2 id="conclusion">Conclusion</h2>
 <p>While <code>debug</code> is a very small &amp; easy-to-get-started-with module, it can tuned in very granular ways and is a powerful development tool. By attaching debug statements to all events, <em>outside</em> of our application code, we can trace the path of an event system &amp; better understand how events interact, without adding any debug statments into our application code. If you&#39;ve found another novel use of this library or have any questions about my post, <a href="http://sequoia.makes.software/contact/">let me know</a>. Happy logging!</p>
