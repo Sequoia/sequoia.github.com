@@ -1,0 +1,212 @@
+<!DOCTYPE html><html lang="en"><head><title>The Node.js Debug Module: Advanced Usage &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="So you're familiar with the `debug` node module. Let's take a look at some more advanced uses and useful tricks!"><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects">Projects</a></li><li><a href="/contact">Contact</a></li></ul></nav></header><aside class="announce row"><h2 class="three columns">News</h2><ul class="nine columns"><li><a href="http://www.oreilly.com/live-training/getting-started-with-node-js.html">Getting Started with Node.js</a>: Boston, October 20 & 21</li><li><a href="https://strongloop.com/strongblog/lets-code-it-the-debug-module/">New blog post</a> on StrongBlog (September 15)</li></ul><span class="clearfix"></span></aside><section id="content"><h1>The Node.js Debug Module: Advanced Usage</h1><p>In <a href="https://strongloop.com/strongblog/lets-code-it-the-debug-module/">a previous post</a>, I mentioned having used the <a href="https://www.npmjs.com/package/debug"><code>debug</code></a> module to help me understand some complex interactions between events in <a href="http://leafletjs.com">Leaflet</a> &amp; <a href="https://github.com/Leaflet/Leaflet.Editable">Leaflet.Editable</a>. Before we go over that, however, let&#39;s lay the groundwork with a couple organizational tips that makes <code>debug</code> easier to use. This post assumes you have either used <a href="https://www.npmjs.com/package/debug"><code>debug</code></a> or read the <a href="https://strongloop.com/strongblog/lets-code-it-the-debug-module/">previous post</a>, so please do one of those first!</p>
+<h2 id="namespacing-debug-functions">Namespacing Debug Functions</h2>
+<p>The <code>debug</code> module has a great namespacing feature which allows you to enable or disable debug functions in groups. It is very simple-- namespaces are separated by colons:</p>
+<pre><code class="hljs lang-js">debug('app<span class="hljs-symbol">:meta</span>')('config loaded')
+debug('app<span class="hljs-symbol">:database</span>')('querying db...')<span class="hljs-comment">;</span>
+debug('app<span class="hljs-symbol">:database</span>')('got results!', results)<span class="hljs-comment">;</span>
+</code></pre>
+<p>Enable debug functions in Node by passing the name the process via the <code>DEBUG</code> environment variable. The following would enable the <code>database</code> debug function but not <code>meta</code>:</p>
+<pre><code class="hljs lang-nohighlight">$ <span class="hljs-attr">DEBUG=</span>'app:database' <span class="hljs-keyword">node</span> <span class="hljs-title">app</span>.js
+</code></pre>
+<p>To enable both, list both names, comma separated:</p>
+<pre><code class="hljs lang-nohighlight">$ <span class="hljs-attr">DEBUG=</span>'app:database,app:<span class="hljs-keyword">meta</span>' <span class="hljs-keyword">node</span> <span class="hljs-title">app</span>.js
+</code></pre>
+<p>Alternately, use a &quot;splat&quot; (<code>*</code>) to enable any debugger in that namespace. The following enables any debug function whose name starts with <code>app:</code>:</p>
+<pre><code class="hljs lang-nohighlight">$ <span class="hljs-attr">DEBUG=</span>'app:*' <span class="hljs-keyword">node</span> <span class="hljs-title">app</span>.js
+</code></pre>
+<p>You can get as granular as you want with debug namespaces...</p>
+<pre><code class="hljs lang-js">debug('myapp<span class="hljs-symbol">:thirdparty</span><span class="hljs-symbol">:identica</span><span class="hljs-symbol">:auth</span>')('success!')<span class="hljs-comment">;</span>
+debug('myapp<span class="hljs-symbol">:thirdparty</span><span class="hljs-symbol">:twitter</span><span class="hljs-symbol">:auth</span>')('success!')<span class="hljs-comment">;</span>
+</code></pre>
+<p>...but don&#39;t overdo it. Personally, I try not to go deeper than two or sometimes three levels.</p>
+<h3 id="more-namespace-tricks">More Namespace Tricks</h3>
+<p>The &quot;splat&quot; character <code>*</code> can match a namespace at any level when enabling a debug function. Given the two debug functions above above, you can enable both thus:  </p>
+<pre><code class="hljs lang-nohighlight">$ <span class="hljs-attr">DEBUG=</span>'myapp:thirdparty:*:auth' <span class="hljs-keyword">node</span> <span class="hljs-title">app</span>.js
+</code></pre>
+<p>The <code>*</code> here will match <code>identica</code>, <code>twitter</code>, or any other string.</p>
+<p>It&#39;s frequently useful to enable all debug functions in a namespace with the exception of one or two. Let&#39;s assume we have separate debug functions for each HTTP status code that our app response with (a weird use of <code>debug</code>, but why not!):</p>
+<pre><code class="hljs lang-js"><span class="hljs-keyword">const</span> OK = debug(<span class="hljs-string">'HTTP:200'</span>);
+<span class="hljs-keyword">const</span> MOVED = debug(<span class="hljs-string">'HTTP:301'</span>);
+<span class="hljs-keyword">const</span> FOUND = debug(<span class="hljs-string">'HTTP:302'</span>);
+<span class="hljs-keyword">const</span> UNAUTHORIZED = debug(<span class="hljs-string">'HTTP:403'</span>);
+<span class="hljs-keyword">const</span> NOTFOUND = debug(<span class="hljs-string">'HTTP:404'</span>);
+<span class="hljs-comment">// etc.</span>
+</code></pre>
+<p>We can turn them all on with <code>HTTP:*</code>, but it turns out that <code>200</code> comes up way too frequently so we want it turned off. The <code>-</code> prefix operator can be used to explicitly disable a single debugger. Here, we&#39;ll enable all debuggers in this namespace then disable just <code>HTTP:200</code>:</p>
+<pre><code class="hljs lang-nohighlight">$ <span class="hljs-attr">DEBUG=</span>'HTTP:*,-HTTP:<span class="hljs-number">200</span>' <span class="hljs-keyword">node</span> <span class="hljs-title">app</span>.js
+</code></pre>
+<h2 id="externalizing-debug-functions">Externalizing Debug Functions</h2>
+<p><code>debug()</code> is factory function, and when you call it it returns another function, which can be called to actually write to the console (more specifically, <code>STDERR</code> in Node.js):</p>
+<pre><code class="hljs lang-js">debug('abc')<span class="hljs-comment">;        // creates function, doesn't write anything </span>
+debug('foo')('bar')<span class="hljs-comment">; // writes `foo: bar` (assuming that debugger is enabled)</span>
+</code></pre>
+<p>If we want to reuse this debugger, we can assign the function to a variable: </p>
+<pre><code class="hljs lang-js">var fooLogger = debug(<span class="hljs-string">'foo'</span>);
+
+fooLogger(<span class="hljs-string">'bar'</span>);                    <span class="hljs-comment">// writes `foo: bar`</span>
+<span class="hljs-function"><span class="hljs-title">fooLogger</span>(<span class="hljs-params">'opening pod bay door...'</span>)</span> <span class="hljs-comment">// writes `foo: opening pod bay door...`</span>
+</code></pre>
+<p>While it&#39;s easy to create one-off debug functions as needed as in the first example, it&#39;s important to remember that the <code>debug</code> module does not write anything <em>unless that particular debugger is enabled</em>. If your fellow developer does not know you created a debugger with the name <code>foo</code>, she cannot know to turn it on! Furthermore, she may create a debugger with the name <code>foo</code> as well, not knowing you&#39;re already using that name. For this reasons (read: <strong>discoverability</strong>), it&#39;s useful to group all such debug logging functions in one file, and export them from there:</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">// lib/debuggers.js</span>
+<span class="hljs-keyword">const</span> debug = require(<span class="hljs-string">'debug'</span>);
+
+<span class="hljs-keyword">const</span> init = debug(<span class="hljs-string">'app:init'</span>);
+<span class="hljs-keyword">const</span> menu = debug(<span class="hljs-string">'app:menu'</span>);
+<span class="hljs-keyword">const</span> db = debug(<span class="hljs-string">'app:database'</span>);
+<span class="hljs-keyword">const</span> http = debug(<span class="hljs-string">'app:http'</span>)
+
+<span class="hljs-keyword">module</span>.<span class="hljs-keyword">exports</span> = {
+  init, menu, db, http
+};
+</code></pre>
+<p><em>NB: using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#New_notations_in_ECMAScript_2015">ES2015 object property shorthand</a> above</em></p>
+<p>This way we can <strong>discover all available debuggers</strong> and <strong>reuse debuggers across files</strong>. For example, if we access the database in <code>customer.js</code> &amp; we wish to log the query, we can import that debugger &amp; use it there:</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">// models/customer.js</span>
+<span class="hljs-keyword">const</span> debugDB = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../lib/debuggers'</span>).db;
+<span class="hljs-comment">// ...</span>
+
+debugDB(<span class="hljs-string">`looking up user by ID: <span class="hljs-subst">${userid}</span>`</span>);
+db.Customer.findById(userid)
+  .tap(result =&gt; debugDB(<span class="hljs-string">'customer lookup result'</span>, result))
+  .then(processCustomer)
+<span class="hljs-comment">//.then(...)</span>
+</code></pre>
+<p><em>NB: using the <a href="http://bluebirdjs.com/docs/api/tap.html">Bluebird promises library</a>&#39;s <code>tap</code> above.</em></p>
+<p>We can later use the same debugger in another file, perhaps with other debuggers as well:</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">// config.js</span>
+debugDB = require(<span class="hljs-string">'../lib/debuggers'</span>).db;
+debugInit = require(<span class="hljs-string">'../lib/debuggers'</span>).init;
+<span class="hljs-comment">// ...</span>
+
+debugInit(<span class="hljs-string">'configuring application...'</span>);
+
+<span class="hljs-built_in">if</span>(<span class="hljs-built_in">process</span>.env !== <span class="hljs-string">'DEV'</span>){
+  debugInit(<span class="hljs-string">'env not DEV, loading configs from DB'</span>);
+  debugDB(<span class="hljs-string">'reading site config from database'</span>);
+  db.Config.<span class="hljs-built_in">find</span>()
+    .tap(debugDB)
+    .then(<span class="hljs-built_in">config</span>){
+      configureApp(<span class="hljs-built_in">config</span>);
+    }
+}<span class="hljs-built_in">else</span>{
+  debugInit(<span class="hljs-string">'local environment: reading config from file'</span>);
+  <span class="hljs-comment">// ...</span>
+}
+</code></pre>
+<p>Then when we&#39;re confused why the app fails on startup on our local machine, we can enable <code>app:init</code> (or <code>app:*</code>) and see the following in our console...</p>
+<pre><code class="hljs lang-nohighlight">app:init env <span class="hljs-keyword">not</span> DEV, loading configs <span class="hljs-keyword">from</span> DB +<span class="hljs-number">1</span>ms
+</code></pre>
+<p>...and quickly discover that a missing environment variable is what&#39;s causing our issue.</p>
+<h2 id="debugging-all-known-events-on-an-event-emitter">Debugging All (known) Events on an Event Emitter</h2>
+<h3 id="background">Background</h3>
+<p>My goal was to run my <code>newFeatureAdded</code> function whenever a user created a new &quot;feature&quot; on the map. (<em>This example is browser-based, but the approach works just as well with <a href="https://nodejs.org/dist/latest-v6.x/docs/api/events.html">Node.js EventEmiters</a>.</em>)</p>
+<p>When I started, I attached my <code>newFeatureAdded</code> function to <code>editable:created</code>:</p>
+<pre><code class="hljs lang-js">map.<span class="hljs-keyword">on</span>(<span class="hljs-string">'editable:created'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(e)</span><span class="hljs-comment">{
+  newFeatureAdded(e.layer);
+}</span>);</span>
+</code></pre>
+<p>But it wasn&#39;t firing when I expected, so I added a debug function call to see what was going on:</p>
+<pre><code class="hljs lang-js">map.on(<span class="hljs-string">'editable:created'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(e)</span></span>{
+  eventDebug(<span class="hljs-string">'editable:created'</span>, e.layer);
+  newFeatureAdded(e.layer);
+});
+</code></pre>
+<p>This revealed that the event was fired when the user clicked &quot;create new feature&quot;, <em>not</em> when they placed the feature on the map. I fixed the issue, but I found myself adding debug function calls all over the place, with almost every event handler function:</p>
+<pre><code class="hljs lang-js"><span class="hljs-selector-tag">map</span><span class="hljs-selector-class">.on</span>(<span class="hljs-string">'editable:drawing:commit'</span>, function(e){
+  eventDebug('<span class="hljs-attribute">FIRED</span>: <span class="hljs-attribute">editable</span>:<span class="hljs-attribute">drawing</span>:commit');
+  handleDrawingCommit(e);
+});
+
+<span class="hljs-selector-tag">map</span><span class="hljs-selector-class">.on</span>(<span class="hljs-string">'click'</span>, function(e){
+  eventDebug('<span class="hljs-attribute">FIRED</span>: click');
+  disableAllEdits();
+});
+
+<span class="hljs-selector-tag">map</span><span class="hljs-selector-class">.on</span>(<span class="hljs-string">'editable:vertex:clicked'</span>, function(e){
+  eventDebug('<span class="hljs-attribute">FIRED</span>: <span class="hljs-attribute">editable</span>:<span class="hljs-attribute">vertex</span>:clicked');
+  handleVertexClick(e);
+});
+</code></pre>
+<p>This is starting to look redundant, and doubly bad as it&#39;s forcing us to wrap our handler calls in extra anonymous functions rather than delegate to them directly, i.e. <code>map.on(&#39;click&#39;, disableEdits)</code>. Furthermore, not knowing the event system well, I want to <em>discover</em> other events that fire at times that might be useful to me.</p>
+<h3 id="another-approach-">Another Approach...</h3>
+<p>In order to build my UI, I needed to understand the interactions between <a href="http://leafletjs.com/reference.html#map-events">Leaflet&#39;s 35 events</a> and <a href="https://github.com/Leaflet/Leaflet.Editable/tree/leaflet0.7#events">Leaflet.Editable&#39;s 18 events</a>, which overlap, trigger one another, and have somewhat ambiguous names (<code>layeradd</code>, <code>dragend</code>, <code>editable:drawing:dragend</code>, <code>editable:drawing:end</code>, <code>editable:drawing:commit</code>, <code>editable:created</code> etc.). </p>
+<p>We could pore over the docs and source code to find the exact event we need for each eventuality... or we could attach debug loggers to <em>all</em> events and see what we see!</p>
+<p>The approach is as follows:</p>
+<ol>
+<li>Create an array of all known events</li>
+<li>Create a debug function for each event</li>
+<li>Attach that function to the target event emitter using <code>.on</code></li>
+</ol>
+<pre><code class="hljs lang-js"><span class="hljs-comment">// 1. Create list of events</span>
+<span class="hljs-keyword">const</span> leafletEditableEvents = [
+  <span class="hljs-string">'editable:created'</span>,
+  <span class="hljs-string">'editable:enable'</span>,
+  <span class="hljs-string">'editable:drawing:start'</span>,
+  <span class="hljs-string">'editable:drawing:end'</span>,
+  <span class="hljs-string">'editable:vertex:contextmenu'</span>,
+<span class="hljs-comment">// ...</span>
+];
+
+<span class="hljs-keyword">const</span> leafletEvents = [
+  <span class="hljs-string">'click'</span>,
+  <span class="hljs-string">'dblclick'</span>,
+  <span class="hljs-string">'mousedown'</span>,
+  <span class="hljs-string">'dragend'</span>,
+  <span class="hljs-string">'layeradd'</span>,
+  <span class="hljs-string">'layerremove'</span>,
+<span class="hljs-comment">// ...</span>
+];
+</code></pre>
+<p>Because we want to be able to use our event debugging tool on any event emitter, we&#39;ll make a function that takes the <code>target</code> object and <code>events</code> array as arguments:</p>
+<pre><code class="hljs lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span></span> debugEvents(<span class="hljs-keyword">target</span>, events){
+  events
+    // <span class="hljs-number">2.</span> Create debug <span class="hljs-function"><span class="hljs-keyword">function</span></span> for each
+    // (but keep the <span class="hljs-function"><span class="hljs-keyword">function</span></span> <span class="hljs-keyword">name</span> as well<span class="hljs-comment">! we'll need it below)</span>
+    // <span class="hljs-keyword">return</span> both as { <span class="hljs-keyword">name</span>, debugger }
+    .map(eventName =&gt; { <span class="hljs-keyword">return</span> { <span class="hljs-keyword">name</span>: eventName, debugger: debug(eventName) }; })
+    // <span class="hljs-number">3.</span> Attach that <span class="hljs-function"><span class="hljs-keyword">function</span></span> to the <span class="hljs-keyword">target</span>
+    .map(event =&gt; <span class="hljs-keyword">target</span>.on(event.<span class="hljs-keyword">name</span>, event.debugger));
+}
+
+debugEvents(mapObject, leafletEditableEvents);
+debugEvents(mapObject, leafletEvents);
+</code></pre>
+<p>Assuming we <a href="https://www.npmjs.com/package/debug#browser-support">set <code>localStorage.debug=&#39;*&#39;</code> in our browser console</a>, we will now see a debug statement in the console when <em>any</em> of the Leaflet.Editable events fire on the map object!</p>
+<p><img src="http://localhost:8080/img/debug_all_events.png" alt="debugger output"></p>
+<p>Note that whatever data is passed to an event handler attached with <code>.on()</code> is passed to the our debug functions. In this case it&#39;s the event object created by Leaflet, shown above in the console as <code>▶ Object</code>.</p>
+<p><code>mousemove</code> etc. are not in any namespace above, and it&#39;s best to always namespace debug functions so they don&#39;t collide, to add context, and to allow enabling/disabling by namespace. Let&#39;s improve our <code>debugEvents</code> function to use a namespace:</p>
+<pre><code class="hljs lang-js"><span class="hljs-selector-tag">function</span> <span class="hljs-selector-tag">debugEvents</span>(target, events, namespace){
+  <span class="hljs-selector-tag">events</span>
+    <span class="hljs-selector-class">.map</span>(eventName =&gt; { <span class="hljs-selector-tag">return</span> {
+      <span class="hljs-attribute">name</span>: eventName,
+      <span class="hljs-attribute">debugger</span>: debug(<span class="hljs-built_in">`${namespace}:${eventName}`</span>)
+    } } )
+    <span class="hljs-selector-class">.map</span>(event =&gt; target.on(event.name, event.debugger));
+}
+
+<span class="hljs-comment">//editable events already prefixed with "editable", so "events:editable:..."</span>
+<span class="hljs-selector-tag">debugEvents</span>(mapObject, leafletEditableEvents, <span class="hljs-string">'event'</span>);
+<span class="hljs-comment">//map events not prefixed so we'll add `map`, so they're "events:map:..."</span>
+<span class="hljs-selector-tag">debugEvents</span>(mapObject, leafletEvents, <span class="hljs-string">'event:map'</span>);
+</code></pre>
+<p>We can enable all event debuggers in our console, or just editable events, or just core map events, thus:</p>
+<pre><code class="hljs lang-js">&gt; localStorage<span class="hljs-selector-class">.debug</span> = <span class="hljs-string">'event:*'</span>
+&gt; localStorage<span class="hljs-selector-class">.debug</span> = <span class="hljs-string">'event:editable:*'</span>
+&gt; localStorage<span class="hljs-selector-class">.debug</span> = <span class="hljs-string">'event:map:*'</span>
+</code></pre>
+<p>Conveniently, the <a href="https://github.com/Leaflet/Leaflet.Editable/tree/leaflet0.7#events">Leaflet.Editable events</a> are all already &quot;namespaced&quot; &amp; colon separated, just like our debug namespaces!</p>
+<pre><code class="hljs lang-js">&gt; localStorage<span class="hljs-selector-class">.debug</span> = <span class="hljs-string">'event:editable:*'</span> <span class="hljs-comment">//enable all editable</span>
+&gt; localStorage<span class="hljs-selector-class">.debug</span> = <span class="hljs-string">'event:editable:drawing:*'</span>  <span class="hljs-comment">//just editable:drawing events</span>
+</code></pre>
+<p>Let&#39;s enable all event debuggers and see what some interactions look like...</p>
+<p><img src="http://localhost:8080/img/debug_events_1.gif" alt="gif of debugger output with rapidly flowing debug statments during user interaction with map. Lots and lots of &quot;event:map:mousemove&quot; events."></p>
+<p>Looks nice, but the <code>mousemove</code> events are coming so fast they push everything else out of the console, i.e. they are noise. Some trial and error taught me it that <code>drag</code> events are equally noisy and that I don&#39;t need to know the core map events most of the time, just the <code>editable</code> events.</p>
+<p>With this info we can tune our logging down to just what we need, enabling only <code>editable:</code> events &amp; ignoring <em>all</em> drag &amp; mousemove events:</p>
+<pre><code class="hljs lang-js">&gt; localStorage<span class="hljs-selector-class">.debug</span> = <span class="hljs-string">'event:editable:*,-event:*:drag,-event:*:mousemove'</span>
+</code></pre>
+<p><img src="http://localhost:8080/img/debug_events_2.gif" alt="gif of debugger output with a smaller number of events. Console screen does not overflow"></p>
+<p>Looks good!</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>While <code>debug</code> is a very small &amp; easy-to-get-started-with module, it can tuned in very granular ways and is a powerful development tool. By attaching debug statements to all events, <em>outside</em> of our application code, we can trace the path of an event system &amp; better understand how events interact, without adding any debug statments into our application code. If you&#39;ve found another novel use of this library or have any questions about my post, <a href="http://sequoia.makes.software/contact/">let me know</a>. Happy logging!</p>
+<p><em>NB: I use the term &quot;debugger function&quot; and &quot;debug logging&quot; rather than &quot;debugger&quot; and &quot;debugging&quot; in this post advisedly. A &quot;debugger&quot; typically refers to a tool that can be used to pause execution &amp; alter the code at runtime, for example the <a href="https://code.visualstudio.com/docs/editor/debugging">VSCode debugger</a>. What we&#39;re doing here is &quot;logging.&quot;</em></p>
+<footer class="byline">Published&nbsp;<span>October 15, 2016</span></footer></section><footer>&copy; Sequoia McDowell 2016</footer></div></body></html>

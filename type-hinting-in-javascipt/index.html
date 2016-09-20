@@ -39,12 +39,12 @@
 <p>We now have these type definitions in our project, and VS Code loads all type definitions in your project automatically. However, it identifies the root of a JavaScript by the presence of a <code>jsconfig.json</code> file, and we don&#39;t have one yet. VS Code can usually guess if your project is JavaScript based, and when it does it will <a href="https://code.visualstudio.com/Docs/runtimes/nodejs#_adding-a-jsconfigjson-configuration-file">display a little green lightbulb in the status bar</a>, prompting you to create just such a <code>jsconfig.json</code> file. Click that button, save the file, start writing some Node and...</p>
 <p><img src="/img/typehint-node-core-apis.gif" alt="demo of looking up core node.js api properties &amp; methods using external node.js typescript definition file"></p>
 <p>It works! We now get &quot;Intellisense&quot; code hints for all Node.js core APIs. Our project won&#39;t just be using Node core APIs though, we&#39;ll be pulling in some utility libraries, starting with <a href="https://lodash.com/">lodash</a>. <code>typings search lodash</code> reveals that there&#39;s a lodash definition from the <code>npm</code> source as well as <code>global</code> and <code>dt</code>. We want the <code>npm</code> version since we&#39;ll be consuming lodash as <strong>module</strong> included with <code>require(&#39;lodash&#39;)</code> and it will <em>not</em> be globally available.</p>
-<pre><code class="hljs lang-nohighlight">$ typings <span class="hljs-keyword">install</span> <span class="hljs-comment">--save npm~lodash</span>
+<pre><code class="hljs lang-nohighlight">$ typings install --save npm~lodash
 lodash@<span class="hljs-number">4.0</span><span class="hljs-number">.0</span>
-└── (<span class="hljs-keyword">No</span> dependencies)
+└── (No dependencies)
 
-$ npm <span class="hljs-keyword">install</span> <span class="hljs-comment">--save lodash</span>
-typehinting-demo@<span class="hljs-number">1.0</span><span class="hljs-number">.0</span> /<span class="hljs-keyword">Users</span>/sequoia/projects/typehinting-demo
+$ npm install --save lodash
+typehinting-demo@<span class="hljs-number">1.0</span><span class="hljs-number">.0</span> /Users/sequoia/projects/typehinting-demo
 └── lodash@<span class="hljs-number">4.13</span><span class="hljs-number">.1</span>
 </code></pre>
 <p>Now we can require lodash and get coding:</p>
@@ -58,11 +58,11 @@ typehinting-demo@<span class="hljs-number">1.0</span><span class="hljs-number">.
 <li>The syntax is very similar to <a href="http://docs.oracle.com/javase/8/docs/technotes/tools/windows/javadoc.html">Javadoc</a> and for the most part fairly intuitive.</li>
 </ol>
 <p>There are <a href="http://usejsdoc.org/index.html#block-tags">many annotations</a> JSDoc supports, but you can get a long way just by learning a few, namely <code>@param</code> and <code>@return</code>. Let&#39;s annotate this simple function, which checks whether one string contains another string:</p>
-<pre><code class="hljs lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">contains</span>(<span class="hljs-params">input, search</span>)</span>{
-  <span class="hljs-keyword">return</span> <span class="hljs-built_in">RegExp</span>(search).test(input);
+<pre><code class="hljs lang-js"><span class="hljs-keyword">function</span> <span class="hljs-title">contains</span>(input, search){
+  <span class="hljs-keyword">return</span> <span class="hljs-type">RegExp(search).test(input)</span>;
 }
 
-contains(<span class="hljs-string">'Everybody loves types. It is known.'</span>, <span class="hljs-string">'known'</span>); <span class="hljs-comment">// =&gt; true</span>
+contains(<span class="hljs-symbol">'Everybody</span> loves types. It <span class="hljs-keyword">is</span> known.', <span class="hljs-symbol">'known</span>'); // =&gt; <span class="hljs-literal">true</span>
 </code></pre>
 <p>With a function like this, it&#39;s easy to forget the order of arguments or their types. Annotations to the rescue!</p>
 <pre><code class="hljs lang-js">/**
@@ -78,32 +78,32 @@ function <span class="hljs-keyword">contains</span>(input, search){
 }
 </code></pre>
 <p>While writing this, we realized it that this function actually works with regular expresssions as the <code>search</code> parameter as well as strings. Let&#39;s update that line to make clear that both types are supported:</p>
-<pre><code class="hljs lang-javascript">/<span class="hljs-keyword">*</span><span class="hljs-keyword">*</span> 
- <span class="hljs-keyword">*</span> ...
- <span class="hljs-keyword">*</span> <span class="hljs-meta">@param</span> {string|<span class="hljs-string">RegExp} search  - the string or pattern to search for
+<pre><code class="hljs lang-javascript">/** 
  * ...
- */</span>
+ * @param {<span class="hljs-built_in">string</span>|RegExp} <span class="hljs-built_in">search</span>  - the <span class="hljs-built_in">string</span> <span class="hljs-built_in">or</span> pattern <span class="hljs-keyword">to</span> <span class="hljs-built_in">search</span> <span class="hljs-keyword">for</span>
+ * ...
+ */
 </code></pre>
 <p>We can even add examples &amp; links to documentation to help the next programmer out:</p>
-<pre><code class="hljs lang-javascript">/<span class="hljs-keyword">*</span><span class="hljs-keyword">*</span>
- <span class="hljs-keyword">*</span> Checks whether one string contains another string
- <span class="hljs-keyword">*</span> 
- <span class="hljs-keyword">*</span> <span class="hljs-meta">@example</span> 
- <span class="hljs-keyword">*</span> ```
- <span class="hljs-keyword">*</span> contains(<span class="hljs-string">"hello world"</span>, <span class="hljs-string">"world"</span>); // true
- <span class="hljs-keyword">*</span> ```
- <span class="hljs-keyword">*</span> <span class="hljs-meta">@example</span>
- <span class="hljs-keyword">*</span> ```
- <span class="hljs-keyword">*</span> const exp = /l{2}/;
- <span class="hljs-keyword">*</span> contains(<span class="hljs-string">"hello world"</span>, exp);  // true
- <span class="hljs-keyword">*</span> ```
- <span class="hljs-keyword">*</span> <span class="hljs-meta">@see</span> https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
- <span class="hljs-keyword">*</span> 
- <span class="hljs-keyword">*</span> <span class="hljs-meta">@param</span> {string} input          - the string to test against
- <span class="hljs-keyword">*</span> <span class="hljs-meta">@param</span> {string|<span class="hljs-string">RegExp} search  - the string or pattern to search for
+<pre><code class="hljs lang-javascript">/**
+ * Checks whether one string contains another string
  * 
- * @return {boolean}
- */</span>
+ * <span class="hljs-variable">@example</span> 
+ * ```
+ * contains(<span class="hljs-string">"hello world"</span>, <span class="hljs-string">"world"</span>); <span class="hljs-regexp">//</span> <span class="hljs-keyword">true</span>
+ * ```
+ * <span class="hljs-variable">@example</span>
+ * ```
+ * const exp = <span class="hljs-regexp">/l{2}/</span>;
+ * contains(<span class="hljs-string">"hello world"</span>, exp);  <span class="hljs-regexp">//</span> <span class="hljs-keyword">true</span>
+ * ```
+ * <span class="hljs-variable">@see</span> <span class="hljs-symbol">https:</span>/<span class="hljs-regexp">/developer.mozilla.org/en</span>-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
+ * 
+ * <span class="hljs-variable">@param</span> {string} input          - the string to test against
+ * <span class="hljs-variable">@param</span> {string|RegExp} search  - the string <span class="hljs-keyword">or</span> pattern to search <span class="hljs-keyword">for</span>
+ * 
+ * <span class="hljs-variable">@return</span> {boolean}
+ *<span class="hljs-regexp">/</span>
 </code></pre>
 <p>...and away we go!</p>
 <p><img src="/img/typehint-jsdoc.gif" alt="example of hinting function parameters &amp; types based on JSDoc comments"></p>
@@ -114,28 +114,28 @@ function <span class="hljs-keyword">contains</span>(input, search){
 <p>Imagine we have an application that creates a map and allows users to add features to that map. We&#39;ll be deploying these editable maps to different client sites, so we want be able to configure the <strong>types of features</strong> users can add and the <strong>coordinates</strong> to center the map on on a per-site basis.</p>
 <p>Our <code>config.json</code> looks like this:</p>
 <pre><code class="hljs lang-json">{
-  "<span class="hljs-attr">siteName</span>": <span class="hljs-string">"Strongloop"</span>,
-  "<span class="hljs-attr">introText</span>":  {
-    "<span class="hljs-attr">title</span>": <span class="hljs-string">"&lt;h1&gt; Yo &lt;/h1&gt;"</span>,
-    "<span class="hljs-attr">body</span>": <span class="hljs-string">"&lt;strong&gt;Welcome to StrongLoop!&lt;/strong&gt;"</span>
+  <span class="hljs-attr">"siteName"</span>: <span class="hljs-string">"Strongloop"</span>,
+  <span class="hljs-attr">"introText"</span>:  {
+    <span class="hljs-attr">"title"</span>: <span class="hljs-string">"&lt;h1&gt; Yo &lt;/h1&gt;"</span>,
+    <span class="hljs-attr">"body"</span>: <span class="hljs-string">"&lt;strong&gt;Welcome to StrongLoop!&lt;/strong&gt;"</span>
   },
-  "<span class="hljs-attr">mapbox</span>": {
-    "<span class="hljs-attr">styleUrl</span>": <span class="hljs-string">"mapbox://styles/test/ciolxdklf80000atmd1raqh0rs"</span>,
-    "<span class="hljs-attr">accessToken</span>": <span class="hljs-string">"pk.10Ijoic2slkdklKLSDKJ083246ImEiOi9823426In0.pWHSxiy24bkSm1V2z-SAkA"</span>
+  <span class="hljs-attr">"mapbox"</span>: {
+    <span class="hljs-attr">"styleUrl"</span>: <span class="hljs-string">"mapbox://styles/test/ciolxdklf80000atmd1raqh0rs"</span>,
+    <span class="hljs-attr">"accessToken"</span>: <span class="hljs-string">"pk.10Ijoic2slkdklKLSDKJ083246ImEiOi9823426In0.pWHSxiy24bkSm1V2z-SAkA"</span>
   },
-  "<span class="hljs-attr">coords</span>": [<span class="hljs-number">73.153</span>,<span class="hljs-number">142.621</span>],
-  "<span class="hljs-attr">types</span>": [
+  <span class="hljs-attr">"coords"</span>: [<span class="hljs-number">73.153</span>,<span class="hljs-number">142.621</span>],
+  <span class="hljs-attr">"types"</span>: [
     {
-      "<span class="hljs-attr">name</span>": <span class="hljs-string">"walk"</span>,
-      "<span class="hljs-attr">type</span>": <span class="hljs-string">"path"</span>,
-      "<span class="hljs-attr">lineColor</span>": <span class="hljs-string">"#F900FC"</span>,
-      "<span class="hljs-attr">icon</span>": <span class="hljs-string">"test-icon-32.png"</span>
+      <span class="hljs-attr">"name"</span>: <span class="hljs-string">"walk"</span>,
+      <span class="hljs-attr">"type"</span>: <span class="hljs-string">"path"</span>,
+      <span class="hljs-attr">"lineColor"</span>: <span class="hljs-string">"#F900FC"</span>,
+      <span class="hljs-attr">"icon"</span>: <span class="hljs-string">"test-icon-32.png"</span>
     },
     {
-      "<span class="hljs-attr">name</span>": <span class="hljs-string">"live"</span>,
-      "<span class="hljs-attr">type</span>": <span class="hljs-string">"point"</span>,
-      "<span class="hljs-attr">question</span>": <span class="hljs-string">"Where do you live?"</span>,
-      "<span class="hljs-attr">icon</span>": <span class="hljs-string">"placeLive.png"</span>
+      <span class="hljs-attr">"name"</span>: <span class="hljs-string">"live"</span>,
+      <span class="hljs-attr">"type"</span>: <span class="hljs-string">"point"</span>,
+      <span class="hljs-attr">"question"</span>: <span class="hljs-string">"Where do you live?"</span>,
+      <span class="hljs-attr">"icon"</span>: <span class="hljs-string">"placeLive.png"</span>
     }
     ...
 </code></pre>
