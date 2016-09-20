@@ -8,14 +8,14 @@
 <p>And a template file to serve the bookmarklet:</p>
 <pre><code class="hljs lang-html"><span class="xml"><span class="hljs-comment">&lt;!-- filename: index.html.tpl --&gt;</span>
 <span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span> 
-    <span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">'javascript:void(</span></span></span>&lt;%=<span class="ruby"> marklet </span>%&gt;<span class="xml"><span class="hljs-tag"><span class="hljs-string">);'</span>&gt;</span>Bookmarklet!<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">'javascript:void(&lt;%=</span></span></span><span class="ruby"> marklet </span><span class="xml"><span class="hljs-tag"><span class="hljs-string">%&gt;);'</span>&gt;</span>Bookmarklet!<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
 <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span></span>
 </code></pre>
 <h2 id="the-gruntfile">The Gruntfile</h2>
 <p><em>abridged; see full version <a href="https://github.com/Sequoia/afonigizer/blob/master/Gruntfile.js">here</a></em></p>
 <pre><code class="hljs lang-javascript"><span class="hljs-comment">//we'll need `fs` to read the bookmarklet file</span>
-fs = require(<span class="hljs-string">'fs'</span>)<span class="hljs-comment">;</span>
-module.exports = function(grunt) {
+fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">grunt</span>) </span>{
 
   <span class="hljs-comment">// Project configuration.</span>
   grunt.initConfig({
@@ -41,11 +41,11 @@ module.exports = function(grunt) {
     template : {
       <span class="hljs-string">'bookmarkletPage'</span> : {
         options : {
-          data : function(){
+          data : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
             <span class="hljs-keyword">return</span> {
               <span class="hljs-comment">//the only "data" are the contents of the javascript file</span>
               marklet : fs.readFileSync(<span class="hljs-string">'dist/afonigizer.min.js'</span>,<span class="hljs-string">'ascii'</span>).trim()
-            }<span class="hljs-comment">;</span>
+            };
           }
         },
         files : {
@@ -53,29 +53,29 @@ module.exports = function(grunt) {
         }
       }
     }
-  })<span class="hljs-comment">;</span>
+  });
 
 <span class="hljs-comment">/* ... */</span>
 
-  grunt.loadNpmTasks(<span class="hljs-string">'grunt-git'</span>)<span class="hljs-comment">;</span>
-  grunt.loadNpmTasks(<span class="hljs-string">'grunt-template'</span>)<span class="hljs-comment">;</span>
+  grunt.loadNpmTasks(<span class="hljs-string">'grunt-git'</span>);
+  grunt.loadNpmTasks(<span class="hljs-string">'grunt-template'</span>);
 
   <span class="hljs-comment">//git rebase will not work if there are uncommitted changes,</span>
   <span class="hljs-comment">//so we check for this before getting started</span>
-  grunt.registerTask(<span class="hljs-string">'assertNoUncommittedChanges'</span>, function(){
-    var done = this.async()<span class="hljs-comment">;</span>
+  grunt.registerTask(<span class="hljs-string">'assertNoUncommittedChanges'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+    <span class="hljs-keyword">var</span> done = <span class="hljs-keyword">this</span>.async();
 
     grunt.util.spawn({
       cmd: <span class="hljs-string">"git"</span>,
       args: [<span class="hljs-string">"diff"</span>, <span class="hljs-string">"--quiet"</span>]
-    }, function (<span class="hljs-keyword">err</span>, result, code) {
+    }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err, result, code</span>) </span>{
       <span class="hljs-keyword">if</span>(code === <span class="hljs-number">1</span>){
-        grunt.fail.fatal(<span class="hljs-string">'There are uncommitted changes. Commit or stash before continuing\n'</span>)<span class="hljs-comment">;</span>
+        grunt.fail.fatal(<span class="hljs-string">'There are uncommitted changes. Commit or stash before continuing\n'</span>);
       }
-      <span class="hljs-keyword">if</span>(code &lt;= <span class="hljs-number">1</span>){ <span class="hljs-keyword">err</span> = null<span class="hljs-comment">; } //codes 0 &amp; 1 are expected, not errors</span>
-      done(!<span class="hljs-keyword">err</span>)<span class="hljs-comment">;</span>
-    })<span class="hljs-comment">;</span>
-  })<span class="hljs-comment">;</span>
+      <span class="hljs-keyword">if</span>(code &lt;= <span class="hljs-number">1</span>){ err = <span class="hljs-literal">null</span>; } <span class="hljs-comment">//codes 0 &amp; 1 are expected, not errors</span>
+      done(!err);
+    });
+  });
 
 
   <span class="hljs-comment">//this task is a wrapper around the gitcommit task which</span>
@@ -83,25 +83,25 @@ module.exports = function(grunt) {
   <span class="hljs-comment">//Without this check, an attempt to commit with no changes will fail</span>
   <span class="hljs-comment">//and exit the whole task.  I didn't feel this state (no changes) should</span>
   <span class="hljs-comment">//break the build process, so this wrapper task just warns &amp; continues.</span>
-  grunt.registerTask(<span class="hljs-string">'commitIfChanged'</span>, function(){
-    var done = this.async()<span class="hljs-comment">;</span>
+  grunt.registerTask(<span class="hljs-string">'commitIfChanged'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+    <span class="hljs-keyword">var</span> done = <span class="hljs-keyword">this</span>.async();
     grunt.util.spawn({
       cmd: <span class="hljs-string">"git"</span>,
       args: [<span class="hljs-string">"diff"</span>, <span class="hljs-string">"--quiet"</span>, <span class="hljs-comment">//just exists with 1 or 0 (change, no change)</span>
         <span class="hljs-string">'--'</span>, grunt.config.data.gitcommit.bookmarkletUpdate.files.src]
-    }, function (<span class="hljs-keyword">err</span>, result, code) {
+    }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err, result, code</span>) </span>{
       <span class="hljs-comment">//only attempt to commit if git diff picks something up</span>
       <span class="hljs-keyword">if</span>(code === <span class="hljs-number">1</span>){
-        grunt.log.ok(<span class="hljs-string">'committing new index.html...'</span>)<span class="hljs-comment">;</span>
-        grunt.task.<span class="hljs-keyword">run</span>(<span class="hljs-string">'gitcommit:bookmarkletUpdate'</span>)<span class="hljs-comment">;</span>
+        grunt.log.ok(<span class="hljs-string">'committing new index.html...'</span>);
+        grunt.task.run(<span class="hljs-string">'gitcommit:bookmarkletUpdate'</span>);
       }<span class="hljs-keyword">else</span>{
-        grunt.log.warn(<span class="hljs-string">'no changes to index.html detected...'</span>)<span class="hljs-comment">;</span>
+        grunt.log.warn(<span class="hljs-string">'no changes to index.html detected...'</span>);
       }
 
-      <span class="hljs-keyword">if</span>(code &lt;= <span class="hljs-number">1</span>){ <span class="hljs-keyword">err</span> = null<span class="hljs-comment">; } //code 0,1 =&gt; no error</span>
-      done(!<span class="hljs-keyword">err</span>)<span class="hljs-comment">;</span>
-    })<span class="hljs-comment">;</span>
-  })<span class="hljs-comment">;</span>
+      <span class="hljs-keyword">if</span>(code &lt;= <span class="hljs-number">1</span>){ err = <span class="hljs-literal">null</span>; } <span class="hljs-comment">//code 0,1 =&gt; no error</span>
+      done(!err);
+    });
+  });
 
   grunt.registerTask(<span class="hljs-string">'bookmarklet'</span>, <span class="hljs-string">'build the bookmarklet on the gh-pages branch'</span>,
     [ <span class="hljs-string">'assertNoUncommittedChanges'</span>,    <span class="hljs-comment">//exit if working directory's not clean</span>
@@ -111,11 +111,11 @@ module.exports = function(grunt) {
       <span class="hljs-string">'commitIfChanged'</span>,               <span class="hljs-comment">//commit if changed, otherwise warn &amp; continue</span>
       <span class="hljs-string">'gitcheckout:master'</span>             <span class="hljs-comment">//finish on the master branch</span>
     ]
-  )<span class="hljs-comment">;</span>
+  );
 
 <span class="hljs-comment">/* ... */</span>
 
-}<span class="hljs-comment">;</span>
+};
 </code></pre>
 <p>That&#39;s it! 😊</p>
 <h2 id="additional-notes">Additional Notes</h2>
