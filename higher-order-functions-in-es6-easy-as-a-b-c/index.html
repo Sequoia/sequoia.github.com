@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>Higher Order Functions in ES6: Easy as a =&gt; b =&gt; c; &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="New language features can make an expression that was cumbersome to write in ES5 easy in ES6, enabling and encouraging the use of this type of expression. We’re going to look at one such case here: how arrow functions make it easier to write higher-order functions in ES6."><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects">Projects</a></li><li><a href="/contact">Contact</a></li></ul></nav></header><aside class="announce row"><h2 class="three columns">News</h2><ul class="nine columns"><li><a href="http://www.oreilly.com/live-training/getting-started-with-node-js.html">Getting Started with Node.js</a>: Boston, October 20 & 21</li><li><a href="https://strongloop.com/strongblog/lets-code-it-the-debug-module/">New blog post</a> on StrongBlog (September 15)</li></ul><span class="clearfix"></span></aside><section id="content"><h1>Higher Order Functions in ES6: Easy as a =&gt; b =&gt; c;</h1><h2 class="linkback">Originally published at <a href="https://strongloop.com/strongblog/an-introduction-to-javascript-es6-arrow-functions/">StrongBlog</a></h2><p>ES6 is nigh! As more and more libraries &amp; Thought Leaders start incorporating ES6 into their code, what used to be nice-to-know ES6 features are becoming required knowledge. And it’s not just new syntax – in many cases, new language features can make an expression that was cumbersome to write in ES5 easy in ES6, enabling and encouraging the use of this type of expression. We’re going to look at one such case here: how arrow functions make it easier to write higher-order functions in ES6.</p>
+<!DOCTYPE html><html lang="en"><head><title>Higher Order Functions in ES6: Easy as a =&gt; b =&gt; c; &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="New language features can make an expression that was cumbersome to write in ES5 easy in ES6, enabling and encouraging the use of this type of expression. We’re going to look at one such case here: how arrow functions make it easier to write higher-order functions in ES6."><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects">Projects</a></li><li><a href="/contact">Contact</a></li></ul></nav></header><aside class="announce row"><h2 class="three columns">News</h2><ul class="nine columns"><li><a href="http://www.oreilly.com/live-training/getting-started-with-node-js.html">Getting Started with Node.js</a>: Boston, October 20 & 21<br><strong>Use code ORMSM20 for 20% off!</strong></li><li><a href="https://strongloop.com/strongblog/the-node-js-debug-module-advanced-usage/">New blog post</a> on StrongBlog (Oct 12)</li><li><a href="https://strongloop.com/strongblog/lets-code-it-the-debug-module/">New blog post</a> on StrongBlog (Sept 15)</li></ul><span class="clearfix"></span></aside><section id="content"><h1>Higher Order Functions in ES6: Easy as a =&gt; b =&gt; c;</h1><p>ES6 is nigh! As more and more libraries &amp; Thought Leaders start incorporating ES6 into their code, what used to be nice-to-know ES6 features are becoming required knowledge. And it’s not just new syntax – in many cases, new language features can make an expression that was cumbersome to write in ES5 easy in ES6, enabling and encouraging the use of this type of expression. We’re going to look at one such case here: how arrow functions make it easier to write higher-order functions in ES6.</p>
 <p>A higher order function is a function that does one or both of the following:</p>
 <ol>
 <li>takes one or more functions as arguments</li>
@@ -12,7 +12,7 @@ looking at as I did the first time I saw it. If you need a refresher in arrow
 syntax, check out <a href="https://strongloop.com/strongblog/an-introduction-to-javascript-es6-arrow-functions/">this
 post</a> first.</p>
 <p>Hopefully you’re familiar with arrow functions that return a value:</p>
-<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> square = x =&gt; x * x;
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> square = <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> x * x;
 
 square(<span class="hljs-number">9</span>) === <span class="hljs-number">81</span>; <span class="hljs-comment">// true</span>
 </code></pre>
@@ -44,9 +44,9 @@ add(<span class="hljs-number">10</span>)(<span class="hljs-number">11</span>);  
 // inner <span class="hljs-function"><span class="hljs-keyword">function</span>:</span> y =&gt; y + x;
 </code></pre>
 <p>Now we can create inner functions with a value bound to x:</p>
-<pre><code class="hljs lang-javascript">const add2 = add(<span class="hljs-number">2</span>);<span class="hljs-comment">// returns [inner function] where x = 2</span>
-add2(<span class="hljs-number">4</span>);            <span class="hljs-comment">// returns 6: exec inner with y = 4, x = 2</span>
-add(<span class="hljs-number">8</span>)(<span class="hljs-number">7</span>);          <span class="hljs-comment">// 15</span>
+<pre><code class="hljs lang-javascript">const add2 = <span class="hljs-keyword">add</span><span class="bash">(2);// returns [inner <span class="hljs-keyword">function</span>] <span class="hljs-built_in">where</span> x = 2
+</span>add2(<span class="hljs-number">4</span>);            // returns <span class="hljs-number">6</span>: exec inner with y = <span class="hljs-number">4</span>, x = <span class="hljs-number">2</span>
+<span class="hljs-keyword">add</span><span class="bash">(8)(7);          // 15</span>
 </code></pre>
 <p>Our <code>add</code> function isn’t terribly useful, but it should illustrate how an outer
 function can take an argument <code>(x)</code> and reference it in a function it returns.</p>
@@ -88,9 +88,9 @@ methods</a>, each of which take a single function argument, but instead of writi
 <li>It increases clarity of code meaning</li>
 </ul>
 <p>Imagine we want only users with pets <strong>and with titles</strong>. We could add another function in:</p>
-<pre><code class="hljs lang-javascript"><span class="hljs-built_in">result</span> = users
-  .<span class="hljs-built_in">filter</span>(x =&gt; x.hasOwnProperty(<span class="hljs-string">'pets'</span>))
-  .<span class="hljs-built_in">filter</span>(x =&gt; x.hasOwnProperty(<span class="hljs-string">'title'</span>))
+<pre><code class="hljs lang-javascript">result = users
+  .filter(<span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> x.hasOwnProperty(<span class="hljs-string">'pets'</span>))
+  .filter(<span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> x.hasOwnProperty(<span class="hljs-string">'title'</span>))
   ...
 </code></pre>
 <p>The repetition here is just clutter: it doesn’t add clarity, it’s just more to read and write. Compare with the same code using our <code>has</code> function:</p>
@@ -150,7 +150,7 @@ isContractor(user); <span class="hljs-regexp">//</span> <span class="hljs-keywor
 </code></pre>
 <h2 id="a-note-on-style">A note on style</h2>
 <p>Scan this function, and note the time it takes you to figure out what’s going on:</p>
-<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> i = x =&gt; y =&gt; z =&gt; h(x)(y) &amp;&amp; y[x] == z;
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> i = <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> y =&gt; <span class="hljs-function"><span class="hljs-params">z</span> =&gt;</span> h(x)(y) &amp;&amp; y[x] == z;
 </code></pre>
 <p>Now take a look at this same function, written slightly differently:</p>
 <pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> <span class="hljs-keyword">is</span> = prop =&gt; val =&gt; obj =&gt; has(prop)(obj) &amp;&amp; obj[prop] == val;
@@ -170,4 +170,4 @@ const noPets = <span class="hljs-built_in">invert</span>(hasPets);
 </code></pre>
 <h2 id="conclusion">Conclusion</h2>
 <p>Functional programming has been gaining momentum throughout the programming world and ES6 arrow functions make it easier to use this style in JavaScript. If you haven’t encountered FP style code in JavaScript yet, it’s likely you will in the coming months. This means that even if you don’t love the style, it’s important to understand the basics of this style, some of which we’ve gone over here. Hopefully the concepts outlined in this post have helped prepare you for when you see this code in the wild, and maybe even inspired you to give this style a try!</p>
-<footer class="byline">Published&nbsp;<span>January 11, 2016</span></footer></section><footer>&copy; Sequoia McDowell 2016</footer></div></body></html>
+<footer><span class="byline">Published January 11, 2016</span><span class="linkback">Originally published at <a href="https://strongloop.com/strongblog/an-introduction-to-javascript-es6-arrow-functions/">StrongBlog</a></span></footer></section><footer>&copy; Sequoia McDowell 2016</footer></div></body></html>

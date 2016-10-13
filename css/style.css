@@ -31,13 +31,6 @@ p{
   padding-top: 30px;
   border-top: dashed 6px lavender;
 }
-#content h2.linkback{
-  padding:.2em;
-  font-size:1em;
-  font-style:oblique;
-  font-weight:normal;
-  background:lavenderblush;
-}
 
 h3{
 	margin:10px 0;
@@ -131,7 +124,7 @@ li>p{
 section.blog-posts{
   
 }
-  section.blog-posts time, footer.byline{
+  section.blog-posts time{
     font-style:oblique;
   }
   section.blog-posts p{
@@ -266,4 +259,18 @@ section.blog-posts{
   /*nav ul li:nth-child(odd){*/
     /*text-align:left;*/
   /*}*/
+}
+
+footer{
+  border-top:dashed 6px lavender;  
+}
+footer span{
+  display:block;
+}
+
+footer span.byline::before{
+  content: "📝 ";
+}
+footer span.linkback::before{
+  content: "🔖 ";
 }
