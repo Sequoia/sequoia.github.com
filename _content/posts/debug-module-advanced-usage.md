@@ -1,9 +1,9 @@
 ---
 hidden: true
 title: "The Node.js Debug Module: Advanced Usage"
-date: October 15, 2016
+date: October 12, 2016
 description: "So you're familiar with the `debug` node module. Let's take a look at some more advanced uses and useful tricks!"
-originalUrl: "https://strongloop.com/strongblog/the-node-js-debug-module-advanced-usage"
+originalUrl: "https://strongloop.com/strongblog/the-node-js-debug-module-advanced-usage/"
 originalBlog: "StrongBlog"
 ---
 

@@ -1,5 +1,4 @@
 ---
-hidden: true
 title: "Let's Code It: The `debug` Module"
 date: September 15, 2016
 description: "What if, instead of commenting out or deleting our useful log statements when we're not using them, we could turn them on when we need them and off when we don't? The `debug` module lets us do that-- but how does it work? Let's find out!"
