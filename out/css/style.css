@@ -274,3 +274,30 @@ footer span.byline::before{
 footer span.linkback::before{
   content: "🔖 ";
 }
+
+@media print {
+  aside.announce, header {
+    display:none!important;
+  }
+  code{
+	  background: #FFF;
+    border-bottom:none;
+  }
+  pre code.hljs{
+    border-right: solid 2px lavender;
+    background: #FFF;
+    border-bottom:none;
+    /* padding-bottom: 5px; */
+  }
+  #wrap>footer {
+    background: none!important;
+    border-top: none!important;;
+    padding-left:1em;
+  }
+  #content>footer{
+    background: none!important;
+    border-top: none!important;
+    float:right;
+    text-align:right;
+  }
+}
