@@ -1,0 +1,96 @@
+<!DOCTYPE html><html lang="en"><head><title>Interactive Debugging with Node.js &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="TODO"><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects">Projects</a></li><li><a href="/contact">Contact</a></li></ul></nav></header><aside class="announce row"><h2 class="three columns">News</h2><ul class="nine columns"><li><a href="http://www.oreilly.com/live-training/getting-started-with-node-js.html">Getting Started with Node.js</a>: Boston, October 20 & 21<br><strong>Use code ORMSM20 for 20% off!</strong></li><li><a href="https://strongloop.com/strongblog/the-node-js-debug-module-advanced-usage/">New blog post</a> on StrongBlog (Oct 12)</li><li><a href="https://strongloop.com/strongblog/lets-code-it-the-debug-module/">New blog post</a> on StrongBlog (Sept 15)</li></ul><span class="clearfix"></span></aside><section id="content"><h1>Interactive Debugging with Node.js</h1><p>An &quot;step through debugger&quot; is a powerful tool that is very handy when your application isn&#39;t behaving the way you expect it to. A step through debugger (a.k.a. &quot;interactive debugger&quot; or just &quot;debugger&quot;) allows you to pause code execution in your application in order to:</p>
+<ul>
+<li>inspect or alter application state</li>
+<li>see the code execution path (&quot;call stack&quot;) that lead to the currently executing line of code, and</li>
+<li>inspect the application state at earlier points on that path</li>
+</ul>
+<p>Interactive Debuggers are familiar to every Java developer (among others), but that they are much less well known in the JavaScript world. This is unfortunate, both because debuggers can be so helpful in diagnosing logic issues and becuase the debugging tools in JavaScript today are the best &amp; easiest to use they&#39;ve ever been! This post will introduce the Node.js debugging tools in <a href="https://code.visualstudio.com">VS Code</a> in a way that&#39;s accessible to programmers who have never used a debugger before. <em>TODO: rework that sentence?</em></p>
+<h2 id="why-use-a-debugger-">Why Use a Debugger?</h2>
+<p>Debuggers are useful when writing your own, original code, but they really show their value when you&#39;re working with an unfamiliar codebase. Being able to step through the code execution function by function can save hours of poring over sourcecode, trying to step through it in your head.</p>
+<p>The ability to change the value of a variable at runtime allows you to play thru different scenarios without hardcoding values or restarting your application. Conditional breakpoints let you halt execution upon encountering an error to figure out how you got there. Even if using a debugger isn&#39;t part of your everday process, knowing how they work adds a powerful tool to your toolbox!</p>
+<h2 id="setting-up">Setting Up</h2>
+<p>We&#39;ll be using <a href="https://code.visualstudio.com">VS Code</a>, which has built-in Node.js debugging capabilities. In order to run code in the context of the VS Code debugger, we must first make VS Code aware of our Node.js project. For this demo I&#39;ll create a simple express app with <a href="https://expressjs.com/en/starter/generator.html"><code>express-generator</code></a>, you can follow along there or follow these steps with your own existing Node.js application.</p>
+<pre><code class="hljs lang-nohighlight"><span class="hljs-variable">$ </span>npm install express-generator -g
+<span class="hljs-variable">$ </span>express test-app   <span class="hljs-comment"># create an application</span>
+<span class="hljs-variable">$ </span>cd test-app        
+<span class="hljs-variable">$ </span>npm install
+<span class="hljs-variable">$ </span>code .             <span class="hljs-comment"># start VS Code</span>
+</code></pre>
+<p>With VS Code open, we need to open the Debug pane by clicking the <a href="https://code.visualstudio.com/images/debugging_debugicon.png">bug icon</a> in left sidebar menu. With the debug pane open, you may note that the gear icon at the top of the pane has a red dot over it. This is because there are currently no &quot;launch configurations,&quot; configuration objects which tell VS Code how to run your application. Click the gear icon, select &quot;Node.js,&quot; and VS Code will generate a boilerplate launch configuration for you.</p>
+<p>There are two ways to attach the VS Code debugger to your application:</p>
+<ol>
+<li>Set up a launch configuration and launch your app from within VS Code</li>
+<li>Start your app from the console with <code>node --debug-brk your-app.js</code> and run the &quot;Attach&quot; launch configuration</li>
+</ol>
+<p>The first approach normally requires some setup (which is beyond the scope of this post but you can <a href="https://code.visualstudio.com/docs/editor/debugging#_launch-configurations">read about here</a>), but because our <code>package.json</code> has a <code>run</code> script, VS Code automagically created a launch configuration based on that script. That means we should be able to simply click the green &quot;run&quot; button to start our application in the debugger.</p>
+<p><img src="/img/launch_button.png" alt="debug &quot;launch&quot; button with mouse pointer over it"></p>
+<p>TODO: Redo that image ^</p>
+<p>If all went well, you should see a new toolbar at the top of your screen with pause and play buttons (among others). The Debug Console at the bottom of the screen should tell you what command it ran &amp; what output that command yielded, something like this:</p>
+<pre><code class="hljs lang-nohighlight"><span class="hljs-keyword">node</span> <span class="hljs-title">--debug-brk</span>=<span class="hljs-number">18764</span> --nolazy bin/www 
+Debugger listening on port <span class="hljs-number">18764</span>
+</code></pre>
+<p>When we load <a href="http://localhost:3000">http://localhost:3000</a> in a browser, we can see the express log messages in this same Debug Console:</p>
+<pre><code class="hljs lang-nohighlight">GET / <span class="hljs-number">304</span> <span class="hljs-number">327.916</span> <span class="hljs-keyword">ms</span> <span class="hljs-title">- -
+GET</span> /stylesheets/style.css <span class="hljs-number">304</span> <span class="hljs-number">1.313</span> <span class="hljs-keyword">ms</span> <span class="hljs-title">- -</span>
+</code></pre>
+<p>Now that we have the code running with the VS Code debugger attached, let&#39;s set some breakpoints and start stepping through our code!   </p>
+<h2 id="breakpoints">Breakpoints</h2>
+<p>A breakpoint is a marker on a line of code that tells the debugger &quot;pause execution here.&quot; To set a breakpoint in VS Code, click the gutter just to the left of the line number. I&#39;ve opened <code>routes/index.js</code> in order to set a breakpoint in the root request listener:</p>
+<p><img src="/img/set-breakpoint.png" alt="setting breakpoint on line 6 of routes/index.js"> </p>
+<p>Note that the breakpoints pane at the bottom left has a listing for this new breakpoint (along with entries for exceptions, which we&#39;ll talk about momentarily). Now, when I hit <a href="http://localhost:3000">http://localhost:3000</a> in a browser again, VS Code will pause at this point &amp; allow me to examine what&#39;s going on a that point:</p>
+<p><img src="/img/paused-on-breakpoint-1.png" alt="VS Code paused on breakpoint"></p>
+<p>With the code paused here, we can examine variables and their values in the <strong>variables pane</strong> and see how we got to this point in the code in the <strong>call stack pane</strong>. You may also have noticed that the browser has not loaded the page-- that&#39;s because it&#39;s still waiting for our server to respond! We&#39;ll take a look at each of the sidebar panes in turn, but for now, I&#39;ll press the <strong>play</strong> button to allow code execution to continue.</p>
+<p><img src="/img/play-button.png" alt="VS Code play button press"></p>
+<p>Now the server should send the finished page to the browser. Note that the with code execution resumed, the &quot;play&quot; button is no longer enabled.</p>
+<h3 id="other-types-of-breakpoints">Other types of breakpoints</h3>
+<p>In addition to breaking on a certain line each time it&#39;s executed, you can add dynamic breakpoints that pause execution only in certain circumstances. Here&#39;s a few of the more useful ones:</p>
+<ol>
+<li><strong>Conditional Breakpoint</strong>: After setting a breakpoint, right click on it &amp; select &quot;edit breakpoint,&quot; this will allow you to enter an expression to conditionally activate a breakpoint. For example, if you wanted to activate a breakpoint only if the user is an admin, you might add <code>user.role === &quot;admin&quot;</code> to your conditional breakpoint.</li>
+<li><strong>Uncaught Exception</strong>: This is enabled by default. With this enabled, you don&#39;t have to set any breakpoints in order to locate errors, the debugger will pause on any (uncaught) exceptions.</li>
+<li><strong>All Exceptions</strong>: If you have robust error handling in your application, but you still want to see where errors are coming from before they&#39;re caught and handled, enable this setting. Be warned, however, that many libraries throw and catch errors internally in the normal course of their execution, so this can be pretty noisey.</li>
+</ol>
+<h2 id="variable-pane">Variable pane</h2>
+<p>In this pane, you can examine and change variables in the running application. Let&#39;s edit our homepage route in <code>routes/index.js</code> to make the title a variable:</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">/* GET home page. */</span>
+<span class="hljs-keyword">var</span> ourTitle = <span class="hljs-string">'Express'</span>;
+router.get(<span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> </span>{
+  res.render(<span class="hljs-string">'index'</span>, { title: ourTitle });
+});
+</code></pre>
+<p>After editing our code, we&#39;ll need to <strong>restart the debugger</strong> so it picks up the new code. We can do this by clicking the green circle/arrow button in the top toolbar. After editing a file with a breakpoint already set and restarting the debugger (as we just did), you&#39;ll also want to check that your breakpoints are still in the right spot. VS Code does a pretty good job of keeping the breakpoint on the line you expect but it&#39;s not perfect.</p>
+<p>With our breakpoint on what&#39;s now line 7 and with the debugger restared, let&#39;s refresh our browser. The debugger should stop on line seven. We don&#39;t see <code>ourTitle</code> in the variable pane right away, because it&#39;s not &quot;Local&quot; to that function, but expand the &quot;Closure&quot; section just below the &quot;Local&quot; section and there it is!</p>
+<p><img src="/img/ourTitle.png" alt="variable pane with the closure section expanded showing variable named &quot;ourTitle&quot; with value &quot;Express&quot;"></p>
+<p>Double-clicking <code>ourTitle</code> in the Variables Pane allows us to edit it. This is a great way to tinker with your application and see what happens if you switch a flag from true to false, change a user&#39;s role, or do something else-- all without having to alter the actual application code <em>or</em> restart your application!</p>
+<p>The variable pane is also a great way to poke around and see what&#39;s available in objects created by libraries or other code. For example, under &quot;Local&quot; we can see the <code>req</code> object, see that its type is <code>IncomingMessage</code>, and by expanding it we can see the <code>originalUrl</code>, <code>originalHeaders</code>, and various other properties and methods.</p>
+<ul>
+<li>Debug Console</li>
+</ul>
+<h2 id="stepping">Stepping</h2>
+<p>Sometimes, rather than just pausing the application, examining or altering a value, and setting it running again, you want to see what&#39;s happening in your code line by line: what function is calling which and  and how that&#39;s changing the application state. This is where the &quot;Debug Actions&quot; pane comes in: it&#39;s the bar at the top of the screen with the playback buttons. We&#39;ve used the <strong>continue</strong> (green arrow) and <strong>restart</strong> (green circle arrow) buttons so far, and you can hover over the others to see the names and associated keyboard shortcuts for each. The buttons are, from left to right:</p>
+<ul>
+<li>Continue/Pause: Resume execution (when paused) or pause execution. </li>
+<li>Step over: Execute the current line and move to the next line. Use this button to step through a file line by line.</li>
+<li>Step in: When paused on a function call, you can use this button to step <em>into that function</em>. This can get a bit confusing if there are multiple function calls on one line, so just play around with it</li>
+<li>Step out: Run the current function its <code>return</code> statement &amp; step out to <em>the line of code that invoked that function</em>.</li>
+<li>Restart: Stop your debugging session (kill your application) and start it again from the beginning. Use this after altering code. </li>
+<li>Stop: Kill your application.</li>
+</ul>
+<h2 id="watch-expressions">Watch Expressions</h2>
+<p>While stepping thru your code, there may be certain values you always want to see the current value of. A &quot;watch expression&quot; will run (in the current scope!) at each paused/stopped position in your code &amp; display the return value of that expression. Hover over the Watch Expression pane and click the plus to add an expression. I want to see the user agent header of each request as well as <code>ourTitle</code>, whether the response object has had headers sent, and the value of <code>1 + 1</code>, just for good measure, so I&#39;ll add the following watch expressions:</p>
+<pre><code class="hljs lang-nohighlight"><span class="hljs-selector-tag">req</span><span class="hljs-selector-class">.headers</span><span class="hljs-selector-attr">['user-agent']</span>
+<span class="hljs-selector-tag">ourTitle</span>
+<span class="hljs-selector-tag">res</span><span class="hljs-selector-class">._headerSent</span>
+1 + 1
+</code></pre>
+<p>When I refresh the browser the debugger pauses once again at the breakpoint on line 7 and we can see the result of each expression:</p>
+<p><img src="/img/watch-expressions.png" alt="watch expressions with values"></p>
+<h2 id="call-stack">Call Stack</h2>
+<p>The Call Stack Pane shows us the function calls that got us to the current position in the code when execution is paused, and allow us to step back up that stack and examine the application state in earlier &quot;frames.&quot; By clicking the frame below the current frame you can jump to the code that called the current function. In our case, the current frame is labeled <code>(anonymous function)</code> in <code>index.js [7]</code>, and the one before that the <code>handle</code> function in <code>layer.js</code>, which is a component of the Express framework:</p>
+<p><img src="/img/call-stack.png" alt="call stack with &quot;handle&quot; frame selected"></p>
+<p><em>Note that the request handling function is unnamed, hence &quot;<code>(anonymous function)</code>.&quot; &quot;Anonymous function?!&quot; What&#39;s that? Who knows! Moral: always name your functions!</em></p>
+<p>Stepping up into the Express framework is not something I do every day, but when you absolutely need to understand how to got to where you are, the Call Stack Pane is very useful!</p>
+<p>One especially interesting use of the Call Stack Pane is to examine variables at earlier points in your code&#39;s execution. By clicking up thru the stack, you can see what variables those earlier functions had in their scope, as well as see the state of any global variables at that point in execution.  </p>
+<h2 id="all-this-and-more-">All This and More...</h2>
+<p>There are many more features of the interactive debugger than I went over here, but this is enough to get you started. If you want to learn more, take a look at the excellent documentation from Microsoft on <a href="https://code.visualstudio.com/docs/editor/debugging">the VS Code Debugger</a> and <a href="https://code.visualstudio.com/docs/runtimes/nodejs#_debugging-your-express-application">using it with Node.js</a>. Oh, and I should probably mention that all the debugging features outlined here (and more) are built-in to <a href="https://developer.mozilla.org/en-US/docs/Tools/Debugger">Firefox</a> as well as <a href="https://developers.google.com/web/tools/chrome-devtools/javascript/add-breakpoints">Chrome</a>, should you wish to use them on browser-based code. Happy Debugging! </p>
+<p>* <em>There&#39;s no specific term I&#39;ve found for this common collection of application debugging tools so I&#39;m using the term &quot;interactive debugging&quot; in this article.</em> </p>
+<footer><span class="byline">Published November 2, 2016</span><span class="linkback">Originally published at <a href="TODO">StrongBlog</a></span></footer></section><footer>&copy; Sequoia McDowell 2016</footer></div></body></html>
