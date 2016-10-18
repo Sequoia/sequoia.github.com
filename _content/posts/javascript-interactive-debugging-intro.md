@@ -113,8 +113,6 @@ Double-clicking `ourTitle` in the Variables Pane allows us to edit it. This is a
 
 The variable pane is also a great way to poke around and see what's available in objects created by libraries or other code. For example, under "Local" we can see the `req` object, see that its type is `IncomingMessage`, and by expanding it we can see the `originalUrl`, `originalHeaders`, and various other properties and methods.
 
-* Debug Console
-
 ## Stepping
 
 Sometimes, rather than just pausing the application, examining or altering a value, and setting it running again, you want to see what's happening in your code line by line: what function is calling which and  and how that's changing the application state. This is where the "Debug Actions" pane comes in: it's the bar at the top of the screen with the playback buttons. We've used the **continue** (green arrow) and **restart** (green circle arrow) buttons so far, and you can hover over the others to see the names and associated keyboard shortcuts for each. The buttons are, from left to right:
