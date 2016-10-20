@@ -12,23 +12,23 @@ references:
   - https://code.visualstudio.com/docs/editor/debugging
 ---
 
-An "step through debugger" is a powerful tool that is very handy when your application isn't behaving the way you expect it to. A step through debugger (a.k.a. "interactive debugger" or just "debugger") allows you to pause code execution in your application in order to:
+A "step through debugger" is a powerful tool that is very handy when your application isn't behaving the way you expect it to. A step through debugger (a.k.a. "interactive debugger" or just "debugger") allows you to pause code execution in your application in order to:
 
 * inspect or alter application state
 * see the code execution path ("call stack") that lead to the currently executing line of code, and
 * inspect the application state at earlier points on that path
 
-Interactive Debuggers are familiar to every Java developer (among others), but that they are much less well known in the JavaScript world. This is unfortunate, both because debuggers can be so helpful in diagnosing logic issues and becuase the debugging tools in JavaScript today are the best & easiest to use they've ever been! This post will introduce the Node.js debugging tools in [VS Code](https://code.visualstudio.com) in a way that's accessible to programmers who have never used a debugger before. *TODO: rework that sentence?*
+Interactive Debuggers\* are familiar to every Java developer (among others), but they are much less well known in the JavaScript world. This is unfortunate, both because debuggers can be so helpful in diagnosing logic issues, and becuase the debugging tools in JavaScript today are the best & easiest to use they've ever been! This post will introduce the Node.js debugging tools in [VS Code](https://code.visualstudio.com) in a way that's accessible to programmers who have never used a debugger before.
 
 ## Why Use a Debugger?
 
-Debuggers are useful when writing your own, original code, but they really show their value when you're working with an unfamiliar codebase. Being able to step through the code execution function by function can save hours of poring over sourcecode, trying to step through it in your head.
+Debuggers are useful when writing your own, original code, but they really show their value when you're working with an unfamiliar codebase. Being able to step through the code execution line by line and function by function can save hours of poring over source code, trying to step through it in your head.
 
-The ability to change the value of a variable at runtime allows you to play thru different scenarios without hardcoding values or restarting your application. Conditional breakpoints let you halt execution upon encountering an error to figure out how you got there. Even if using a debugger isn't part of your everday process, knowing how they work adds a powerful tool to your toolbox!
+The ability to change the value of a variable at runtime allows you to play through different scenarios without hardcoding values or restarting your application. Conditional breakpoints let you halt execution upon encountering an error to figure out how you got there. Even if using a debugger isn't part of your everyday process, knowing how they work adds a powerful tool to your toolbox!
 
 ## Setting Up
 
-We'll be using [VS Code](https://code.visualstudio.com), which has built-in Node.js debugging capabilities. In order to run code in the context of the VS Code debugger, we must first make VS Code aware of our Node.js project. For this demo I'll create a simple express app with [`express-generator`](https://expressjs.com/en/starter/generator.html), you can follow along there or follow these steps with your own existing Node.js application.
+We'll be using [VS Code](https://code.visualstudio.com), which has built-in Node.js debugging capabilities. In order to run code in the context of the VS Code debugger, we must first make VS Code aware of our Node.js project. For this demo I'll create a simple express app with [`express-generator`](https://expressjs.com/en/starter/generator.html), you can follow along by running the commands below:
 
 ```nohighlight
 $ npm install express-generator -g
@@ -38,7 +38,7 @@ $ npm install
 $ code .             # start VS Code
 ```
 
-With VS Code open, we need to open the Debug pane by clicking the [bug icon](https://code.visualstudio.com/images/debugging_debugicon.png) in left sidebar menu. With the debug pane open, you may note that the gear icon at the top of the pane has a red dot over it. This is because there are currently no "launch configurations," configuration objects which tell VS Code how to run your application. Click the gear icon, select "Node.js," and VS Code will generate a boilerplate launch configuration for you.
+With VS Code open, we need to open the Debug pane by clicking the [bug icon](https://code.visualstudio.com/images/debugging_debugicon.png) in left sidebar menu. With the debug pane open, you may note that the gear icon at the top of the pane has a red dot over it. This is because there are currently no "launch configurations:" configuration objects which tell VS Code how to run your application. Click the gear icon, select "Node.js," and VS Code will generate a boilerplate launch configuration for you.
 
 There are two ways to attach the VS Code debugger to your application:
 
@@ -49,8 +49,6 @@ The first approach normally requires some setup (which is beyond the scope of th
 
 ![debug "launch" button with mouse pointer over it](/img/launch_button.png)
 
-TODO: Redo that image ^
-
 If all went well, you should see a new toolbar at the top of your screen with pause and play buttons (among others). The Debug Console at the bottom of the screen should tell you what command it ran & what output that command yielded, something like this:
 
 ```nohighlight
@@ -58,7 +56,7 @@ node --debug-brk=18764 --nolazy bin/www
 Debugger listening on port 18764
 ```
 
-When we load <http://localhost:3000> in a browser, we can see the express log messages in this same Debug Console:
+When we load <http://localhost:3000> in a browser, we can see the Express log messages in this same Debug Console:
 
 ```nohighlight
 GET / 304 327.916 ms - -
@@ -89,7 +87,7 @@ In addition to breaking on a certain line each time it's executed, you can add d
 
 1. **Conditional Breakpoint**: After setting a breakpoint, right click on it & select "edit breakpoint," this will allow you to enter an expression to conditionally activate a breakpoint. For example, if you wanted to activate a breakpoint only if the user is an admin, you might add `user.role === "admin"` to your conditional breakpoint.
 2. **Uncaught Exception**: This is enabled by default. With this enabled, you don't have to set any breakpoints in order to locate errors, the debugger will pause on any (uncaught) exceptions.
-3. **All Exceptions**: If you have robust error handling in your application, but you still want to see where errors are coming from before they're caught and handled, enable this setting. Be warned, however, that many libraries throw and catch errors internally in the normal course of their execution, so this can be pretty noisey.
+3. **All Exceptions**: If you have robust error handling in your application, but you still want to see where errors are coming from before they're caught and handled, enable this setting. Be warned, however, that many libraries throw and catch errors internally in the normal course of their execution, so this can be pretty noisy.
 
 ## Variable pane
 
@@ -105,28 +103,28 @@ router.get('/', function(req, res, next) {
 
 After editing our code, we'll need to **restart the debugger** so it picks up the new code. We can do this by clicking the green circle/arrow button in the top toolbar. After editing a file with a breakpoint already set and restarting the debugger (as we just did), you'll also want to check that your breakpoints are still in the right spot. VS Code does a pretty good job of keeping the breakpoint on the line you expect but it's not perfect.
 
-With our breakpoint on what's now line 7 and with the debugger restared, let's refresh our browser. The debugger should stop on line seven. We don't see `ourTitle` in the variable pane right away, because it's not "Local" to that function, but expand the "Closure" section just below the "Local" section and there it is!
+With our breakpoint on what's now line 7 and with the debugger restarted, let's refresh our browser. The debugger should stop on line seven. We don't see `ourTitle` in the variable pane right away, because it's not "Local" to that function, but expand the "Closure" section just below the "Local" section and there it is!
 
 ![variable pane with the closure section expanded showing variable named "ourTitle" with value "Express"](/img/ourTitle.png)
 
 Double-clicking `ourTitle` in the Variables Pane allows us to edit it. This is a great way to tinker with your application and see what happens if you switch a flag from true to false, change a user's role, or do something else-- all without having to alter the actual application code *or* restart your application!
 
-The variable pane is also a great way to poke around and see what's available in objects created by libraries or other code. For example, under "Local" we can see the `req` object, see that its type is `IncomingMessage`, and by expanding it we can see the `originalUrl`, `originalHeaders`, and various other properties and methods.
+The variable pane is also a great way to poke around and see what's available in objects created by libraries or other code. For example, under "Local" we can see the `req` object, see that its type is `IncomingMessage`, and by expanding it we can see the `originalUrl`, `headers`, and various other properties and methods.
 
 ## Stepping
 
-Sometimes, rather than just pausing the application, examining or altering a value, and setting it running again, you want to see what's happening in your code line by line: what function is calling which and  and how that's changing the application state. This is where the "Debug Actions" pane comes in: it's the bar at the top of the screen with the playback buttons. We've used the **continue** (green arrow) and **restart** (green circle arrow) buttons so far, and you can hover over the others to see the names and associated keyboard shortcuts for each. The buttons are, from left to right:
+Sometimes, rather than just pausing the application, examining or altering a value, and setting it running again, you want to see what's happening in your code line by line: what function is calling which and  and how that's changing the application state. This is where the "Debug Actions" menu comes in: it's the bar at the top of the screen with the playback buttons. We've used the **continue** (green arrow) and **restart** (green circle arrow) buttons so far, and you can hover over the others to see the names and associated keyboard shortcuts for each. The buttons are, from left to right:
 
 * Continue/Pause: Resume execution (when paused) or pause execution. 
 * Step over: Execute the current line and move to the next line. Use this button to step through a file line by line.
-* Step in: When paused on a function call, you can use this button to step *into that function*. This can get a bit confusing if there are multiple function calls on one line, so just play around with it
-* Step out: Run the current function its `return` statement & step out to *the line of code that invoked that function*.
+* Step in: When paused on a function call, you can use this button to step *into that function*. This can get a bit confusing if there are multiple function calls on one line, so just play around with it.
+* Step out: Run the current function to its `return` statement & step out to *the line of code that invoked that function*.
 * Restart: Stop your debugging session (kill your application) and start it again from the beginning. Use this after altering code. 
 * Stop: Kill your application.
 
 ## Watch Expressions
 
-While stepping thru your code, there may be certain values you always want to see the current value of. A "watch expression" will run (in the current scope!) at each paused/stopped position in your code & display the return value of that expression. Hover over the Watch Expression pane and click the plus to add an expression. I want to see the user agent header of each request as well as `ourTitle`, whether the response object has had headers sent, and the value of `1 + 1`, just for good measure, so I'll add the following watch expressions:
+While stepping through your code, there may be certain values you always want to see the current value of. A "watch expression" will run (in the current scope!) at each paused/stopped position in your code & display the return value of that expression. Hover over the Watch Expression pane and click the plus to add an expression. I want to see the user agent header of each request as well as `ourTitle`, whether the response object has had headers sent, and the value of `1 + 1`, just for good measure, so I'll add the following watch expressions:
 
 ```nohighlight
 req.headers['user-agent']
@@ -147,9 +145,9 @@ The Call Stack Pane shows us the function calls that got us to the current posit
 
 *Note that the request handling function is unnamed, hence "`(anonymous function)`." "Anonymous function?!" What's that? Who knows! Moral: always name your functions!*
 
-Stepping up into the Express framework is not something I do every day, but when you absolutely need to understand how to got to where you are, the Call Stack Pane is very useful!
+Stepping down into the Express framework is not something I do every day, but when you absolutely need to understand how you got to where you are, the Call Stack Pane is very useful!
 
-One especially interesting use of the Call Stack Pane is to examine variables at earlier points in your code's execution. By clicking up thru the stack, you can see what variables those earlier functions had in their scope, as well as see the state of any global variables at that point in execution.  
+One especially interesting use of the Call Stack Pane is to examine variables at earlier points in your code's execution. By clicking up through the stack, you can see what variables those earlier functions had in their scope, as well as see the state of any global variables at that point in execution.  
 
 ## All This and More...
 
