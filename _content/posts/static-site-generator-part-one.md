@@ -19,7 +19,7 @@ Traditionally, if you wanted to create a blog or website that you can update eas
 
 ## Enter Static Site Generators
 
-It occurred to some people that maybe it didn't make sense to run step three *every single time* someone hit a page on their site. If step three  (combining template with page content) were done in batch beforehand, all of the site's pages could be stored on disk and served from a static server! An application that takes this approach, generating "static" webpages and storing them as flat HTML files, is referred to as a Static Site Generator (or SSG). An SSG has the following benefits over a CMS: 
+It occurred to some people that it didn't make sense to run step three *every single time* someone hit a page on their site. If step three (combining template with page content) were done in batch beforehand, all of the site's pages could be stored on disk and served from a static server! An application that takes this approach, generating "static" webpages and storing them as flat HTML files, is referred to as a Static Site Generator (or SSG). An SSG has the following benefits over a CMS: 
 
 1. It eliminates the need to run a database server
 2. It eliminates the need to execute PHP or any application logic on the server
