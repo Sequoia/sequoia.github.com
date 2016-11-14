@@ -1,45 +1,20 @@
-## Posts
-* [x] read posts
-* [x] frontmatter
-* [x] pygments
-* [x] md parser
-* [x] slugify dirname
-* [x] write to out dir
+# RX.js update
 
-## Markup
-* [x] ui framework... :(
-  * [x] css
-  * [x] js
-  * [x] fonts
+## What functions do we need?
+* [ ] build a post
+* [ ] build a page
+* [ ] read markdown files from FS
+* [ ] build index page (from posts)
+  * requires summaries of posts
+    * use `parsedPosts.combineLatest` to get always-updated copy of posts
+    * use `distinctUntilChanged` on the `postMetedata` observable to only rebuild index if post metadata changes
+* [ ] build an RSS feed (like index page)
+* [ ] Write a post to html
+  * [ ] create output directory <-- happens first
+  * use `do` for this ?
+  * [ ] write file to disk
 
-### Reqs:
-* [x] Menu (normal & mobile)
-* [ ] code
-
-## Templates
-* [x] layout.jade
-  * [x] head.jade
-  * [x] menu.jade (static)
-  * [x] foot.jade
-* [x] post.jade
-
-## Lists
-* [x] posts
-
-## Pages
-* [x] front page (listing)
-
-# Later
-## Projects
-* [x] list
-* ~~page~~ not gonna do page-per-project
-* [ ] styles (float left blocks?)
-
-## Talks
-* [ ] list
-* [ ] page
-
-## Contact form
-* [ ] https://getsimpleform.com/
-* [ ] html of form
-* [ ] thanks page/message
+### Stretch/extra
+* [ ] watch posts, build a single post file
+  * [ ] 
+* [ ] watch includes, layouts, etc.: rebuild all
