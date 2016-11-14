@@ -101,6 +101,8 @@ function writeIndexPage(posts) {
  */
 function getPosts() {
   return (0, _getFiles2.default)((0, _rootPath2.default)('_content/posts'), { match: /.*\.md/ }).map(_frontMatter2.default) // => { body, attributes }
+  //skip posts which yet have no frontmatter/metadata
+  .filter((0, _ramda.has)('frontmatter'))
   //merge attributes to top level
   .map(function (p) {
     p.attributes.body = p.body;return p.attributes;

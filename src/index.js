@@ -1,6 +1,6 @@
 const join = require('path').join;
 const assert = require('assert');
-import {reverse, compose, curryN, prop, has, sortBy, reject} from 'ramda';
+import {reverse, compose, curryN, prop, has, sortBy, reject, isEmpty, not} from 'ramda';
 import root from 'root-path';
 import {l, e, onProp, addPropFn, addProp} from './util';
 import Promise from 'bluebird';
@@ -67,6 +67,8 @@ function writeIndexPage(posts){
 function getPosts(){
   return getFiles(root('_content/posts'), {match: /.*\.md/})
     .map(frontmatter) // => { body, attributes }
+    //skip posts which yet have no frontmatter/metadata
+    .filter(has('frontmatter'))
     //merge attributes to top level
     .map(p => { p.attributes.body = p.body; return p.attributes; })
     .map(addSlug)
