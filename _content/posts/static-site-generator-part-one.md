@@ -3,7 +3,7 @@ title: "Let's Code It: Static Site Generator"
 date: November 30, 2017
 hidden: true
 description: "Markdown in, HTML out... do we really need a framework for this? I Don't Think So!!"
-originalUrl: "https://strongloop.com/strongblog/an-introduction-to-javascript-es6-arrow-functions/"
+originalUrl: "https://strongloop.com/strongblog/lets-code-it-static-site-generator/"
 originalBlog: "StrongBlog"
 ---
 
