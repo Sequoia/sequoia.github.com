@@ -1,0 +1,343 @@
+<!DOCTYPE html><html lang="en"><head><title>Let's Code It: Static Site Generator with Rx.js &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="TODO"><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects">Projects</a></li><li><a href="/contact">Contact</a></li></ul></nav></header><aside class="announce row"><h2 class="three columns">News</h2><ul class="nine columns"><li><a href="https://strongloop.com/strongblog/interactive-debugging-with-node-js/">Blog Post on Debugging Node.js</a> on StrongBlog (Nov 9)</li></ul><span class="clearfix"></span></aside><section id="content"><h1>Let's Code It: Static Site Generator with Rx.js</h1><p><a href="https://strongloop.com/strongblog/lets-code-it-static-site-generator/">Last post</a>, we went over building a Static Site Generator (SSG) in Node.js. We used <a href="http://bluebirdjs.com/docs/why-promises.html">Promises</a> for flow control, and that worked for reading each Markdown input file, transforming it into HTML, and writing that to disk, once per file. What if we instead of running this build process once per input file, we want it to run once per input file <em>every time that input file is created or changed?</em></p>
+<p>If our goal is to map a sequence of events over time (file creation or modification) to one or more operations (building Markdown to HTML and writing to disk), it&#39;s very likely <a href="http://reactivex.io/rxjs/manual/overview.html#observable"><strong>Observables</strong></a> are a good fit! In this blog post, we&#39;ll look at how to use Observables and <a href="http://reactivex.io/rxjs/manual/overview.html#introduction">RX.js</a> to create a SSG with <strong>built-in, incremental watch rebuilds</strong>, and with <strong>with multiple output streams</strong> (individual posts and blog index page).</p>
+<p>This post loosely follows the demo project <a href="https://github.com/Sequoia/rx-static-blog-example/blob/master/index.js">here</a>, so if you prefer to look at all the code at once (or run it) you can do so. </p>
+<h2 id="what-is-rx-js">What is RX.js</h2>
+<p>Observables can be confusing so reading <a href="https://gist.github.com/staltz/868e7e9bc2a7b8c1f754">a more detailed intro</a> is advisable. Here I&#39;ll give a simplified explanation of Observables that is inadequate to understand them fully, but will hopefully be enough for this blog post!</p>
+<p>As alluded to, Observables are a tool for modeling and working with events over time. One way to conceptualize Observables if you are familiar with Promises is to think of an Observable as a Promise that can emit multiple values. A Promise has the following &quot;things it can do:&quot;</p>
+<ol>
+<li>Emit an error (and settle the Promise)</li>
+<li>Emit a value (and settle the Promise)</li>
+</ol>
+<p>The things an Observable can do are:</p>
+<ol>
+<li>Emit an error (like <code>reject</code>)</li>
+<li>Emit a value</li>
+<li>Emit a &quot;complete&quot; notification</li>
+</ol>
+<p>The key difference is that that emitting a value and &quot;settling&quot; (called &quot;completing&quot; in RX.js Observables) are split into separate actions in Observables, and because emitting a value does not &quot;complete&quot; an Observable, it can be done over and over.</p>
+<p>To illustrate this comparison further, with code, let us imagine a new utility method for constructing Promises called <code>Promise.create</code>. It behaves the same as the Promise constructor, but the signature of its function argument is slightly different.</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">// Promise constructor</span>
+<span class="hljs-keyword">const</span> p1 = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">settle</span>(<span class="hljs-params">resolve, reject</span>)</span>{
+  <span class="hljs-keyword">if</span>(foo){ resolve(value); }
+  <span class="hljs-keyword">else</span>{ reject(<span class="hljs-string">'Error!'</span>); } 
+});
+
+p1.then(<span class="hljs-built_in">console</span>.log);
+
+<span class="hljs-comment">// Promise.create (imaginary API)</span>
+<span class="hljs-keyword">const</span> p2 = <span class="hljs-built_in">Promise</span>.create(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">settle</span>(<span class="hljs-params">settler</span>)</span>{
+  <span class="hljs-keyword">if</span>(foo){ settler.resolve(value); }
+  <span class="hljs-keyword">else</span>{ settler.reject(<span class="hljs-string">'Error!'</span>); } 
+});
+
+p2.then(<span class="hljs-built_in">console</span>.log);
+</code></pre>
+<p>As you can see, <code>Promise.create</code> takes a <code>settle</code> function which receives an <strong>object</strong> with <code>resolve</code> and <code>reject</code> methods, rather than separate <code>resolve</code> and <code>reject</code> functions. From here it is a short step to <code>Rx.Observable.create</code>:</p>
+<pre><code class="hljs lang-js"><span class="hljs-keyword">const</span> o = Rx.Observable.create(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">subscribe</span>(</span>subscriber) {
+  <span class="hljs-keyword">try</span>{
+    <span class="hljs-keyword">while</span>(foo = getNextFoo()){
+      subscriber.<span class="hljs-keyword">next</span>(foo);   // emit <span class="hljs-keyword">next</span> value 
+    }
+    subscriber.complete();    // emit <span class="hljs-string">"complete"</span>
+  }
+  <span class="hljs-keyword">catch</span>(e){
+    subscriber.<span class="hljs-built_in">error</span>(e);      // emit <span class="hljs-string">"error"</span>
+  }
+});
+</code></pre>
+<p>When you want to use the results of a Promise, you attach a function via <code>.then</code>. With an Observable, when you wish to use the results to produce side effects, you attach an &quot;Observer&quot; via <code>.subscribe</code>:</p>
+<pre><code class="hljs lang-js">myPromise.then(<span class="hljs-function"><span class="hljs-params">foo</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'foo is %s'</span>, foo))
+ .catch(<span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> <span class="hljs-built_in">console</span>.error(e));
+
+myObservable.subscribe({
+  <span class="hljs-attr">next</span>: <span class="hljs-function"><span class="hljs-params">foo</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'next foo is %s'</span>, foo),
+  <span class="hljs-attr">error</span>: <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> <span class="hljs-built_in">console</span>.error(e),
+  <span class="hljs-attr">complete</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'All done! No more foo.'</span>)
+})
+</code></pre>
+<h3 id="observers-and-subscribers">Observers and Subscribers</h3>
+<p>In the style of programming with Observables that RX.js allows, tasks are often conceptualized as being composed of two parts: Observables (inputs), and Subscriptions or side effects (outputs). Side effects describe what you want to ultimately <em>do</em> with the values from an observable.</p>
+<p>If you describe your goals as side effects, you can work backward to figure out what sort of Observables you need to create to provide the values those side effects need. For example, if you wish a counter to be incremented each time a button is clicked, &quot;increment the counter&quot; is the side effect, and you need an Observable of button clicks for that increment function to &quot;subscribe&quot; to.</p>
+<p>For our static site generator, we have the following high-level goals:</p>
+<ol>
+<li>Write to disk an updated HTML version of each post:<ol>
+<li>When the post input file is created</li>
+<li>When the post input file is changed and it results in different output</li>
+</ol>
+</li>
+<li>Write to disk an updated blog index page:<ol>
+<li>When we start our script</li>
+<li>Each time a post&#39;s metadata (title, description, etc.) is changed</li>
+</ol>
+</li>
+</ol>
+<p>The Observables we can map to each of these goals are:</p>
+<ol>
+<li><code>parsedAndRenderedPosts$</code>: emits post output each time a post is created or changed. Subscribe to this and write the new post contents to disk on each emit.</li>
+<li><code>latestPostMetadata$</code>: emits a collection of the latest metadata when the script starts or the metadata for a post changes. Subscribe to this and write the rendered index page to disk on each emit.</li>
+</ol>
+<p>Each of these two Observables will be composed of or created as a result of other Observables. As we build these up, we&#39;ll learn about different methods Rx.js has for creating and transforming Observables. Let&#39;s begin!</p>
+<h2 id="goal-1-write-posts">Goal 1: Write Posts</h2>
+<p>We know each of our Observables should emit based on file changes and additions, so we&#39;ll start by creating an Observable of file changes and additions called <code>changesAndAdditions$</code>. The <a href="https://github.com/paulmillr/chokidar"><code>chokidar</code></a> module can be used to create an event emitter that emits <code>change</code> and <code>add</code> events on filesystem changes, so let&#39;s start there:</p>
+<pre><code class="hljs lang-js"><span class="hljs-attribute">const chokidar</span> = require(<span class="hljs-string">'chokidar'</span>);
+<span class="hljs-attribute">const dirWatcher</span> = chokidar.watch(<span class="hljs-string">'./_posts/*.md'</span>);
+</code></pre>
+<p>We want to create Observables of file changes &amp; additions so we can manipulate &amp; combine them with Rx.js. Rx.js provides a utility method to create an Observable from <code>EventEmitter</code> by event name. We are interested in the <code>add</code> event and the <code>change</code> events, so let&#39;s use <code>fromEvent</code> to create Observables of them:</p>
+<pre><code class="hljs lang-js">const Rx = <span class="hljs-keyword">require</span>(<span class="hljs-string">'rxjs'</span>);
+<span class="hljs-regexp">//</span> <span class="hljs-symbol">note:</span> <span class="hljs-string">`add`</span> is emitted <span class="hljs-keyword">for</span> each file on startup, <span class="hljs-keyword">when</span> chokidar first scans the directory
+const newFiles$     = Rx.Observable.fromEvent(dirWatcher, <span class="hljs-string">'add'</span>);
+const changedFiles$ = Rx.Observable.fromEvent(dirWatcher, <span class="hljs-string">'change'</span>);
+</code></pre>
+<p>Now <code>newFiles$</code> will emit a new value (a filename) when <code>dirWatcher</code> emits an <code>add</code> event, and <code>changedFiles$</code> behaves similarly with <code>change</code> events. We can create an observable of both of these events by using <code>.merge</code>.</p>
+<pre><code class="hljs lang-js">const changesAndAdditions<span class="hljs-variable">$ </span>= newFiles<span class="hljs-variable">$.</span>merge(changedFiles<span class="hljs-variable">$)</span>;
+</code></pre>
+<h3 id="mapping-filename-to-file-contents">Mapping Filename to File Contents</h3>
+<p>To get the file contents, we can <code>.map</code> the name of the file to the contents of that file by using a function that reads files. But reading a file (typically) an asynchronous operation. If we were using Promises, we might write a function that takes a filename and returns a Promise that will emit the file contents. Similarly, using Observables, we use a function that takes a filename and returns an Observable that will emit the file&#39;s contents.</p>
+<p>Just as <a href="http://bluebirdjs.com/docs/api/promise.promisify.html"><code>Promise.promisify</code></a> will convert a callback based function to one that returns a Promise, <a href="reactivex.io/rxjs/class/es6/Observable.js~Observable.html#static-method-bindNodeCallback"><code>Rx.Observable.bindNodeCallback</code></a> does converts a callback based function to one that returns an Observable:</p>
+<pre><code class="hljs lang-js"><span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
+<span class="hljs-keyword">const</span> readFileAsObservable = Rx.Observable.bindNodeCallback(fs.readFile);
+
+<span class="hljs-keyword">const</span> fileContents$ = changesAndAdditions$
+  .map(readFileAsObservable) <span class="hljs-comment">// map filename observable of file contents</span>
+  .mergeAll();               <span class="hljs-comment">// Unwrap Observable&lt;"file contents"&gt; to get "file contents"</span>
+
+fileContents$
+  .subscribe(<span class="hljs-function"><span class="hljs-params">content</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(content)); <span class="hljs-comment">// log contents of each file</span>
+</code></pre>
+<p>Now we&#39;ll log the contents of each file as it is created or changed. Let&#39;s take a closer look at our use of <code>.mergeAll</code>: <code>readFileAsObservable</code> is a function that takes a <code>String</code> (filename) as input and returns an <code>Observable&lt;String&gt;</code> (an observable of the &quot;file contents&quot; string).</p>
+<p>This means that by mapping <code>changesAndAdditions$</code> over <code>readFileAsObservable</code>, we took an <code>Observable&lt;String&gt;</code> (an observable of strings, namely, file names) and converted each <code>String</code> value to a new <code>Observable&lt;String&gt;</code>. This means we have <code>Observable&lt;Observable&lt;String&gt;&gt;</code>: an Observable of Observables of Strings.</p>
+<p>We don&#39;t actually want an <em>Observable</em> of file contents, we want <strong>filename in, file contents out</strong>. For this reason we use <code>.mergeAll</code> to &quot;unwrap&quot; the file contents strings from the inner Observables as they are emitted. If you are confused by this, don&#39;t worry: it is in fact confusing! For now it&#39;s only important to understand that <code>.mergeAll</code> converts <code>Observable&lt;Observable&lt;String&gt;&gt;</code>to <code>Observable&lt;String&gt;</code>, so we can process the string (in this case file contents).</p>
+<h3 id="emitting-only-when-contents-is-changed">Emitting Only When Contents is Changed</h3>
+<p>When our script starts, <code>newFiles$</code> will emit each filename once when <code>chokidar</code> first scans our <code>_posts</code> directory, and this will be merged into <code>changesAndAdditions$</code>. While editing a post in your text editor, each time you &quot;save&quot; the Markdown file, <code>changedFiles$</code> will emit the filename, <em>regardless of whether the contents of the file actually changed</em>. If you hit <code>^S</code> ten times in a row, <code>changesAndAdditions$</code> will emit that filename 10 times and we&#39;ll read the file 10 times.</p>
+<p>If the file contents hasn&#39;t changed, we don&#39;t want to send it down the pipe to be parsed, templated, and written as an updated HTML file-- we only want to do this latter processing (right now just <code>console.log(contents</code>)) if the contents are actually different from the last contents that were emitted. Luckily, Rx.js has a method for this built in: <code>.distinctUntilChanged</code> will emit a value one time, but will not emit again until the value changes. That means if a file is saved 10 times with the same contents, it will emit the file contents the first time and drop the rest.</p>
+<pre><code class="hljs lang-js"><span class="hljs-keyword">const</span> latestFileContents$ = fileContents$.distinctUntilChanged();
+
+latestFileContents$.subscribe(<span class="hljs-function"><span class="hljs-params">content</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(content));
+</code></pre>
+<p>Now we&#39;ll only see file contents logged if it&#39;s different from the last contents that were emitted. There&#39;s a logic problem here, however. Consider the following scenario:</p>
+<ol>
+<li>Save <code>foo.md</code><ol>
+<li><code>changesAndAdditions$</code> emits &quot;foo.md&quot;</li>
+<li><code>fileContents$</code> emits &quot;contents of foo.md&quot;</li>
+<li>last value (<code>null</code>) <strong>is distinct</strong> from &quot;contents of foo.md&quot;</li>
+<li><em>last value updated to &quot;contents of foo.md&quot;</em></li>
+<li><code>latestFileContents$</code> emits &quot;contents of foo.md&quot;</li>
+</ol>
+</li>
+<li>Save <code>bar.md</code><ol>
+<li><code>changesAndAdditions$</code> emits &quot;bar.md&quot;</li>
+<li><code>fileContents$</code> emits &quot;contents of BAR.md&quot;</li>
+<li>last value (&quot;contents of foo.md&quot;) <strong>is distinct</strong> from &quot;contents of BAR.md&quot;</li>
+<li><em>last value updated to &quot;contents of BAR.md&quot;</em></li>
+<li><code>latestFileContents$</code> emits &quot;contents of BAR.md&quot;</li>
+</ol>
+</li>
+<li>Save <code>foo.md</code> again<ol>
+<li><code>changesAndAdditions$</code> emits &quot;foo.md&quot;</li>
+<li><code>fileContents$</code> emits &quot;contents of foo.md&quot;</li>
+<li>last value (&quot;contents of BAR.md&quot;) <strong>is distinct</strong> from &quot;contents of foo.md&quot;</li>
+<li><em>last value updated to &quot;contents of foo.md&quot;</em></li>
+<li><code>latestFileContents$</code> emits &quot;contents of foo.md&quot;</li>
+</ol>
+</li>
+</ol>
+<p>As you can see, the contents of the two files never changes, but the <code>latestFileContents$</code> considers it &quot;changed&quot; <em>because it&#39;s different from the last value, which was from the other file</em>. The solution is to create an observable of file contents that is distinct until changed for <em>each file</em>, so the new contents of <code>foo.md</code> are compared to the last contents of <code>foo.md</code>, regardless of whether <code>bar.md</code> was changed since then. This is a bit more complicated than merging the <code>newFiles$</code> and <code>changedFiles$</code> Observables, but it&#39;s doable!</p>
+<p>Because we want one observable of file changes <em>per file</em>, we must perform the &quot;read file &amp; see if it changed&quot; <em>per file</em>, not on a merged stream of all files. The plan of attack is as follows: For each <code>add</code> event (new file created or read on startup)...</p>
+<ol>
+<li>Create an Observable of <code>change</code> events for <em>this file only</em></li>
+<li>Start that Observable by emitting the filename once (for the <code>add</code> event)</li>
+<li>Map the filename to an Observable of the file contents (as above)</li>
+<li>Use <code>.mergeAll</code> to unwrap Observable from step 3</li>
+<li>Emit contents <em>only if it&#39;s distinct from the last contents</em></li>
+</ol>
+<pre><code class="hljs lang-js"><span class="hljs-comment">// for each added file...  </span>
+<span class="hljs-keyword">const</span> latestFileContents$ = newFiles$.map(<span class="hljs-function"><span class="hljs-params">addedName</span> =&gt;</span> {
+
+  <span class="hljs-comment">// 1. create Observable of file changes...</span>
+  <span class="hljs-keyword">const</span> singleFileChangesAndAdditions$ = changedFiles$
+  <span class="hljs-comment">// ...only taking those for THIS file</span>
+    .filter(<span class="hljs-function"><span class="hljs-params">changedName</span> =&gt;</span> changedName === addedName)
+  <span class="hljs-comment">// 2. emit filename once to start (on "add")</span>
+    .startWith(addedName);
+
+  <span class="hljs-keyword">const</span> singleFileLatestContents$ = singleFileChangesAndAdditions$
+  <span class="hljs-comment">// 3. map the filename to an observable of the file contents</span>
+    .map(<span class="hljs-function"><span class="hljs-params">filename</span> =&gt;</span> readFileAsObservable(filename, <span class="hljs-string">'utf-8'</span>))
+  <span class="hljs-comment">// 4. Merge the Observable&lt;Observable&lt;file contents&gt;&gt; to Observable&lt;file contents&gt;</span>
+    .mergeAll()
+  <span class="hljs-comment">// 5. don't emit unless the file contents actually changed</span>
+    .distinctUntilChanged();
+
+  <span class="hljs-comment">// 6. return an observable of changes per added filename </span>
+  <span class="hljs-keyword">return</span> singleFileLatestContents$;
+
+})
+.mergeAll(); <span class="hljs-comment">//unwrap per-file Observable of changes</span>
+</code></pre>
+<p>We&#39;re using <code>.mergeAll</code> twice because we&#39;re mapping strings to Observables twice:</p>
+<ol>
+<li>filename <strong>string</strong> from <code>changedFiles$</code> <strong>mapped to an observable</strong> of file contents in step 4</li>
+<li>filename <strong>string</strong> from <code>newFiles$</code> <strong>mapped to an observable</strong> returned in step 6</li>
+</ol>
+<p>Because we go <code>Observable&lt;String&gt;</code> to <code>Observable&lt;Observable&lt;String&gt;&gt;</code> twice, we have to reverse the process with <code>.mergeAll</code> twice.</p>
+<p>Since we have one <code>singleFileChangesAndAdditions$</code> observable <em>per file added</em>, we are able to perform the &quot;map filename to contents and compare with last value&quot; check <em>per file</em>. <code>latestFileContents$</code> can still be consumed as it was before.</p>
+<h3 id="templating-and-writing-html-to-disk">Templating and Writing HTML to Disk</h3>
+<p>That was a lot, but it&#39;s the bulk of the Rx.js logic for our &quot;write blog posts&quot; goal. Now that we have an Observable that emits the contents of our Markdown blog posts each time they change, we can map that over our frontmatter, markdown parsing, template, and write-to-disk functions much as we did before with Promises. We&#39;ll start by creating a few utility functions as before:</p>
+<pre><code class="hljs lang-js"><span class="hljs-keyword">const</span> md = <span class="hljs-built_in">require</span>(<span class="hljs-string">'markdown-it'</span>)();
+<span class="hljs-keyword">const</span> frontmatter = <span class="hljs-built_in">require</span>(<span class="hljs-string">'frontmatter'</span>);
+<span class="hljs-keyword">const</span> pug = <span class="hljs-built_in">require</span>(<span class="hljs-string">'pug'</span>);
+
+<span class="hljs-keyword">const</span> writeFileAsObservable = Rx.Observable.bindNodeCallback(fs.writeFile);
+<span class="hljs-keyword">const</span> renderPost = pug.compileFile(<span class="hljs-string">`<span class="hljs-subst">${__dirname}</span>/templates/post.pug`</span>);
+
+<span class="hljs-comment">// IN:  { content, data : { title, description, ...} }</span>
+<span class="hljs-comment">// OUT: { content, title, description, ... }</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">flattenPost</span>(<span class="hljs-params">post</span>)</span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Object</span>.assign({}, post.data, { <span class="hljs-attr">content</span> : post.content });
+}
+
+<span class="hljs-comment">// parse markdown to HTML then send the whole post object to the template function</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">markdownAndTemplate</span>(<span class="hljs-params">post</span>)</span>{
+  post.body = md.render(post.content);
+  post.rendered = renderPost(post);   <span class="hljs-comment">//send `post` to pug render function for post template</span>
+  <span class="hljs-keyword">return</span> post;
+}
+
+<span class="hljs-comment">// take post object with:</span>
+<span class="hljs-comment">// 1. `slug` (e.g. "four-es6-tips") to build file name and</span>
+<span class="hljs-comment">// 2. `rendered` contents: the finished HTML for the post</span>
+<span class="hljs-comment">// write this to disk &amp; output error or success message</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">writePost</span>(<span class="hljs-params">post</span>)</span>{
+  <span class="hljs-keyword">var</span> outfile = path.join(__dirname, <span class="hljs-string">'out'</span>, <span class="hljs-string">`<span class="hljs-subst">${post.slug}</span>.html`</span>);
+  writeFileAsObservable(outfile, post.rendered)
+    .subscribe({
+      <span class="hljs-attr">next</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'wrote '</span> + outfile),
+      <span class="hljs-attr">error</span>: <span class="hljs-built_in">console</span>.error
+    });
+}
+</code></pre>
+<p><em>NB: see <a href="https://strongloop.com/strongblog/lets-code-it-static-site-generator/">the previous post</a> for details on <code>frontmatter</code>, <code>md.render</code>, etc.</em></p>
+<p>We use our Observable utility functions to string them together:</p>
+<pre><code class="hljs lang-js">latestFileContents$
+  .<span class="hljs-built_in">map</span>(frontmatter)        <span class="hljs-comment">// trim &amp; parse frontmatter</span>
+  .<span class="hljs-built_in">map</span>(flattenPost)        <span class="hljs-comment">// format the post for Pug templating</span>
+  .<span class="hljs-built_in">map</span>(markdownAndTemplate)<span class="hljs-comment">// render markdown &amp; render template</span>
+  .subscribe(writePost);
+</code></pre>
+<p>Now we have a working, Rx.js version of our Static Site Generator that does the same as it did with Promises, but with built-in file watch and rebuild!</p>
+<p><img src="/img/rx-post-writer.gif" alt="animated gif illustrating running application live-updating output HTML on markdown edits"></p>
+<p>On to our next goal, the index page...</p>
+<h2 id="goal-2-write-index-page-with-latest-post-metadata">Goal 2: Write Index Page with Latest Post Metadata</h2>
+<p>Our index page template, <code>index.pug</code>:</p>
+<pre><code class="hljs lang-jade"><span class="hljs-selector-tag">html</span>
+  head
+    title Welcome to my blog!
+  <span class="hljs-selector-tag">body</span>
+    <span class="hljs-selector-tag">h1</span> Blog Posts:
+
+    <span class="hljs-comment">//- Output h2 with link &amp; paragraph tag with description</span>
+    <span class="hljs-keyword">for</span> post <span class="hljs-keyword">in</span> posts
+      <span class="hljs-selector-tag">h2</span>: <span class="hljs-selector-tag">a</span>.title(href=<span class="hljs-string">'/'</span> + post<span class="hljs-selector-class">.slug</span> + <span class="hljs-string">'.html'</span>)= post<span class="hljs-selector-class">.title</span>
+      p= post.description
+</code></pre>
+<p>The data our template expects must be structured thus:</p>
+<pre><code class="hljs lang-js">{
+  <span class="hljs-string">posts :</span> [
+    { <span class="hljs-string">title:</span><span class="hljs-string">"Intro To Rx.js"</span>, <span class="hljs-string">slug:</span> <span class="hljs-string">"intro-to-rx-js"</span>, <span class="hljs-string">description:</span> <span class="hljs-string">"..."</span>},
+    { <span class="hljs-string">title:</span><span class="hljs-string">"Post Two"</span>, <span class="hljs-string">slug:</span> <span class="hljs-string">"post-2"</span>, <span class="hljs-string">description:</span> <span class="hljs-string">"..."</span>},
+    <span class="hljs-comment">//...</span>
+  ]
+}
+</code></pre>
+<h3 id="an-observable-of-post-metadata">An Observable of Post Metadata</h3>
+<p>Earlier, we mapped the <code>latestFileContents$</code> over the <code>frontmatter</code> function. We need to use that Observable for our index page as well, so let&#39;s modify our code from above to capture that Observable and set it aside:</p>
+<pre><code class="hljs lang-js"><span class="hljs-keyword">const</span> postsAndMetadata$ = latestFileContents$
+  .<span class="hljs-built_in">map</span>(frontmatter);
+
+postsAndMetadata$ <span class="hljs-comment">//same as before:</span>
+  .<span class="hljs-built_in">map</span>(flattenPost)
+  .<span class="hljs-built_in">map</span>(markdownAndTemplate)
+  .subscribe(writePost);
+</code></pre>
+<p>The <code>frontmatter</code> function returns an object with <code>data</code> and <code>contents</code> keys, but we only need the value of <code>data</code> for our index page template so we&#39;ll <a href="http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html#instance-method-pluck"><code>pluck</code></a> that property from the object:</p>
+<pre><code class="hljs lang-js">const metadata<span class="hljs-variable">$ </span>= postsAndMetadata<span class="hljs-variable">$
+</span>  .pluck(<span class="hljs-string">'data'</span>);
+</code></pre>
+<p>At this point we have an Observable that emits latest metadata for a file when that file is created or saved. We need to transform our Observable (&quot;collection over time&quot;) to an array (&quot;collection over space&quot;). Rx.js&#39;s has a <code>reduce</code> method that can do this, but it waits for an Observable to &quot;complete&quot; before emitting one final &quot;reduced&quot; value, and our file-watching <code>$metadata</code> Observable never &quot;completes.&quot;</p>
+<p>We need a way to aggregate values into an accumulator like <code>reduce</code> does, but that emits the new accumulator value on each iteration so we don&#39;t have to wait for the &quot;complete&quot; that will never come. Rx.js has a method called <a href="http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html#instance-method-scan"><code>.scan</code></a> that does just this:</p>
+<pre><code class="hljs lang-js"><span class="hljs-keyword">const</span> metadataMap$ = metadata$
+  .scan(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(acc, post)</span></span>{
+    acc[post.slug] = post;
+    <span class="hljs-keyword">return</span> acc;
+  }, {});
+</code></pre>
+<p>By making the <code>slug</code> the keys in the <code>acc</code> object, there will be only one property per post. When we first start our script, we&#39;ll get a post object from <code>$metadata</code> with the slug <code>post-2</code> and add it to the accumulator as <code>acc[&#39;post-2&#39;]</code>.</p>
+<p>When post two is updated and saved, its metadata will be sent to <code>.scan</code> again, but it won&#39;t add a new key to <code>acc</code>: it will <em>overwrite</em> the existing <code>acc[&#39;post-2&#39;]</code>. In this way, <code>metadataMap$</code> will emit an object containing the latest metadata for <em>all posts</em>, with <em>one key per post</em>. The output will look thus:</p>
+<pre><code class="hljs lang-js">{
+  <span class="hljs-string">'intro-to-rx-js'</span> : { title, description, slug },
+  <span class="hljs-string">'post-2'</span> : { title, description, slug }
+}
+</code></pre>
+<h3 id="transforming-the-data-for-pug-">Transforming the Data for Pug.</h3>
+<p>We now have an object with an entry for each post, but this does not match the format we outlined above (<code>{ posts : [ post, post, post ] }</code>). In the next two steps we can transform the object into an array and then insert it into a wrapper object:</p>
+<pre><code class="hljs lang-js"><span class="hljs-keyword">const</span> indexTemplateData$ = metadataMap$
+  .map(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getValuesAsArray</span>(<span class="hljs-params">postsObject</span>)</span>{ <span class="hljs-comment">// (or Object.keys in ES2017)</span>
+    <span class="hljs-comment">// IN: { 'slug' : postObj, 'slug2' : postObj2, ... }</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">Object</span>.keys(postsObject)
+      .reduce(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">acc, key</span>)</span>{
+        acc.push(postsObject[key]);
+        <span class="hljs-keyword">return</span> acc;
+      }, []);
+    <span class="hljs-comment">// OUT: [postObj, postObj2, ...]</span>
+  })
+  .map(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">formatForTemplate</span>(<span class="hljs-params">postsArray</span>)</span>{
+    <span class="hljs-keyword">return</span> {
+      <span class="hljs-attr">posts</span> : postsArray
+    };
+  })
+</code></pre>
+<h3 id="reducing-repetition-and-noise">Reducing Repetition and Noise</h3>
+<p>Now we get have an Observable that emits the latest listing of post metadata, formatted for the <code>index.pug</code> template, on each add or change event. This isn&#39;t quite what we want, however, for two reasons.</p>
+<p>First: in the course of editing a post, most of your changes will be to content, not to the metadata. Content changes don&#39;t affect the index page, so we want to drop any emissions from <code>indexTemplateData$</code> where the data is the same as the previous emission. This is another case where <code>.distinctUntilChanged</code> comes in handy:</p>
+<pre><code class="hljs lang-js"><span class="hljs-keyword">const</span> distinctITD$ = indexTemplateData$
+  .distinctUntilChanged(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">compareStringified</span>(<span class="hljs-params">last, current</span>)</span>{
+    <span class="hljs-comment">//true = NOT distinct; false = DISTINCT </span>
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">JSON</span>.stringify(last) === <span class="hljs-built_in">JSON</span>.stringify(current);
+  });
+</code></pre>
+<p>We pass a comparator function to <code>distinctUntilChanged</code> this time because <code>formatForTemplate</code> (above) returns a newly created object each time-- the new object it emits will <em>always</em> be &quot;distinct&quot; from the last one, even if their contents are identical. We stringify the <code>last</code> and <code>current</code> objects in order to compare their <em>contents</em> and emit only when they differ.</p>
+<p>Second: when we first start our script, it reads each file and emits its contents once. This means that while files are initially being read, <code>indexTemplateData$</code> will emit a bunch of incomplete objects consisting of whatever posts have been read so far. If we have 4 posts, emissions will look like this:</p>
+<ol>
+<li><code>{ post1 }</code></li>
+<li><code>{ post1, post2 }</code></li>
+<li><code>{ post1, post2, post3 }</code> </li>
+<li><code>{ post1, post2, post3, post4 }</code></li>
+</ol>
+<p><strong>Only the last version</strong> represents a collection of metadata from all pages; the others can be ignored. In order to get around the flood of events on <code>indexTemplateData$</code> on startup, we&#39;ll use <a href="http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html#instance-method-debounceTime"><code>.debounceTime</code></a>, which will wait until an Observable stops emitting for a fixed amount of time before emitting the latest result:</p>
+<pre><code class="hljs lang-js">const distinctDebouncedITD<span class="hljs-symbol">$</span> = distinctITD<span class="hljs-symbol">$</span>
+  .debounceTime(<span class="hljs-number">100</span>); <span class="hljs-comment">// wait 'til the observable STOPS emitting for 100ms, then emit latest</span>
+</code></pre>
+<p>This probably isn&#39;t <em>the</em> most graceful solution, but when <code>indexTemplateData$</code> gets its initial flood of emissions, <code>distinctDebouncedITD$</code> will only emit once, once it&#39;s finished.</p>
+<h3 id="writing-the-index-page">Writing the Index Page</h3>
+<p>The only thing left is to pass the values from <code>distinctDebouncedITD$</code> to the template rendering function then write the results to disk:</p>
+<pre><code class="hljs lang-js"><span class="hljs-keyword">const</span> renderIndex = pug.compileFile(<span class="hljs-string">`<span class="hljs-subst">${__dirname}</span>/templates/index.pug`</span>);
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">writeIndexPage</span>(<span class="hljs-params">indexPage</span>)</span>{
+  <span class="hljs-keyword">var</span> outfile = path.join(__dirname, <span class="hljs-string">'out'</span>, <span class="hljs-string">'index.html'</span>);
+  writeFileAsObservable(outfile, indexPage)
+    .subscribe({
+      <span class="hljs-attr">next</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'wrote '</span> + outfile),
+      <span class="hljs-attr">error</span>: <span class="hljs-built_in">console</span>.error
+    });
+}
+
+postsListing$
+  .map(renderIndex)
+  .subscribe(writeIndexPage);
+</code></pre>
+<p>Now <code>index.html</code> will be rewritten when we edit a post, but <em>only if the metadata changed</em>: </p>
+<p><img src="/img/rx-index-writer.gif" alt="animated gif illustrating running application live-updating index page but only with metadata changes"></p>
+<p>That&#39;s it!</p>
+<h2 id="conclusion-and-next-steps">Conclusion and Next Steps</h2>
+<p>If you made it this far, congratulations! My goal was not to explain each Rx.js concept introduced herein in detail, but to walk through the process of using Rx.js to complete a real-world programming task. I hope this was useful! If this post has piqued your interest, I highly recommend running the full version of the code this post was based on, which you can find in <a href="https://github.com/Sequoia/rx-static-blog-example">this repository</a>. As always, if you have any questions or Rx.js corrections please feel free to <a href="https://twitter.com/_sequoia">contact me</a>. Happy coding!</p>
+<footer><span class="byline">Published December 15, 2016</span><span class="linkback">Originally published at <a href="TODO">StrongBlog</a></span></footer></section><footer>&copy; Sequoia McDowell 2016</footer></div></body></html>

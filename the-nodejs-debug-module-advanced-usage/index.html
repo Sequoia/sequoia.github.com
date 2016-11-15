@@ -106,9 +106,9 @@ debugInit(<span class="hljs-string">'configuring application...'</span>);
 }</span>);</span>
 </code></pre>
 <p>But it wasn&#39;t firing when I expected, so I added a debug function call to see what was going on:</p>
-<pre><code class="hljs lang-js">map.on(<span class="hljs-string">'editable:created'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(e)</span></span>{
+<pre><code class="hljs lang-js">map.on(<span class="hljs-string">'editable:created'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span></span>(e){
   eventDebug(<span class="hljs-string">'editable:created'</span>, e.layer);
-  newFeatureAdded(e.layer);
+  <span class="hljs-keyword">new</span><span class="hljs-type">FeatureAdded</span>(e.layer);
 });
 </code></pre>
 <p>This revealed that the event was fired when the user clicked &quot;create new feature&quot;, <em>not</em> when they placed the feature on the map. I fixed the issue, but I found myself adding debug function calls all over the place, with almost every event handler function:</p>
