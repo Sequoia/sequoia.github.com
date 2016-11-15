@@ -3,13 +3,13 @@
 <p>So, we have our bookmarklet written, linted, minified, and committed to the <code>master</code> branch, and we&#39;re ready to publish it to the web.  From a high level, this means <strong>checking out</strong> the <code>gh-pages</code> branch, <strong>rebasing</strong> onto master to get the latest javascript, <strong>interpolating</strong> the javascript file into the template, <strong>committing</strong> the new <code>index.html</code> file, and <strong>checking out</strong> <code>master</code> again to wrap up.  Switching branches and rebasing are peculiar tasks for a build, but it can be done (even if it shouldn&#39;t be) and the following Gruntfile snippet explains how.</p>
 <h2 id="prerequisites-and-setup">Prerequisites and setup</h2>
 <p>We need a minified javascript file:</p>
-<pre><code class="hljs lang-javascript">(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{<span class="hljs-keyword">var</span> a=<span class="hljs-string">"@"</span>,b=<span class="hljs-string">"_"</span>,c=<span class="hljs-string">"sequoia"</span>;alert(a+b+c);})();
+<pre><code class="hljs lang-javascript">(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{<span class="hljs-keyword">var</span> a=<span class="hljs-string">"@"</span>,b=<span class="hljs-string">"_"</span>,c=<span class="hljs-string">"sequoia"</span>;alert(a+b+c);})();
 </code></pre>
 <p>And a template file to serve the bookmarklet:</p>
-<pre><code class="hljs lang-html"><span class="xml"><span class="hljs-comment">&lt;!-- filename: index.html.tpl --&gt;</span>
+<pre><code class="hljs lang-html"><span class="hljs-comment">&lt;!-- filename: index.html.tpl --&gt;</span>
 <span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span> 
-    <span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">'javascript:void(&lt;%=</span></span></span><span class="ruby"> marklet </span><span class="xml"><span class="hljs-tag"><span class="hljs-string">%&gt;);'</span>&gt;</span>Bookmarklet!<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
-<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span></span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">'javascript:void(&lt;%= marklet %&gt;);'</span>&gt;</span>Bookmarklet!<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
 </code></pre>
 <h2 id="the-gruntfile">The Gruntfile</h2>
 <p><em>abridged; see full version <a href="https://github.com/Sequoia/afonigizer/blob/master/Gruntfile.js">here</a></em></p>

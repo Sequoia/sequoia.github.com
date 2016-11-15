@@ -69,15 +69,15 @@
 <h2 id="2-parse-frontmatter">2. Parse Frontmatter</h2>
 <p>In a traditional CMS, the <code>Posts</code> table holds not just the contents of the post, but also metadata such as its title, author, publish date, and perhaps a permanent URL or canonical link. This metadata is used both on the post page or in a page <code>&lt;title&gt;</code> and on index pages. In our flat-file system, all the information for a post must be contained in the markdown file for that post. We&#39;ll use the same solution for this challenge that is used by Jekyll and others: YAML frontmatter.</p>
 <p><a href="http://yaml.org/">YAML</a> is a data serialization format that&#39;s basically like JSON but lighter weight. It looks like this:</p>
-<pre><code class="hljs lang-yaml"><span class="hljs-attribute">key</span>: value
-<span class="hljs-attribute">author</span>: Sequoia McDowell
-<span class="hljs-attribute">Object</span>:
-  <span class="hljs-attribute">key</span>: <span class="hljs-attribute">http</span>:<span class="hljs-comment">//example.com</span>
-  <span class="hljs-attribute">wikipedia</span>: <span class="hljs-attribute">https</span>:<span class="hljs-comment">//wikipedia.com</span>
-<span class="hljs-attribute">List</span>:
-  - First
-  - Second
-  - Third
+<pre><code class="hljs lang-yaml"><span class="hljs-attr">key:</span> value
+<span class="hljs-attr">author:</span> Sequoia McDowell
+<span class="hljs-attr">Object:</span>
+<span class="hljs-attr">  key:</span> http://example.com
+<span class="hljs-attr">  wikipedia:</span> https://wikipedia.com
+<span class="hljs-attr">List:</span>
+<span class="hljs-bullet">  -</span> First
+<span class="hljs-bullet">  -</span> Second
+<span class="hljs-bullet">  -</span> Third
 </code></pre>
 <p>&quot;<a href="https://jekyllrb.com/docs/frontmatter/">Frontmatter</a>&quot; on Markdown files is an idea borrowed from Jekyll. Very simply, it means putting a block of YAML at the top of your markdown file containing metadata for that file. The SSG separates this YAML data from the rest of the file (the contents) and parses it for use in generating the page for that post. With YAML frontmatter, our post looks like this:</p>
 <pre><code class="hljs lang-md">---
@@ -129,11 +129,11 @@ getFiles(<span class="hljs-string">'_posts'</span>, {<span class="hljs-attr">mat
 <p>Now our markdown is HTML!</p>
 <h2 id="4-highlight-code-snippets">4. Highlight Code Snippets</h2>
 <p>We&#39;re writing a technical blog, so we want to display code with syntax highlighting. If I write:</p>
-<pre><code class="hljs lang-markdown">Here<span class="hljs-symbol">'s</span> a *pretty good* <span class="hljs-keyword">function</span>:
+<pre><code class="hljs lang-markdown">Here's a <span class="hljs-emphasis">*pretty good*</span> function:
 
-```js
-<span class="hljs-keyword">function</span> <span class="hljs-title">greet</span>(name){
-  <span class="hljs-keyword">return</span> <span class="hljs-type">"Hello</span> <span class="hljs-string">" + name;
+<span class="hljs-code">```js
+function greet(name){
+  return "Hello " + name;
 }
 ```</span>
 </code></pre>
@@ -162,17 +162,17 @@ getFiles(<span class="hljs-string">'_posts'</span>, {<span class="hljs-attr">mat
 <p>Now we can used fenced code blocks as above. We&#39;re almost there!</p>
 <h2 id="5-templating">5. Templating</h2>
 <p>There are plenty of templating libraries in JavaScript; we&#39;ll use <a href="https://pugjs.org/api/getting-started.html">Pug</a> (formerly &quot;Jade&quot;) here. First we&#39;ll create a template for posts:</p>
-<pre><code class="hljs lang-jade"><span class="hljs-comment">//templates/post.pug</span>
-- <span class="hljs-keyword">var</span> thisYear = (<span class="hljs-keyword">new</span> Date()).getFullYear();
-<span class="hljs-function">doctype html
-<span class="hljs-title">html</span>(<span class="hljs-params">lang=<span class="hljs-string">'en'</span></span>)
+<pre><code class="hljs lang-jade">//templates/post.pug
+- var thisYear = (new Date()).getFullYear();
+doctype html
+html(lang=&#39;en&#39;)
   head
-    title</span>= <span class="hljs-function">title
-    <span class="hljs-title">meta</span>(<span class="hljs-params">name=<span class="hljs-string">'description'</span>, content=description</span>)
+    title= title
+    meta(name=&#39;description&#39;, content=description)
   body
-    h1</span>= title 
+    h1= title 
     | !{content}
-    footer &amp;copy; <span class="hljs-meta">#{author} #{thisYear}</span>
+    footer &amp;copy; #{author} #{thisYear}
 </code></pre>
 <p>We won&#39;t dwell on the Pug syntax, but the important bits here are where are our data is injected into the template.  Note in particular:</p>
 <ol>
@@ -192,23 +192,23 @@ getFiles(<span class="hljs-string">'_posts'</span>, {<span class="hljs-attr">mat
 }
 </code></pre>
 <p>We&#39;ll also need a function to flatten the post object for Pug&#39;s consumption</p>
-<pre><code class="hljs lang-js">// <span class="hljs-keyword">IN</span>:  { content, data : { <span class="hljs-type">title</span>, description, ...} }
-// <span class="hljs-keyword">OUT</span>: { content, title, description, ... }
-<span class="hljs-keyword">function</span> <span class="hljs-title">flattenPost</span>(post){
-  <span class="hljs-keyword">return</span> <span class="hljs-type">Object.assign({},</span> post.data, { content : <span class="hljs-type">post.content</span> });
+<pre><code class="hljs lang-js"><span class="hljs-comment">// IN:  { content, data : { title, description, ...} }</span>
+<span class="hljs-comment">// OUT: { content, title, description, ... }</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">flattenPost</span>(<span class="hljs-params">post</span>)</span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Object</span>.assign({}, post.data, { <span class="hljs-attr">content</span> : post.content });
 }
 </code></pre>
 <p>Now we can plug these two new functions into our pipeline</p>
 <pre><code class="hljs lang-js"><span class="hljs-comment">//...</span>
 
-getFiles(<span class="hljs-string">'_posts'</span>, {<span class="hljs-keyword">match</span>: /.*\.md/})
-  .<span class="hljs-built_in">map</span>(frontmatter) <span class="hljs-comment">// =&gt; { data, content:md }</span>
-  .<span class="hljs-built_in">map</span>(convertMarkdown) <span class="hljs-comment">// =&gt; { data, content:html }</span>
-  .<span class="hljs-built_in">map</span>(flattenPost)
-  .<span class="hljs-built_in">map</span>(renderPost)
-  .<span class="hljs-built_in">map</span>(post =&gt; {
-    console.<span class="hljs-keyword">log</span>(post.content); <span class="hljs-comment">// '&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;&lt;title&gt; ...'</span>
-    console.<span class="hljs-keyword">log</span>(post.path);    <span class="hljs-comment">// 'the-hotdog-dilemma.html'</span>
+getFiles(<span class="hljs-string">'_posts'</span>, {<span class="hljs-attr">match</span>: <span class="hljs-regexp">/.*\.md/</span>})
+  .map(frontmatter) <span class="hljs-comment">// =&gt; { data, content:md }</span>
+  .map(convertMarkdown) <span class="hljs-comment">// =&gt; { data, content:html }</span>
+  .map(flattenPost)
+  .map(renderPost)
+  .map(<span class="hljs-function"><span class="hljs-params">post</span> =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(post.content); <span class="hljs-comment">// '&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;&lt;title&gt; ...'</span>
+    <span class="hljs-built_in">console</span>.log(post.path);    <span class="hljs-comment">// 'the-hotdog-dilemma.html'</span>
   })
 </code></pre>
 <p>Finally we&#39;re at the last step: writing posts to an output directory.</p>
@@ -231,18 +231,18 @@ getFiles(<span class="hljs-string">'_posts'</span>, {<span class="hljs-keyword">
 
 <span class="hljs-comment">//Read posts &amp; generate HTML:</span>
 
-getFiles(<span class="hljs-string">'_posts'</span>, {match: /.*\.md/}) <span class="hljs-comment">// 1</span>
+getFiles(<span class="hljs-string">'_posts'</span>, {<span class="hljs-attr">match</span>: <span class="hljs-regexp">/.*\.md/</span>}) <span class="hljs-comment">// 1</span>
   .map(frontmatter)                   <span class="hljs-comment">// 2</span>
   .map(convertMarkdown)               <span class="hljs-comment">// 3</span>
   .map(flattenPost)
   .map(renderPost)                    <span class="hljs-comment">// 4, 5</span>
   .map(writeHTML)                     <span class="hljs-comment">// 6</span>
-  .<span class="hljs-keyword">then</span>(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span>{</span>
-    console.<span class="hljs-built_in">log</span>(<span class="hljs-string">'done!'</span>);
+  .then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'done!'</span>);
   })
-  .<span class="hljs-keyword">catch</span>(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(e)</span>{</span>
-    console.<span class="hljs-built_in">error</span>(<span class="hljs-string">'there was an error!'</span>)
-    console.<span class="hljs-built_in">error</span>(e)
+  .catch(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>)</span>{
+    <span class="hljs-built_in">console</span>.error(<span class="hljs-string">'there was an error!'</span>)
+    <span class="hljs-built_in">console</span>.error(e)
   });
 </code></pre>
 <p>That&#39;s it!</p>

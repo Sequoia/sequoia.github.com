@@ -10,11 +10,11 @@
 <p>The ability to change the value of a variable at runtime allows you to play through different scenarios without hardcoding values or restarting your application. Conditional breakpoints let you halt execution upon encountering an error to figure out how you got there. Even if using a debugger isn&#39;t part of your everyday process, knowing how they work adds a powerful tool to your toolbox!</p>
 <h2 id="setting-up">Setting Up</h2>
 <p>We&#39;ll be using <a href="https://code.visualstudio.com">VS Code</a>, which has built-in Node.js debugging capabilities. In order to run code in the context of the VS Code debugger, we must first make VS Code aware of our Node.js project. For this demo I&#39;ll create a simple express app with <a href="https://expressjs.com/en/starter/generator.html"><code>express-generator</code></a>, you can follow along by running the commands below:</p>
-<pre><code class="hljs lang-nohighlight"><span class="hljs-variable">$ </span>npm install express-generator -g
-<span class="hljs-variable">$ </span>express test-app   <span class="hljs-comment"># create an application</span>
-<span class="hljs-variable">$ </span>cd test-app        
-<span class="hljs-variable">$ </span>npm install
-<span class="hljs-variable">$ </span>code .             <span class="hljs-comment"># start VS Code</span>
+<pre><code class="hljs lang-nohighlight">$ npm install express-generator -g
+$ express test-app   # create an application
+$ cd test-app        
+$ npm install
+$ code .             # start VS Code
 </code></pre>
 <p>With VS Code open, we need to open the Debug pane by clicking the <a href="https://code.visualstudio.com/images/debugging_debugicon.png">bug icon</a> in left sidebar menu. With the debug pane open, you may note that the gear icon at the top of the pane has a red dot over it. This is because there are currently no &quot;launch configurations:&quot; configuration objects which tell VS Code how to run your application. Click the gear icon, select &quot;Node.js,&quot; and VS Code will generate a boilerplate launch configuration for you.</p>
 <p>There are two ways to attach the VS Code debugger to your application:</p>
@@ -25,12 +25,12 @@
 <p>The first approach normally requires some setup (which is beyond the scope of this post but you can <a href="https://code.visualstudio.com/docs/editor/debugging#_launch-configurations">read about here</a>), but because our <code>package.json</code> has a <code>run</code> script, VS Code automagically created a launch configuration based on that script. That means we should be able to simply click the green &quot;run&quot; button to start our application in the debugger.</p>
 <p><img src="/img/launch_button.png" alt="debug &quot;launch&quot; button with mouse pointer over it"></p>
 <p>If all went well, you should see a new toolbar at the top of your screen with pause and play buttons (among others). The Debug Console at the bottom of the screen should tell you what command it ran &amp; what output that command yielded, something like this:</p>
-<pre><code class="hljs lang-nohighlight"><span class="hljs-keyword">node</span> <span class="hljs-title">--debug-brk</span>=<span class="hljs-number">18764</span> --nolazy bin/www 
-Debugger listening on port <span class="hljs-number">18764</span>
+<pre><code class="hljs lang-nohighlight">node --debug-brk=18764 --nolazy bin/www 
+Debugger listening on port 18764
 </code></pre>
 <p>When we load <a href="http://localhost:3000">http://localhost:3000</a> in a browser, we can see the Express log messages in this same Debug Console:</p>
-<pre><code class="hljs lang-nohighlight">GET / <span class="hljs-number">304</span> <span class="hljs-number">327.916</span> <span class="hljs-keyword">ms</span> <span class="hljs-title">- -
-GET</span> /stylesheets/style.css <span class="hljs-number">304</span> <span class="hljs-number">1.313</span> <span class="hljs-keyword">ms</span> <span class="hljs-title">- -</span>
+<pre><code class="hljs lang-nohighlight">GET / 304 327.916 ms - -
+GET /stylesheets/style.css 304 1.313 ms - -
 </code></pre>
 <p>Now that we have the code running with the VS Code debugger attached, let&#39;s set some breakpoints and start stepping through our code!   </p>
 <h2 id="breakpoints">Breakpoints</h2>
@@ -52,8 +52,8 @@ GET</span> /stylesheets/style.css <span class="hljs-number">304</span> <span cla
 <p>In this pane, you can examine and change variables in the running application. Let&#39;s edit our homepage route in <code>routes/index.js</code> to make the title a variable:</p>
 <pre><code class="hljs lang-js"><span class="hljs-comment">/* GET home page. */</span>
 <span class="hljs-keyword">var</span> ourTitle = <span class="hljs-string">'Express'</span>;
-router.get(<span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> </span>{
-  res.render(<span class="hljs-string">'index'</span>, { title: ourTitle });
+router.get(<span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res, next</span>) </span>{
+  res.render(<span class="hljs-string">'index'</span>, { <span class="hljs-attr">title</span>: ourTitle });
 });
 </code></pre>
 <p>After editing our code, we&#39;ll need to <strong>restart the debugger</strong> so it picks up the new code. We can do this by clicking the green circle/arrow button in the top toolbar. After editing a file with a breakpoint already set and restarting the debugger (as we just did), you&#39;ll also want to check that your breakpoints are still in the right spot. VS Code does a pretty good job of keeping the breakpoint on the line you expect but it&#39;s not perfect.</p>
@@ -73,9 +73,9 @@ router.get(<span class="hljs-string">'/'</span>, <span class="hljs-function"><sp
 </ul>
 <h2 id="watch-expressions">Watch Expressions</h2>
 <p>While stepping through your code, there may be certain values you always want to see the current value of. A &quot;watch expression&quot; will run (in the current scope!) at each paused/stopped position in your code &amp; display the return value of that expression. Hover over the Watch Expression pane and click the plus to add an expression. I want to see the user agent header of each request as well as <code>ourTitle</code>, whether the response object has had headers sent, and the value of <code>1 + 1</code>, just for good measure, so I&#39;ll add the following watch expressions:</p>
-<pre><code class="hljs lang-nohighlight"><span class="hljs-selector-tag">req</span><span class="hljs-selector-class">.headers</span><span class="hljs-selector-attr">['user-agent']</span>
-<span class="hljs-selector-tag">ourTitle</span>
-<span class="hljs-selector-tag">res</span><span class="hljs-selector-class">._headerSent</span>
+<pre><code class="hljs lang-nohighlight">req.headers[&#39;user-agent&#39;]
+ourTitle
+res._headerSent
 1 + 1
 </code></pre>
 <p>When I refresh the browser the debugger pauses once again at the breakpoint on line 7 and we can see the result of each expression:</p>
