@@ -22,10 +22,10 @@
 <h2 id="typings">Typings</h2>
 <p>Typings is a &quot;Typescript Definition Manager&quot;, which means it helps us install the Typescript Defintions (or &quot;Declarations&quot;) we need for our IDE to know what the JavaScript APIs we&#39;re working with look like. We&#39;ll look more at the format of Typescript Declarations later, for now we&#39;ll stay focused on our goal of getting our IDE to recognize Node.js core APIs.</p>
 <p>Install <code>typings</code> thus:</p>
-<pre><code class="hljs lang-nohighlight">$ <span class="hljs-built_in">npm</span> install --<span class="hljs-built_in">global</span> typings
+<pre><code class="hljs lang-nohighlight">$ npm install --global typings
 </code></pre>
 <p>With <code>typings</code> installed on our system, we can add those Node.js core API type definitions to our project. From the project root:</p>
-<pre><code class="hljs lang-nohighlight">$ typings install dt~<span class="hljs-keyword">node</span> <span class="hljs-title">--global</span> --save
+<pre><code class="hljs lang-nohighlight">$ typings install dt~node --global --save
 </code></pre>
 <p>Let&#39;s break that command down:</p>
 <ol>
@@ -40,12 +40,12 @@
 <p><img src="/img/typehint-node-core-apis.gif" alt="demo of looking up core node.js api properties &amp; methods using external node.js typescript definition file"></p>
 <p>It works! We now get &quot;Intellisense&quot; code hints for all Node.js core APIs. Our project won&#39;t just be using Node core APIs though, we&#39;ll be pulling in some utility libraries, starting with <a href="https://lodash.com/">lodash</a>. <code>typings search lodash</code> reveals that there&#39;s a lodash definition from the <code>npm</code> source as well as <code>global</code> and <code>dt</code>. We want the <code>npm</code> version since we&#39;ll be consuming lodash as <strong>module</strong> included with <code>require(&#39;lodash&#39;)</code> and it will <em>not</em> be globally available.</p>
 <pre><code class="hljs lang-nohighlight">$ typings install --save npm~lodash
-lodash@<span class="hljs-number">4.0</span><span class="hljs-number">.0</span>
+lodash@4.0.0
 └── (No dependencies)
 
 $ npm install --save lodash
-typehinting-demo@<span class="hljs-number">1.0</span><span class="hljs-number">.0</span> /Users/sequoia/projects/typehinting-demo
-└── lodash@<span class="hljs-number">4.13</span><span class="hljs-number">.1</span>
+typehinting-demo@1.0.0 /Users/sequoia/projects/typehinting-demo
+└── lodash@4.13.1
 </code></pre>
 <p>Now we can require lodash and get coding:</p>
 <p><img src="/img/typehint-lodash.gif" alt="example demonstrating property and method lookup of a application dependency (lodash)"></p>
@@ -58,52 +58,52 @@ typehinting-demo@<span class="hljs-number">1.0</span><span class="hljs-number">.
 <li>The syntax is very similar to <a href="http://docs.oracle.com/javase/8/docs/technotes/tools/windows/javadoc.html">Javadoc</a> and for the most part fairly intuitive.</li>
 </ol>
 <p>There are <a href="http://usejsdoc.org/index.html#block-tags">many annotations</a> JSDoc supports, but you can get a long way just by learning a few, namely <code>@param</code> and <code>@return</code>. Let&#39;s annotate this simple function, which checks whether one string contains another string:</p>
-<pre><code class="hljs lang-js"><span class="hljs-keyword">function</span> <span class="hljs-title">contains</span>(input, search){
-  <span class="hljs-keyword">return</span> <span class="hljs-type">RegExp(search).test(input)</span>;
+<pre><code class="hljs lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">contains</span>(<span class="hljs-params">input, search</span>)</span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">RegExp</span>(search).test(input);
 }
 
-contains(<span class="hljs-symbol">'Everybody</span> loves types. It <span class="hljs-keyword">is</span> known.', <span class="hljs-symbol">'known</span>'); // =&gt; <span class="hljs-literal">true</span>
+contains(<span class="hljs-string">'Everybody loves types. It is known.'</span>, <span class="hljs-string">'known'</span>); <span class="hljs-comment">// =&gt; true</span>
 </code></pre>
 <p>With a function like this, it&#39;s easy to forget the order of arguments or their types. Annotations to the rescue!</p>
-<pre><code class="hljs lang-js">/**
- * Checks whether one <span class="hljs-built_in">string</span> <span class="hljs-keyword">contains</span> another <span class="hljs-built_in">string</span>
+<pre><code class="hljs lang-js"><span class="hljs-comment">/**
+ * Checks whether one string contains another string
  * 
- * @param {<span class="hljs-built_in">string</span>} input   - <span class="hljs-keyword">the</span> <span class="hljs-built_in">string</span> <span class="hljs-keyword">to</span> test <span class="hljs-keyword">against</span>
- * @param {<span class="hljs-built_in">string</span>} search  - <span class="hljs-keyword">the</span> <span class="hljs-built_in">string</span> <span class="hljs-keyword">to</span> search <span class="hljs-keyword">for</span>
+ * @param {string} input   - the string to test against
+ * @param {string} search  - the string to search for
  * 
- * @<span class="hljs-literal">return</span> {<span class="hljs-built_in">boolean</span>}
- */
-function <span class="hljs-keyword">contains</span>(input, search){
-<span class="hljs-built_in">  return</span> RegExp(search).test(input);
+ * @return {boolean}
+ */</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">contains</span>(<span class="hljs-params">input, search</span>)</span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">RegExp</span>(search).test(input);
 }
 </code></pre>
 <p>While writing this, we realized it that this function actually works with regular expresssions as the <code>search</code> parameter as well as strings. Let&#39;s update that line to make clear that both types are supported:</p>
-<pre><code class="hljs lang-javascript">/** 
+<pre><code class="hljs lang-javascript"><span class="hljs-comment">/** 
  * ...
- * @param {<span class="hljs-built_in">string</span>|RegExp} <span class="hljs-built_in">search</span>  - the <span class="hljs-built_in">string</span> <span class="hljs-built_in">or</span> pattern <span class="hljs-keyword">to</span> <span class="hljs-built_in">search</span> <span class="hljs-keyword">for</span>
+ * @param {string|RegExp} search  - the string or pattern to search for
  * ...
- */
+ */</span>
 </code></pre>
 <p>We can even add examples &amp; links to documentation to help the next programmer out:</p>
-<pre><code class="hljs lang-javascript">/**
+<pre><code class="hljs lang-javascript"><span class="hljs-comment">/**
  * Checks whether one string contains another string
  * 
- * <span class="hljs-variable">@example</span> 
+ * @example 
  * ```
- * contains(<span class="hljs-string">"hello world"</span>, <span class="hljs-string">"world"</span>); <span class="hljs-regexp">//</span> <span class="hljs-keyword">true</span>
+ * contains("hello world", "world"); // true
  * ```
- * <span class="hljs-variable">@example</span>
+ * @example
  * ```
- * const exp = <span class="hljs-regexp">/l{2}/</span>;
- * contains(<span class="hljs-string">"hello world"</span>, exp);  <span class="hljs-regexp">//</span> <span class="hljs-keyword">true</span>
+ * const exp = /l{2}/;
+ * contains("hello world", exp);  // true
  * ```
- * <span class="hljs-variable">@see</span> <span class="hljs-symbol">https:</span>/<span class="hljs-regexp">/developer.mozilla.org/en</span>-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
+ * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
  * 
- * <span class="hljs-variable">@param</span> {string} input          - the string to test against
- * <span class="hljs-variable">@param</span> {string|RegExp} search  - the string <span class="hljs-keyword">or</span> pattern to search <span class="hljs-keyword">for</span>
+ * @param {string} input          - the string to test against
+ * @param {string|RegExp} search  - the string or pattern to search for
  * 
- * <span class="hljs-variable">@return</span> {boolean}
- *<span class="hljs-regexp">/</span>
+ * @return {boolean}
+ */</span>
 </code></pre>
 <p>...and away we go!</p>
 <p><img src="/img/typehint-jsdoc.gif" alt="example of hinting function parameters &amp; types based on JSDoc comments"></p>
@@ -173,8 +173,8 @@ function <span class="hljs-keyword">contains</span>(input, search){
 <li>Exports <code>MapConfig</code> so we can reference it from outside the file.</li>
 </ol>
 <p>VS Code will load the file automatically because it&#39;s in our project, and we&#39;ll use the <code>@type</code> annotation to mark our <code>conf</code> object as a <code>MapConfig</code> when we load it from disk:</p>
-<pre><code class="hljs lang-js">/** @<span class="hljs-keyword">type</span> {<span class="hljs-type">Demo</span>.<span class="hljs-type">MapConfig</span>} */
-<span class="hljs-title">const</span> conf = require('./config.js');
+<pre><code class="hljs lang-js"><span class="hljs-comment">/** @type {Demo.MapConfig} */</span>
+<span class="hljs-keyword">const</span> conf = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./config.js'</span>);
 </code></pre>
 <p>Now we can access properties of the configuration object &amp; get the same code-completion, type info, and documentation hints! Note how in the following gif, VS Code identifies not only that <code>conf.types</code> is an array, but when we call an <code>.filter</code> on it, knows that each element in the array is a <code>MapConfigFeature</code> type object:</p>
 <p><img src="/img/typehint-mapconfig.gif" alt="example demonstrating looking up properties on an object based on a local Typescript Definition"></p>

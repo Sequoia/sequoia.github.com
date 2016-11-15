@@ -2,7 +2,7 @@
 hidden: true
 title: "Let's Code It: Static Site Generator with Rx.js"
 date: December 15, 2016
-description: "TODO"
+description: "Watching a filesystem for changes and building an input (markdown) file to output (HTML) on each change? This sounds like a job for... Observables!"
 originalUrl: "TODO"
 originalBlog: "StrongBlog"
 ---

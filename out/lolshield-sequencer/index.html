@@ -48,9 +48,9 @@ The impetus for the project was as follows: I wanted to do an Arduino project an
 <li>Receive the state on the Arduino and draw it to the shield.</li>
 </ol>
 <p>That&#39;s a lot of steps!  On a lark, I tried writing some text directly to the USB device (<code>echo &quot;1&quot; &gt; /dev/ttyUSB0</code>) and what&#39;s this? It worked! It turns out the Linux kernel writes to the USB port at 9600 baud by default (I&#39;m not sure exactly where this default is set but it is set by U-Boot; see <code>man termios</code> for info on changing it). So I can cut step 3 and write directly from PHP to the USB port.  The initial PHP script, in its entirety:</p>
-<pre><code class="hljs lang-php"><span class="php"><span class="hljs-meta">&lt;?php</span>
+<pre><code class="hljs lang-php"><span class="hljs-meta">&lt;?php</span>
   file_put_contents(/dev/ttyUSB0 , $_POST[<span class="hljs-string">'frame'</span>]);
-<span class="hljs-meta">?&gt;</span></span>
+<span class="hljs-meta">?&gt;</span>
 </code></pre>
 <p>Much simpler!  I let people mess around with it and they did! I was very happy.
 <img src="/img/lss_hi.jpg" alt="Young man using the LSS in the browser with the Arduino shield updating in real time">
