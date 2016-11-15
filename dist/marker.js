@@ -17,8 +17,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _marked2.default.setOptions({
   sanitize: false,
   langPrefix: 'hljs lang-',
-  highlight: function highlight(code) {
-    return _highlight3.default.highlightAuto(code).value;
+  highlight: function highlight(code, lang) {
+    if (_highlight3.default.getLanguage(lang)) {
+      return _highlight3.default.highlight(lang, code).value;
+    } else {
+      console.warn('highlight.js: LANGUAGE NOT FOUND: ```%s', lang);
+      return code;
+    }
   }
 });
 
