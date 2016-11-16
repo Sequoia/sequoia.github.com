@@ -1,0 +1,6 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+  "markdown-checkbox.strikeThroughWhenChecked": true,
+  "editor.quickSuggestions": false,
+  "cSpell.enabled": true
+}
