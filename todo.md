@@ -9,8 +9,8 @@
 * [ ] borders?
 
 ## Blog posts to migrate
-* [ ] avoiding live coding
-* [ ] strongloop deep dive
+* [x] avoiding live coding
+* [x] strongloop deep dive
 
 # RX.js update
 

@@ -118,7 +118,7 @@ h2+p, h3+p{
 }
 
 li>p{
-	margin:0;
+	margin:.5em 0;
 }
 
 section.blog-posts{

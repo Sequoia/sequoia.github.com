@@ -1,0 +1,424 @@
+<!DOCTYPE html><html lang="en"><head><title>Migrating a Legacy System to a Modern API Framework &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="LoopBack makes it easy to develop greenfield APIs, but in real business environments, data isn’t always tidy &amp; cooperative. In this case study we'll see what it takes to migrate a complex legacy application to LoopBack."><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects">Projects</a></li><li><a href="/contact">Contact</a></li></ul></nav></header><aside class="announce row"><h2 class="three columns">News</h2><ul class="nine columns"><li><a href="https://strongloop.com/strongblog/interactive-debugging-with-node-js/">Blog Post on Debugging Node.js</a> on StrongBlog (Nov 9)</li></ul><span class="clearfix"></span></aside><section id="content"><h1>Migrating a Legacy System to a Modern API Framework</h1><p>We know LoopBack <a href="https://strongloop.com/strongblog/compare-express-restify-hapi-loopback/">makes it a breeze</a> to create APIs that expose <a href="https://strongloop.com/strongblog/getting-started-with-the-mysql-connector-for-loopback/">SQL</a> &amp; <a href="https://strongloop.com/strongblog/node-js-loopback-js-couchbase-connector/">NoSQL</a> databases (<a href="https://strongloop.com/strongblog/node-js-loopback-api-gateway-sample-applications/">among others</a>), but in real business environments, data isn’t always this tidy. As business systems develop over years, it’s not uncommon for information to be scattered across databases, flat files, or even third party servers outside of your control. Given a complex situation like this, is it still possible to build an API using LoopBack? Yes it is, and that’s just what we’ll do now!</p>
+<h2 id="background">Background</h2>
+<p>Al’s Appliances is a retail chain that specializes in ACME products. Al’s has a website where customers can order products, but getting replacement parts for products is more complicated.</p>
+<p>To wit:</p>
+<ol>
+<li>Customer calls Sales Rep with <strong>product name</strong>.</li>
+<li>Sales Rep looks up <strong>product number</strong> in the products database.</li>
+<li>Sales Rep uses <strong>product number</strong> to find the proper <strong>parts list</strong>, supplied by ACME.</li>
+<li>Customer asks about one or more <strong>parts</strong>.</li>
+<li>Sales Rep goes to ACME’s wholesaler portal and looks up <strong>price</strong> and <strong>availability</strong> of the parts, one by one.</li>
+</ol>
+<p>Yikes! Al’s IT team would like to build an interface to support the following workflow:</p>
+<ol>
+<li>Customer looks up product on website.</li>
+<li>Customer clicks to see list of associated parts with up-to-date price and availability info.</li>
+<li>Alternately, Customer can enter a part number and get up-to-date info for that part.</li>
+</ol>
+<p>Their team can build the web UI, but it’s up to us to tie the data together &amp; expose it via an API.</p>
+<h2 id="lay-of-the-land">Lay of the Land</h2>
+<p>We have the following assets to work with:</p>
+<ol>
+<li><strong>Products Database</strong>: a SQL database with a Product table listing name, description, and ID of each product.</li>
+<li><p><strong>Parts lists (<a href="https://en.wikipedia.org/wiki/Comma-separated_values#Example">CSVs</a>)</strong>: ACME delivers CSV files, named by product number &amp; containing a list of part names &amp; <a href="https://en.wikipedia.org/wiki/Stock_keeping_unit">SKUs</a>. For example:</p>
+<pre><code class="hljs lang-nohighlight">//mvwave_0332.csv//
+door handle,8c218
+rotator base,f74af
+rotator axel,15b4c
+...,...
+</code></pre>
+<p>These CSVs are the “single source of truth” for parts info and they’re sometimes updated or replaced. Business processes for other departments rely on them, so unfortunately we must do the same (we must use the CSVs, moving the data to a database is not an option).</p>
+</li>
+<li><p><strong>Parts API</strong>: We’re in luck: ACME exposes a rudimentary API to access part information, so we don’t have to <a href="https://en.wikipedia.org/wiki/Web_scraping">scrape the website!</a> Unfortunately, it’s very simple and only exposes one endpoint to look up a single part at a time:</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">//GET api.acme.com/parts/f74af</span>
+{
+  <span class="hljs-string">"name"</span>: <span class="hljs-string">"rotator base"</span>,
+  <span class="hljs-string">"sku"</span>: <span class="hljs-string">"f74af"</span>,
+  <span class="hljs-string">"qty_avail"</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-string">"price"</span>: <span class="hljs-string">"2.32"</span>
+}
+</code></pre>
+</li>
+</ol>
+<p>IT has requested an API that exposes the following endpoints:</p>
+<ol>
+<li><code>/v1/products</code> → Array of products</li>
+<li><code>/v1/products/{id}</code> → Object representing a single product</li>
+<li><code>/v1/products/{id}/parts</code> → Array of parts for a product</li>
+<li><code>/v1/parts/{sku}</code> → Object representing a single part</li>
+</ol>
+<h1 id="why-loopback-">Why LoopBack?</h1>
+<p>Given this nonstandard, somewhat complicated data architecture, why not build a 100% custom solution instead of using LoopBack, which best shows its strengths with more structured data? Using LoopBack here will require us to go “off the beaten path” a bit, but in return we get…</p>
+<ul>
+<li>easy extension of our application with any of the components in the LoopBack ecosystem</li>
+<li>API discovery and exploration tools</li>
+<li>powerful configuration management</li>
+<li>loose coupling to the current data sources</li>
+</ul>
+<p>That last point is important, as it will allow us to eventually replace the directory of CSVs with a database table, once the business is ready for this, without major rewrites. Plugging into the LoopBack ecosystem gives us access to ready solutions for auth, data transformation, logging, push notification, throttling etc. when our requirements grow or change. Broadly speaking we’ll be building a highly extensible, highly maintainable application that can serve as a foundation for future projects, and this is makes LoopBack a good choice.</p>
+<p>Setting Up
+To get started we’ll install <a href="https://www.npmjs.com/package/strongloop">Strongloop tools</a></p>
+<pre><code class="hljs lang-nohighlight">$ npm install -g strongloop
+</code></pre>
+<p>and <a href="https://docs.strongloop.com/display/public/LB/Application+generator">scaffold a new LoopBack application</a> in a new directory.</p>
+<pre><code class="hljs lang-nohighlight">$ slc loopback als-api
+</code></pre>
+<p>Now we can switch to the new <code>als-api</code> directory and generate our models. We’ll keep them server-only for now, we can easily change that later.</p>
+<pre><code class="hljs lang-nohighlight">$ cd als-api
+$ slc loopback:model
+? Enter the model name: Product
+? Select the data-source to attach Product to: db (memory)
+? Select model&#39;s base class PersistedModel
+? Expose Product via the REST API? Yes
+? Custom plural form (used to build REST URL): n
+? Common model or server only? server
+</code></pre>
+<p>Let’s add some Product properties now.</p>
+<pre><code class="hljs lang-nohighlight">? Property name: name
+invoke loopback:property
+? Property type: string
+? Required? Yes
+
+...etc...
+</code></pre>
+<p><em>NB: You can see a detailed example of this process <a href="https://docs.strongloop.com/display/public/LB/Create+new+models">here</a>.</em></p>
+<p>Once we finish this process, we have models for Product, Part, and PartsList, with corresponding <code>js</code> and <code>json</code> files in <code>server/models/</code>. The PartsList is a join model that connects a Product to its Parts. That model requires some custom code, so we’ll save that bit for last and start by wiring the Product and Part model to their datasources.</p>
+<h2 id="product">Product</h2>
+<p>Our generated <code>server/models/product.json</code>:</p>
+<pre><code class="hljs lang-js">{
+  <span class="hljs-string">"name"</span>: <span class="hljs-string">"Product"</span>,
+  <span class="hljs-string">"properties"</span>: {
+    <span class="hljs-string">"name"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
+      <span class="hljs-string">"required"</span>: <span class="hljs-literal">true</span>
+    }
+  },
+  <span class="hljs-string">"description"</span>: {
+    <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
+    <span class="hljs-string">"required"</span>: <span class="hljs-literal">true</span>
+  },
+  <span class="hljs-string">"id"</span>: {
+    <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
+    <span class="hljs-string">"required"</span>: <span class="hljs-literal">true</span>
+  }
+ },
+. . .
+}
+</code></pre>
+<p>The products are in a SQL database (SQLite for our example). There are three steps to connecting the model to its data:</p>
+<ol>
+<li><p><strong>Install the appropriate connector.</strong> Loopback has many data connectors but only the “in memory” database is bundled. The <a href="https://docs.strongloop.com/display/public/LB/Database+connectors">list of StrongLoop supported connectors</a> doesn’t include SQLLite, but the <a href="https://docs.strongloop.com/display/public/LB/Community+connectors">list of community connectors</a> indicates that we should install “loopback-connector-sqlite”:</p>
+<pre><code class="hljs lang-nohighlight">$ npm install --save loopback-connector-sqlite
+</code></pre>
+</li>
+<li><p><strong>Create a datasource using that connector.</strong> To create a sqlite datasource called “products,” we add the following to server/datasources.json:</p>
+<pre><code class="hljs lang-js">&quot;products&quot;: {
+  &quot;name&quot;: &quot;products&quot;,
+  &quot;connector&quot;: &quot;sqlite&quot;,
+  &quot;file_name&quot;: &quot;./localdbdata/
+  local_database.sqlite3&quot;,
+  &quot;debug&quot;: true
+}
+</code></pre>
+<p>In our local setup our sqlite database resides in ./localdbdata/ we can later add another configuration for the production environment.</p>
+</li>
+<li><p><strong>Connect the model to the datasource.</strong>
+<code>/server/modelconfig.json</code> manages this:</p>
+<pre><code class="hljs lang-js"><span class="hljs-string">"Product"</span>: {
+  <span class="hljs-string">"dataSource"</span>: <span class="hljs-string">"products"</span>,
+  <span class="hljs-string">"public"</span>: <span class="hljs-literal">true</span>
+},
+</code></pre>
+<p>There is an additional step for this particular connector, specifying which field is the primary key. We do this by adding <code>&quot;id&quot;: true</code> to a property in <code>/server/models/product.json</code>:</p>
+<pre><code class="hljs lang-js">. . .
+<span class="hljs-string">"properties"</span>: {
+  . . .
+  <span class="hljs-string">"id"</span>: {
+    <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
+    <span class="hljs-string">"id"</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-string">"required"</span>: <span class="hljs-literal">true</span>
+  }
+},
+. . .
+</code></pre>
+</li>
+</ol>
+<p>Before we start our server to see if this works, let’s update the server configuration to expose the API on <code>/v1/</code> rather than the default path (<code>/api/</code>) in <code>server/config.json</code>:</p>
+<pre><code class="hljs lang-js">. . .
+  <span class="hljs-string">"restApiRoot"</span>: <span class="hljs-string">"/v1"</span>,
+  <span class="hljs-string">"host"</span>: <span class="hljs-string">"0.0.0.0"</span>,
+. . .
+</code></pre>
+<p>The API will now be served from <code>/v1/</code> per IT’s specifications. Now we can start our server…</p>
+<pre><code class="hljs lang-nohighlight">$ npm start
+</code></pre>
+<p>and start querying products from <a href="http://localhost:3000/">http://localhost:3000/</a></p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">//GET /v1/products</span>
+[
+  {
+    <span class="hljs-string">"name"</span>: <span class="hljs-string">"Microwelle Deluxe"</span>,
+    <span class="hljs-string">"description"</span>: <span class="hljs-string">"The very best microwave money can buy"</span>,
+    <span class="hljs-string">"id"</span>: <span class="hljs-literal">null</span>
+  },
+  {
+    <span class="hljs-string">"name"</span>: <span class="hljs-string">"Microwelle Budget"</span>,
+    <span class="hljs-string">"description"</span>: <span class="hljs-string">"The most OK microwave money can buy"</span>,
+    <span class="hljs-string">"id"</span>: <span class="hljs-literal">null</span>
+  },
+. . .
+]
+</code></pre>
+<p>Uhoh! The <code>ids</code> are strings and <code>idInjection</code> makes LoopBack treat them as numbers. Let’s fix that in <code>server/models/product.json</code>:</p>
+<pre><code class="hljs lang-js">. . .
+  <span class="hljs-string">"idInjection"</span>: <span class="hljs-literal">false</span>,
+. . .
+</code></pre>
+<p>Now let’s try again:</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">//GET /v1/products</span>
+[
+  {
+    <span class="hljs-string">"name"</span>: <span class="hljs-string">"Microwelle Deluxe"</span>,
+    <span class="hljs-string">"description"</span>: <span class="hljs-string">"The very best microwave money can buy"</span>,
+    <span class="hljs-string">"id"</span>: <span class="hljs-string">"microwelle_010"</span>
+  },
+  {
+    <span class="hljs-string">"name"</span>: <span class="hljs-string">"Microwelle Budget"</span>,
+    <span class="hljs-string">"description"</span>: <span class="hljs-string">"The most OK microwave money can buy"</span>,
+    <span class="hljs-string">"id"</span>: <span class="hljs-string">"microwelle_022"</span>
+  },
+. . .
+]
+
+<span class="hljs-comment">//GET /v1/products/microwelle_010</span>
+{
+  <span class="hljs-string">"name"</span>: <span class="hljs-string">"Microwelle Deluxe"</span>,
+  <span class="hljs-string">"description"</span>: <span class="hljs-string">"The very best microwave money can buy"</span>,
+  <span class="hljs-string">"id"</span>: <span class="hljs-string">"microwelle_010"</span>
+}
+</code></pre>
+<p>That’s better! Our Products are now being served so Endpoints 1 (<code>/v1/products</code>) and 2 (<code>/v1/products/{id}</code>) are working. Now let’s configure our Parts datasource and set up Endpoint 4 (<code>/v1/parts/{sku}</code>).</p>
+<p>Part
+Our generated <code>server/models/part.json</code>:</p>
+<pre><code class="hljs lang-js">{
+  <span class="hljs-string">"name"</span>: <span class="hljs-string">"Part"</span>,
+  <span class="hljs-string">"properties"</span>: {
+    <span class="hljs-string">"sku"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
+      <span class="hljs-string">"required"</span>: <span class="hljs-literal">true</span>
+    },
+    <span class="hljs-string">"qty_avail"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>,
+      <span class="hljs-string">"required"</span>: <span class="hljs-literal">true</span>
+    },
+    <span class="hljs-string">"price"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>,
+      <span class="hljs-string">"required"</span>: <span class="hljs-literal">true</span>
+    },
+    <span class="hljs-string">"name"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
+      <span class="hljs-string">"required"</span>: <span class="hljs-literal">true</span>
+    }
+  }
+. . .
+}
+</code></pre>
+<p>We’ll need to follow the same three steps to connect the Parts model its datasource, a remote server this time.</p>
+<ol>
+<li><p><strong>Install connector</strong>:</p>
+<pre><code class="hljs lang-nohighlight">$ npm install --save loopback-connector-rest
+</code></pre>
+</li>
+<li><p><strong>Create Datasource</strong>: Because there’s no universal standard for what parameters REST endpoints take, how they take them (query, post data, or part of URL), or what sort of data they return, we must configure each method manually for a REST datasource.</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">//server/datasources.json:</span>
+. . .
+  <span class="hljs-string">"partsServer"</span>: {
+    <span class="hljs-string">"name"</span>: <span class="hljs-string">"partsServer"</span>,
+    <span class="hljs-string">"connector"</span>: <span class="hljs-string">"rest"</span>
+    <span class="hljs-string">"operations"</span>: [{
+      <span class="hljs-string">"template"</span>: {
+        <span class="hljs-string">"method"</span>: <span class="hljs-string">"GET"</span>,
+        <span class="hljs-string">"url"</span>: <span class="hljs-string">"http://api.acme.com/parts/{sku}"</span>,
+        <span class="hljs-string">"headers"</span>: {
+          <span class="hljs-string">"accepts"</span>: <span class="hljs-string">"application/json"</span>,
+          <span class="hljs-string">"contenttype"</span>: <span class="hljs-string">"application/json"</span>
+        }
+      },
+      <span class="hljs-string">"functions"</span>: {
+        <span class="hljs-string">"findById"</span>: [<span class="hljs-string">"sku"</span>]
+      }
+    }]
+  }
+. . .
+</code></pre>
+<p>This will create a method called <code>findById</code> on any model attached to this datasource. That method takes one parameter (sku) that will be plugged into the url template. Everything else here is default.</p>
+<p>We named the “operation” findById to conform to LoopBack convention. Because it has this name, LoopBack will know to exposed the method on /v1/parts/{id} .</p>
+</li>
+<li><p><strong>Connect the model to the datasource.</strong> <code>/server/modelconfig.json</code>:</p>
+<pre><code class="hljs lang-js">. . .
+  <span class="hljs-string">"Part"</span>: {
+    <span class="hljs-string">"dataSource"</span>: <span class="hljs-string">"partsServer"</span>,
+    <span class="hljs-string">"public"</span>: <span class="hljs-literal">true</span>
+  },
+. . .
+</code></pre>
+</li>
+</ol>
+<p>Let’s restart the server and try it out:</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">//GET /v1/parts/f74af</span>
+{
+  <span class="hljs-string">"name"</span>: <span class="hljs-string">"rotator base"</span>,
+  <span class="hljs-string">"sku"</span>: <span class="hljs-string">"f74af"</span>,
+  <span class="hljs-string">"qty_avail"</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-string">"price"</span>: <span class="hljs-string">"2.11"</span>
+}
+</code></pre>
+<p>Endpoint 4 (<code>/v1/parts/{sku}</code>) is now working! It’s just a passthrough to the ACME API right now, but this has advantages: we can set up logging, caching, etc., we don’t have to worry about <a href="https://remysharp.com/2011/04/21/getting-cors-working">CORS</a>, and if ACME makes a breaking API change, we can fix it in one place in our server code and clients are none the wiser.</p>
+<p>With the easy parts out of the way, it’s time to tackle our CSVs…</p>
+<h2 id="partslist">PartsList</h2>
+<p>Although the part lists CSVs contain product names, we’re relying on the remote server for this, so the CSVs are being used as simple many-to-many
+join tables. Many-to-many tables don’t generally need their own model, so why are we creating one in this case? There are two reasons:</p>
+<ol>
+<li>Rather than a normal join table filled with <code>product_id</code>, <code>sku</code> pairs, we have a bunch of files named like <code>{product_id}.csv</code> that contain lists of <code>sku</code>s. This will require custom join logic, and,</li>
+<li>We want to encapsulate this logic in one place so the Product and Part models are not polluted with CSV and file-reading concerns.</li>
+</ol>
+<p>If we stop using CSVs in the future we can delete this model and update the relationship configurations on Product, and that model can continue working without changes.</p>
+<p>We’re going to use a <a href="https://docs.strongloop.com/display/public/LB/HasManyThrough+relations">hasManyThrough</a> relationship to tie Products to their Parts, and because we’re not concerned with the part name in the PartsList, our <code>partslist.json</code> is does not specify any properties:</p>
+<pre><code class="hljs lang-js">{
+  <span class="hljs-string">"name"</span>: <span class="hljs-string">"PartsList"</span>,
+  <span class="hljs-string">"base"</span>: <span class="hljs-string">"PersistedModel"</span>,
+  <span class="hljs-string">"properties"</span>: {
+  },
+. . .
+}
+</code></pre>
+<p>We’re not exposing PartsLists directly via the API, just using them for Endpoint 3 (<code>/v1/products/{id}/parts</code>), so we’ll just set it up to support this relationship. This first step here is to add the relationship from Product to Part, which we can do using the relationship generator:</p>
+<pre><code class="hljs lang-nohighlight">$ slc loopback:relation
+? Select the model to create the relationship from: Product
+? Relation type: has many
+? Choose a model to create a relationship with: Part
+? Enter the property name for the relation: parts
+? Optionally enter a custom foreign key:
+? Require a through model? Yes
+? Choose a through model: PartsList
+</code></pre>
+<p>Now when we hit <code>/v1/products/thing_123/parts</code>, LoopBack will attempt to figure out what Parts are related to our Product by calling <code>find</code> on the join model, more or less like this:</p>
+<pre><code class="hljs lang-js">PartsList.find(
+  {
+    <span class="hljs-attr">where</span>: { <span class="hljs-attr">productId</span>: <span class="hljs-string">'thing_123'</span> },
+    <span class="hljs-attr">include</span>: <span class="hljs-string">'part'</span>,
+    <span class="hljs-attr">collect</span>: <span class="hljs-string">'part'</span>
+  },
+  {},
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">callback</span>(<span class="hljs-params">err, res</span>)</span>{ <span class="hljs-comment">/*...*/</span> }
+);
+</code></pre>
+<p>How will we make this work? We’ll definitely need to read CSVs from the filesystem, so let’s get that configuration out of the way.</p>
+<p>##Configuration</p>
+<p>Our PartsList CSVs exist in <code>/vol/NAS_2/shared/parts_lists</code> but of course we don’t wish to hardcode this path in our model. Instead, we’ll put it into a local config file where it can easily be overridden in other environments:</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">//server/config.local.json:</span>
+{
+  <span class="hljs-string">'partsListFilePath'</span> : <span class="hljs-string">'/vol/NAS_2/shared/parts_lists'</span>
+}
+</code></pre>
+<h2 id="overriding-partslist-find-">Overriding <code>PartsList.find</code></h2>
+<p>We know that when querying related models, LoopBack will call <code>find</code> on the “through” model (aka join model), so we’ll override <code>PartsList.find</code> and make it:</p>
+<ol>
+<li>read <code>thing_123.csv</code></li>
+<li>get the <code>sku</code>s</li>
+<li>call Part<code>.findOne</code> on each sku</li>
+<li>pass an array of Parts to the callback</li>
+</ol>
+<p>We’ll need to override the method in <code>server/models/partslist.js</code>. To override a data access method like this, we listen for the <code>attached</code> event to fire then overwrite the method on the model. We’ll be using two node modules to help: <a href="https://www.npmjs.com/package/async">async</a> to manage “wait for multiple async calls (calls to ACME API) to finish then call our <code>done</code> callback with the results,” and <a href="https://www.npmjs.com/package/csv-parse">csvparse</a> to parse our CSVs:</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">//server/model/partslist.js:</span>
+<span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
+<span class="hljs-keyword">var</span> <span class="hljs-keyword">async</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">'async'</span>);      <span class="hljs-comment">//npm install!</span>
+<span class="hljs-keyword">var</span> csvParse = <span class="hljs-built_in">require</span>(<span class="hljs-string">'csvparse'</span>);<span class="hljs-comment">//npm install!</span>
+<span class="hljs-keyword">var</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">PartsList</span>) </span>{
+  PartsList.on(<span class="hljs-string">'attached'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">app</span>)</span>{
+
+    PartsList.find = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+      <span class="hljs-comment">//variable arguments, filter always first callback always last</span>
+      <span class="hljs-keyword">var</span> filter = <span class="hljs-built_in">arguments</span>[<span class="hljs-number">0</span>];
+      <span class="hljs-keyword">var</span> done = <span class="hljs-built_in">arguments</span>[<span class="hljs-built_in">arguments</span>.length<span class="hljs-number">-1</span>];
+
+      <span class="hljs-comment">//0. build the filename</span>
+      <span class="hljs-keyword">var</span> filename = filter.where.productId + <span class="hljs-string">'.csv'</span>;
+      <span class="hljs-keyword">var</span> csvPath = path.join(app.get(<span class="hljs-string">'partsListFilePath'</span>),
+filename);
+      <span class="hljs-comment">//1. read the csv</span>
+      fs.readFile(csvPath, <span class="hljs-string">'utf-8'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getParts</span>(<span class="hljs-params">err, res</span>)</span>{
+        <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">return</span> done(err);
+
+        <span class="hljs-comment">//parse the csv contents</span>
+        csvParse(res, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, partlist</span>)</span>{
+          <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">return</span> done(err);
+
+          <span class="hljs-comment">//2. get the skus from ['part name', 'sku'] tuples</span>
+          <span class="hljs-keyword">var</span> skus = partlist.map(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getSku</span>(<span class="hljs-params">partTuple</span>)</span>{
+            <span class="hljs-keyword">return</span> partTuple[<span class="hljs-number">1</span>];
+          });
+
+          <span class="hljs-comment">//3. call Part.findOne on each sku</span>
+          <span class="hljs-keyword">async</span>.map(skus, app.models.Part.findById, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err,
+parts</span>)</span>{
+            <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">return</span> done(err);
+
+            <span class="hljs-comment">//4. pass an array of Parts to the callback</span>
+            done(<span class="hljs-literal">null</span>, parts);
+          });
+        });
+      });
+    };
+  });
+};
+</code></pre>
+<p>This could certainly be broken up into named functions for easier reading, but it works and for our purposes that’s good enough! One issue, however, is that the repeated calls to <code>Part.findById</code> is a “code smell:” we have Part logic (get all Parts by list of <code>sku</code>s) in the PartsList model. It would be much better to pass our array of <code>sku</code>s to a Part method and let it handle the details. Let’s change step (3) above so it looks like this:</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">//3. pass our list of SKUs and `done` callback to Part.getAll</span>
+app.models.Part.getAll(skus, done);
+
+<span class="hljs-comment">//4. pass an array of Parts to the callback</span>
+<span class="hljs-comment">//   ^-- this happens in Part.getAll</span>
+</code></pre>
+<p>Now we add this new method to Part:</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">//server/model/part.js:</span>
+<span class="hljs-keyword">var</span> <span class="hljs-keyword">async</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">'async'</span>);
+
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">Part</span>) </span>{
+  Part.getAll = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">skus, cb</span>) </span>{
+    <span class="hljs-keyword">async</span>.map(skus, Part.findById, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err, parts</span>)</span>{
+      <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">return</span> cb(err);
+      cb(<span class="hljs-literal">null</span>, parts);
+    });
+  }
+};
+</code></pre>
+<p>Now our Parts logic is nicely encapsulated in the Part model &amp; the logic in our PartsList model is a bit simpler. Let’s give our last API endpoint a try:</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">//GET /v1/Products/mvwave_0332/parts</span>
+[
+  {
+    <span class="hljs-string">"name"</span>: <span class="hljs-string">"door handle"</span>,
+    <span class="hljs-string">"sku"</span>: <span class="hljs-string">"8c218"</span>,
+    <span class="hljs-string">"qty_avail"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-string">"price"</span>: <span class="hljs-string">"1.22"</span>
+  },
+  {
+    <span class="hljs-string">"name"</span>: <span class="hljs-string">"rotator base"</span>,
+    <span class="hljs-string">"sku"</span>: <span class="hljs-string">"f74af"</span>,
+    <span class="hljs-string">"qty_avail"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-string">"price"</span>: <span class="hljs-string">"8.35"</span>
+  },
+  {
+    <span class="hljs-string">"name"</span>: <span class="hljs-string">"rotator axel"</span>,
+    <span class="hljs-string">"sku"</span>: <span class="hljs-string">"15b4c"</span>,
+    <span class="hljs-string">"qty_avail"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-string">"price"</span>: <span class="hljs-string">"2.32"</span>
+  }
+]
+</code></pre>
+<p>It works!</p>
+<h2 id="next-steps">Next Steps</h2>
+<p>We managed to tie together a motley collection of data sources, represent them with LoopBack models, and expose them on an API built to IT’s specifications. That’s a good stopping point for now. Obvious next steps would be to <a href="https://docs.strongloop.com/display/public/LB/Exposing+models+over+REST#ExposingmodelsoverREST-HidingmethodsandRESTendpoints">disable unused methods</a> (this API is read-only, after all), build a client to interact with our API, and to <a href="https://docs.strongloop.com/display/public/LB/Authentication%2C+authorization%2C+and+permissions">set up auth</a> if needed. By using LoopBack to build our API, we’ve positioned ourselves to be able to complete these tasks easily. We can now answer my initial question with greater confidence: yes, LoopBack can do it!</p>
+<p>Want to see all this stuff actually work? Check out the <a href="https://github.com/Sequoia/loopback-legacy-migration-example">demo app</a>!</p>
+<footer><span class="byline">Published March 3, 2016</span><span class="linkback">Originally published at <a href="https://strongloop.com/strongblog/migrating-a-legacy-system-to-loopback-even-with-complicated-data/">StrongBlog</a></span></footer></section><footer>&copy; Sequoia McDowell 2016</footer></div></body></html>
