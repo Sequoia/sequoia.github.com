@@ -35,12 +35,13 @@ function formatDate(d){
 }
 
 Promise.all([
-  getPosts()
-    .tap(writeIndexPage)
-    .then(writePosts),
-  writeProjectsPage(),
-  writeContactsPage(),
-  writeThanksPage()
+  // getPosts()
+  //   .tap(writeIndexPage)
+  //   .then(writePosts),
+  // writeProjectsPage(),
+  // writeContactsPage(),
+  // writeThanksPage(),
+  writeWorkPage()
 ]).then(() => l('EVERYTHING done :)'));
 
 ////homepage
@@ -110,6 +111,24 @@ function writeContactsPage(){
     { title: 'Contact Me', slug : 'contact' },
     tmpl.contact
   );
+}
+
+//TODO: create a generic "page" function so index & work page fns can be merged
+// merge it with existing createPage fn?
+function writeWorkPage(){
+  //params:
+  // markdown (filename)
+  // template fn
+  // outfile name
+  return fs.readFileAsync(root('_content/work.md'), 'utf-8')
+    .then(frontmatter) // => { body, attributes }
+    //merge attributes to top level
+    .then(p => { p.attributes.body = p.body; return p.attributes; })
+    .then(onProp('body')(marked)) //markdown
+    .then(page => { page.body = tmpl.page(page); return page; } ) //template
+    .tap(console.log)
+    .then(writePage);
+    // .then(rendered => fs.writeFile(join(outDir, 'work', 'index.html'), rendered));
 }
 
 function writeThanksPage(){

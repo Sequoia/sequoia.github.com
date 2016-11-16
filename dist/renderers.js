@@ -14,6 +14,7 @@ function makeRenderer(tmplName) {
 
 module.exports = {
   post: makeRenderer('post.jade'),
+  page: makeRenderer('page.jade'),
   index: makeRenderer('index.jade'),
   projects: makeRenderer('projects.jade'),
   contact: makeRenderer('contact.jade'),

@@ -70,7 +70,14 @@ function formatDate(d) {
   return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 }
 
-_bluebird2.default.all([getPosts().tap(writeIndexPage).then(writePosts), writeProjectsPage(), writeContactsPage(), writeThanksPage()]).then(function () {
+_bluebird2.default.all([
+// getPosts()
+//   .tap(writeIndexPage)
+//   .then(writePosts),
+// writeProjectsPage(),
+// writeContactsPage(),
+// writeThanksPage(),
+writeWorkPage()]).then(function () {
   return (0, _util.l)('EVERYTHING done :)');
 });
 
@@ -141,6 +148,25 @@ function writeProjectsPage() {
 
 function writeContactsPage() {
   return createPage({ title: 'Contact Me', slug: 'contact' }, tmpl.contact);
+}
+
+//TODO: create a generic "page" function so index & work page fns can be merged
+// merge it with existing createPage fn?
+function writeWorkPage() {
+  //params:
+  // markdown (filename)
+  // template fn
+  // outfile name
+  return fs.readFileAsync((0, _rootPath2.default)('_content/work.md'), 'utf-8').then(_frontMatter2.default) // => { body, attributes }
+  //merge attributes to top level
+  .then(function (p) {
+    p.attributes.body = p.body;return p.attributes;
+  }).then((0, _util.onProp)('body')(_marker2.default)) //markdown
+  .then(function (page) {
+    page.body = tmpl.page(page);return page;
+  }) //template
+  .tap(console.log).then(writePage);
+  // .then(rendered => fs.writeFile(join(outDir, 'work', 'index.html'), rendered));
 }
 
 function writeThanksPage() {
