@@ -14,6 +14,18 @@ var _highlight3 = _interopRequireDefault(_highlight2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var wordpress_compat_options = {
+  sanitize: false,
+  langPrefix: 'hljs lang-',
+  highlight: function highlight(code, lang) {
+    if (lang == 'nohighlight' || typeof lang === 'undefined' || lang === 'jade') {
+      return '<pre class="lang:default highlight:0 decode:true">' + code + '</pre>';
+    } else {
+      return '<pre class="lang:' + lang + ' decode:true">' + code + '</pre>';
+    }
+  }
+};
+
 _marked2.default.setOptions({
   sanitize: false,
   langPrefix: 'hljs lang-',
@@ -26,5 +38,7 @@ _marked2.default.setOptions({
     }
   }
 });
+
+_marked2.default.setOptions(wordpress_compat_options);
 
 exports.default = _marked2.default;
