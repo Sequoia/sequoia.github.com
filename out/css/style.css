@@ -301,3 +301,10 @@ footer span.linkback::before{
     text-align:right;
   }
 }
+blockquote{
+  border-left:solid 5px gray;
+  margin: .5em 0;
+  padding: 1px .5em;
+  background-color:#EEE;
+  font-style: oblique;
+}

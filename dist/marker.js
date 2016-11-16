@@ -39,6 +39,6 @@ _marked2.default.setOptions({
   }
 });
 
-_marked2.default.setOptions(wordpress_compat_options);
+// marked.setOptions(wordpress_compat_options);
 
 exports.default = _marked2.default;

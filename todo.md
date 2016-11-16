@@ -1,3 +1,17 @@
+# Random stuff
+
+## New pages
+* [ ] hire me
+* [ ] augment projects page?
+
+## Styles
+* [ ] change colors
+* [ ] borders?
+
+## Blog posts to migrate
+* [ ] avoiding live coding
+* [ ] strongloop deep dive
+
 # RX.js update
 
 ## What functions do we need?
