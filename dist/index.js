@@ -70,14 +70,7 @@ function formatDate(d) {
   return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 }
 
-_bluebird2.default.all([
-// getPosts()
-//   .tap(writeIndexPage)
-//   .then(writePosts),
-// writeProjectsPage(),
-// writeContactsPage(),
-// writeThanksPage(),
-writeWorkPage()]).then(function () {
+_bluebird2.default.all([getPosts().tap(writeIndexPage).then(writePosts), writeProjectsPage(), writeContactsPage(), writeThanksPage(), writeWorkPage()]).then(function () {
   return (0, _util.l)('EVERYTHING done :)');
 });
 

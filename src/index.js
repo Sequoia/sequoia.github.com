@@ -35,12 +35,12 @@ function formatDate(d){
 }
 
 Promise.all([
-  // getPosts()
-  //   .tap(writeIndexPage)
-  //   .then(writePosts),
-  // writeProjectsPage(),
-  // writeContactsPage(),
-  // writeThanksPage(),
+  getPosts()
+    .tap(writeIndexPage)
+    .then(writePosts),
+  writeProjectsPage(),
+  writeContactsPage(),
+  writeThanksPage(),
   writeWorkPage()
 ]).then(() => l('EVERYTHING done :)'));
 
