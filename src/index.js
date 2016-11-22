@@ -126,7 +126,7 @@ function writeWorkPage(){
     .then(p => { p.attributes.body = p.body; return p.attributes; })
     .then(onProp('body')(marked)) //markdown
     .then(page => { page.body = tmpl.page(page); return page; } ) //template
-    .tap(console.log)
+    // .tap(console.log)
     .then(writePage);
     // .then(rendered => fs.writeFile(join(outDir, 'work', 'index.html'), rendered));
 }

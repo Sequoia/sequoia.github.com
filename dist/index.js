@@ -165,7 +165,8 @@ function writeWorkPage() {
   .then(function (page) {
     page.body = tmpl.page(page);return page;
   }) //template
-  .tap(console.log).then(writePage);
+  // .tap(console.log)
+  .then(writePage);
   // .then(rendered => fs.writeFile(join(outDir, 'work', 'index.html'), rendered));
 }
 
