@@ -1,9 +1,8 @@
 ---
 title: "Interactive Debugging with Node.js"
-date: November 02, 2016
-hidden: true
-description: TODO
-originalUrl: TODO
+date: November 09, 2016
+description: "Interactive Debuggers are familiar to every Java developer, but they are much less well known in the JavaScript world. If you're a JavaScript developer who hasn't experienced the power of step-thru debugging, read this post to find out what you're missing!"
+originalUrl: https://strongloop.com/strongblog/interactive-debugging-with-node-js/
 originalBlog: "StrongBlog"
 references: 
   - https://developers.google.com/web/tools/chrome-devtools/javascript/step-code
@@ -18,7 +17,7 @@ A "step through debugger" is a powerful tool that is very handy when your applic
 * see the code execution path ("call stack") that lead to the currently executing line of code, and
 * inspect the application state at earlier points on that path
 
-Interactive Debuggers\* are familiar to every Java developer (among others), but they are much less well known in the JavaScript world. This is unfortunate, both because debuggers can be so helpful in diagnosing logic issues, and becuase the debugging tools in JavaScript today are the best & easiest to use they've ever been! This post will introduce the Node.js debugging tools in [VS Code](https://code.visualstudio.com) in a way that's accessible to programmers who have never used a debugger before.
+Interactive Debuggers\* are familiar to every Java developer (among others), but they are much less well known in the JavaScript world. This is unfortunate, both because debuggers can be so helpful in diagnosing logic issues, and because the debugging tools in JavaScript today are the best & easiest to use they've ever been! This post will introduce the Node.js debugging tools in [VS Code](https://code.visualstudio.com) in a way that's accessible to programmers who have never used a debugger before.
 
 ## Why Use a Debugger?
 

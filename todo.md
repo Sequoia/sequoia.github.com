@@ -1,7 +1,7 @@
 # Random stuff
 
 ## New pages
-* [ ] hire me
+* [X] ~~*hire me*~~
 * [ ] augment projects page?
 
 ## Styles
