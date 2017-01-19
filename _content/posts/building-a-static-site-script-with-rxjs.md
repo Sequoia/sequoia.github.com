@@ -55,7 +55,7 @@ As you can see, `Promise.create` takes a `settle` function which receives an **o
 ```js
 const o = Rx.Observable.create(function subscribe(subscriber) {
   try{
-    while(foo = getNextFoo()){
+    while(let foo = getNextFoo()){
       subscriber.next(foo);   // emit next value 
     }
     subscriber.complete();    // emit "complete"
@@ -126,9 +126,9 @@ const changesAndAdditions$ = newFiles$.merge(changedFiles$);
 
 ### Mapping Filename to File Contents
 
-To get the file contents, we can `.map` the name of the file to the contents of that file by using a function that reads files. But reading a file (typically) an asynchronous operation. If we were using Promises, we might write a function that takes a filename and returns a Promise that will emit the file contents. Similarly, using Observables, we use a function that takes a filename and returns an Observable that will emit the file's contents.
+To get the file contents, we can `.map` the name of the file to the contents of that file by using a function that reads files. Reading a file is (typically) an asynchronous operation. If we were using Promises, we might write a function that takes a filename and returns a Promise that will emit the file contents. Similarly, using Observables, we use a function that takes a filename and returns an Observable that will emit the file's contents.
 
-Just as [`Promise.promisify`](http://bluebirdjs.com/docs/api/promise.promisify.html) will convert a callback based function to one that returns a Promise, [`Rx.Observable.bindNodeCallback`](reactivex.io/rxjs/class/es6/Observable.js~Observable.html#static-method-bindNodeCallback) does converts a callback based function to one that returns an Observable:
+Just as [`Promise.promisify`](http://bluebirdjs.com/docs/api/promise.promisify.html) will convert a callback based function to one that returns a Promise, [`Rx.Observable.bindNodeCallback`](reactivex.io/rxjs/class/es6/Observable.js~Observable.html#static-method-bindNodeCallback) converts a callback based function to one that returns an Observable:
 
 ```js
 const fs = require('fs');
@@ -146,7 +146,7 @@ Now we'll log the contents of each file as it is created or changed. Let's take 
 
 This means that by mapping `changesAndAdditions$` over `readFileAsObservable`, we took an `Observable<String>` (an observable of strings, namely, file names) and converted each `String` value to a new `Observable<String>`. This means we have `Observable<Observable<String>>`: an Observable of Observables of Strings.
 
-We don't actually want an *Observable* of file contents, we want **filename in, file contents out**. For this reason we use `.mergeAll` to "unwrap" the file contents strings from the inner Observables as they are emitted. If you are confused by this, don't worry: it is in fact confusing! For now it's only important to understand that `.mergeAll` converts `Observable<Observable<String>>`to `Observable<String>`, so we can process the string (in this case file contents).
+We don't actually want an *Observable* of file contents, we want **filename in, file contents out**. For this reason we use `.mergeAll` to "unwrap" the file contents strings from the inner Observables as they are emitted. If you are confused by this, don't worry: it is in fact confusing! For now it's only important to understand that `.mergeAll` converts `Observable<Observable<String>>` to `Observable<String>`, so we can process the string (in this case file contents).
 
 ### Emitting Only When Contents is Changed
 
@@ -362,7 +362,7 @@ We now have an object with an entry for each post, but this does not match the f
 
 ```js
 const indexTemplateData$ = metadataMap$
-  .map(function getValuesAsArray(postsObject){ // (or Object.keys in ES2017)
+  .map(function getValuesAsArray(postsObject){ // (or Object.values in ES2017)
     // IN: { 'slug' : postObj, 'slug2' : postObj2, ... }
     return Object.keys(postsObject)
       .reduce(function(acc, key){
