@@ -308,3 +308,10 @@ blockquote{
   background-color:#EEE;
   font-style: oblique;
 }
+
+/* Forms (comment form specifically) */
+
+fieldset{
+  border-width: 1px;
+  padding: 1em;
+}
