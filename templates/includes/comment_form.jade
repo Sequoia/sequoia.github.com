@@ -1,0 +1,22 @@
+form#comment-form(
+  action='https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d'
+  method='POST'
+)
+  fieldset
+    legend Leave a Comment
+    input(type='hidden' name='redirect_to' value='http://sequoia.makes.software/thanks/')
+    input(type='hidden' name='post_title' value=title)
+
+    .row
+
+      .six.columns
+        label(for='name') Name
+        input.u-full-width(type='text', required='required' name='name' placeholder='Slim Pickens')
+      .six.columns
+        label(for='website') Website
+        input.u-full-width(type='url', name='website' placeholder='www.example.com')
+
+    label(for='comment') Comment
+    textarea.u-full-width(name='comment' required='required' placeholder='I didn\'t like your post… I LOVED it!')
+
+    input.button-primary(type='submit', value='Submit')

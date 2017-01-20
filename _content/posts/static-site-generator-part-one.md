@@ -1,7 +1,6 @@
 ---
 title: "Let's Code It: Static Site Generator"
 date: January 5, 2017
-hidden: true
 description: "Markdown in, HTML out... do we really need a framework for this? I Don't Think So!!"
 originalUrl: "https://strongloop.com/strongblog/lets-code-it-static-site-generator/"
 originalBlog: "StrongBlog"
@@ -331,4 +330,4 @@ There is a lot we did not go over in this post, such as generating an index page
 
 By writing your own tool you miss out out on the reusability of existing tools, but you gain *full control* over your blog build and *less reliance on a third party tool you don't control*. For me, the tradeoff of effort for control was worth it. Perhaps it is for you too!
 
-\* *My next post will go over those features and more, so stay tuned!*
+\* *My [next post](https://strongloop.com/strongblog/lets-code-it-static-site-generator-with-rx-js/) will go over those features and more, so stay tuned!*
