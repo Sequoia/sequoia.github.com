@@ -148,6 +148,8 @@ This means that by mapping `changesAndAdditions$` over `readFileAsObservable`, w
 
 We don't actually want an *Observable* of file contents, we want **filename in, file contents out**. For this reason we use `.mergeAll` to "unwrap" the file contents strings from the inner Observables as they are emitted. If you are confused by this, don't worry: it is in fact confusing! For now it's only important to understand that `.mergeAll` converts `Observable<Observable<String>>` to `Observable<String>`, so we can process the string (in this case file contents).
 
+*NB: Mapping a value to an observable then unwrapping that inner observable as we’ve done here is an extremely common operation in Rx.js, and can be achieved using the [.mergeMap(fn)](http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html#instance-method-mergeMap) shorthand, which is the equivalent of .map(fn).mergeAll().*
+
 ### Emitting Only When Contents is Changed
 
 When our script starts, `newFiles$` will emit each filename once when `chokidar` first scans our `_posts` directory, and this will be merged into `changesAndAdditions$`. While editing a post in your text editor, each time you "save" the Markdown file, `changedFiles$` will emit the filename, *regardless of whether the contents of the file actually changed*. If you hit `^S` ten times in a row, `changesAndAdditions$` will emit that filename 10 times and we'll read the file 10 times.

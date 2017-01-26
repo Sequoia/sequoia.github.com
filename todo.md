@@ -3,6 +3,7 @@
 ## New pages
 * [X] ~~*hire me*~~
 * [ ] augment projects page?
+* [ ] "portfolio" page. What would this look like?
 
 ## Styles
 * [ ] change colors
