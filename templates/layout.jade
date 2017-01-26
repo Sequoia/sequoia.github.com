@@ -10,7 +10,9 @@ html(lang='en')
         h2 Programmer, Educator
         include ./includes/navigation.jade
 
-      include ./includes/announcement.jade
+      block announce
+        //- add an empty announce block to extenders to disable this
+        include ./includes/announcement.jade
 
       section#content
         block content
