@@ -140,7 +140,7 @@ section.blog-posts{
 }
 
 /* http://codepen.io/Sequoia/pen/zrXrdj?editors=1100 */
-#wrap aside.announce{
+#wrap aside#announce{
   background-color:lightgreen;
   /*border-radius:10px;*/
   padding: 15px;
@@ -157,25 +157,29 @@ section.blog-posts{
 
 }
 
-#wrap aside.announce{
+#wrap aside#announce{
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-#wrap aside.announce h2{
+#wrap aside#announce h2{
   text-align:right;
   margin:.1em 0;
 }
-#wrap aside.announce p{
+#wrap aside#announce p{
   margin:0;
 }
-#wrap aside.announce ul{
+#wrap aside#announce ul{
   margin: .2em;
 }
 
-#wrap aside.announce:hover{
+#wrap aside#announce:hover{
   animation-duration: 1s;
+}
+
+#wrap aside#announce.hidden{
+  display: none!important; /* displayed via announce-header if current announcements exist*/
 }
 
 @keyframes marching-ants {
@@ -242,10 +246,10 @@ section.blog-posts{
     nav ul li:last-child{
       margin-right:0;
     }
-    #wrap aside.announce{
+    #wrap aside#announce{
       display: block;
     }
-    #wrap aside.announce h2{
+    #wrap aside#announce h2{
       text-align:left;
     }
   /*nav ul li a{*/
@@ -276,7 +280,7 @@ footer span.linkback::before{
 }
 
 @media print {
-  aside.announce, header {
+  aside#announce, header {
     display:none!important;
   }
   code{
