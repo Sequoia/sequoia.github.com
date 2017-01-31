@@ -442,3 +442,15 @@ That's it!
 ## Conclusion and Next Steps
 
 If you made it this far, congratulations! My goal was not to explain each Rx.js concept introduced herein in detail, but to walk through the process of using Rx.js to complete a real-world programming task. I hope this was useful! If this post has piqued your interest, I highly recommend running the full version of the code this post was based on, which you can find in [this repository](https://github.com/Sequoia/rx-static-blog-example). As always, if you have any questions or Rx.js corrections please feel free to [contact me](https://twitter.com/_sequoia). Happy coding!
+
+# Comments
+
+> This is a great overview - thank you! What are you using to do those awesome terminal gifs?
+
+\- [Mark](http://mrh.io) <time datetime="2017-01-31 16:04:27 UTC">January 31, 2017</time>
+
+Thanks, Mark! I use [licecap](http://www.cockos.com/licecap/) to make gifs on my Macintosh. Tips to keep the sizes/zoom consistent:
+* Use a tiling tool like [Spectacle](https://www.spectacleapp.com/) to tile to e.g. ¼ screen
+* Use *the same screen resolution* when recording these gifs. If you switch from desktop to laptop you'll get different zoom
+
+See [my post on avoiding livecoding in demos](/techniques-to-avoid-live-coding-part-1/) for more such tricks!
