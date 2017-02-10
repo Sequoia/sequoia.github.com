@@ -1,7 +1,6 @@
 ---
-hidden: true
 title: "Let's Code It: Static Site Generator with Rx.js"
-date: January 19, 2016
+date: January 19, 2017
 description: "Watching a filesystem for changes and building an input (markdown) file to output (HTML) on each change? This sounds like a job for... Observables!"
 originalUrl: "https://strongloop.com/strongblog/lets-code-it-static-site-generator-with-rx-js/"
 originalBlog: "StrongBlog"
