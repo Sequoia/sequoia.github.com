@@ -15,7 +15,7 @@ On projects of any size, code hinting reduces typos, makes coding easier, and ob
 
 JavaScript is weakly typed, so when you declare `var animals;`, there's no way to know whether `animals` will be an array, a string, a function, or something else. If your IDE or editor doesn't know that `animals` will eventually be an array, there's no way for it to helpfully tell you that `animals` has the property `length` and the method `map`, among others. There's no way for the IDE to know it's an array... unless you tell it!
 
-In this post we'll look at a couple ways to clue your IDE in to the **types** of the variables, function parameters, and return values in your program so it clue *you* in on how they should be used. We'll go over two ways to "tell" your IDE (and other developers) what types things are, and see how load type information for third party libraries as well. Before we start *writing* type annotations, however, let's make sure we have a tool that can *read* them.
+In this post we'll look at a couple ways to clue your IDE in to the **types** of the variables, function parameters, and return values in your program so it clue *you* in on how they should be used. We'll go over two ways to "tell" your IDE (and other developers) what types things are, and see how to load type information for third party libraries as well. Before we start *writing* type annotations, however, let's make sure we have a tool that can *read* them.
 
 ## Setting up The Environment
 
