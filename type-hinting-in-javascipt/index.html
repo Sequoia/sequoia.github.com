@@ -20,7 +20,7 @@
 <p><img src="/img/typehint-built-in-stuff.gif" alt="demo of type hinting for String, Math, Console, and Document"></p>
 <p>Nice! But we&#39;re more interested in Node.js annotations and sadly, VS Code does not ship with those. Type declarations for Node.js core APIs do exist, however, in the form of <a href="https://www.typescriptlang.org/docs/handbook/writing-declaration-files.html">Typescript declaration files</a>. We just need a way to add them to our workspace so VS Code can find them. Enter <a href="https://www.npmjs.com/package/typings">Typings</a>.</p>
 <h2 id="typings">Typings</h2>
-<p>Typings is a &quot;Typescript Definition Manager&quot;, which means it helps us install the Typescript Defintions (or &quot;Declarations&quot;) we need for our IDE to know what the JavaScript APIs we&#39;re working with look like. We&#39;ll look more at the format of Typescript Declarations later, for now we&#39;ll stay focused on our goal of getting our IDE to recognize Node.js core APIs.</p>
+<p>Typings is a &quot;Typescript Definition Manager&quot;, which means it helps us install the Typescript Definitions (or &quot;Declarations&quot;) we need for our IDE to know what the JavaScript APIs we&#39;re working with look like. We&#39;ll look more at the format of Typescript Declarations later, for now we&#39;ll stay focused on our goal of getting our IDE to recognize Node.js core APIs.</p>
 <p>Install <code>typings</code> thus:</p>
 <pre><code class="hljs lang-nohighlight">$ npm install --global typings
 </code></pre>
@@ -36,7 +36,7 @@
 </ol>
 <p>Now we have a new <code>typings/</code> directory containing the newly downloaded definitions, as well as our <code>typings.json</code> file.</p>
 <h3 id="one-more-step-">One More Step...</h3>
-<p>We now have these type definitions in our project, and VS Code loads all type definitions in your project automatically. However, it identifies the root of a JavaScript by the presence of a <code>jsconfig.json</code> file, and we don&#39;t have one yet. VS Code can usually guess if your project is JavaScript based, and when it does it will <a href="https://code.visualstudio.com/Docs/runtimes/nodejs#_adding-a-jsconfigjson-configuration-file">display a little green lightbulb in the status bar</a>, prompting you to create just such a <code>jsconfig.json</code> file. Click that button, save the file, start writing some Node and...</p>
+<p>We now have these type definitions in our project, and VS Code loads all type definitions in your project automatically. However, it identifies the root of a JavaScript project by the presence of a <code>jsconfig.json</code> file, and we don&#39;t have one yet. VS Code can usually guess if your project is JavaScript based, and when it does it will <a href="https://code.visualstudio.com/Docs/runtimes/nodejs#_adding-a-jsconfigjson-configuration-file">display a little green lightbulb in the status bar</a>, prompting you to create just such a <code>jsconfig.json</code> file. Click that button, save the file, start writing some Node and...</p>
 <p><img src="/img/typehint-node-core-apis.gif" alt="demo of looking up core node.js api properties &amp; methods using external node.js typescript definition file"></p>
 <p>It works! We now get &quot;Intellisense&quot; code hints for all Node.js core APIs. Our project won&#39;t just be using Node core APIs though, we&#39;ll be pulling in some utility libraries, starting with <a href="https://lodash.com/">lodash</a>. <code>typings search lodash</code> reveals that there&#39;s a lodash definition from the <code>npm</code> source as well as <code>global</code> and <code>dt</code>. We want the <code>npm</code> version since we&#39;ll be consuming lodash as <strong>module</strong> included with <code>require(&#39;lodash&#39;)</code> and it will <em>not</em> be globally available.</p>
 <pre><code class="hljs lang-nohighlight">$ typings install --save npm~lodash
@@ -77,7 +77,7 @@ contains(<span class="hljs-string">'Everybody loves types. It is known.'</span>,
   <span class="hljs-keyword">return</span> <span class="hljs-built_in">RegExp</span>(search).test(input);
 }
 </code></pre>
-<p>While writing this, we realized it that this function actually works with regular expresssions as the <code>search</code> parameter as well as strings. Let&#39;s update that line to make clear that both types are supported:</p>
+<p>While writing this, we realized it that this function actually works with regular expressions as the <code>search</code> parameter as well as strings. Let&#39;s update that line to make clear that both types are supported:</p>
 <pre><code class="hljs lang-javascript"><span class="hljs-comment">/** 
  * ...
  * @param {string|RegExp} search  - the string or pattern to search for
@@ -139,7 +139,7 @@ contains(<span class="hljs-string">'Everybody loves types. It is known.'</span>,
     }
     ...
 </code></pre>
-<p>We don&#39;t want to have to go read over this complex JSON file each time we want to find the name of a key or remember the type of a property. Furthermore, it&#39;s not possible to document this structure in the file itself because JSON does not allow comments.* Let&#39;s create Typescript Declaration called <code>config.d.ts</code> to desribe this config object, and put it in a directory in our project called <code>types/</code>.</p>
+<p>We don&#39;t want to have to go read over this complex JSON file each time we want to find the name of a key or remember the type of a property. Furthermore, it&#39;s not possible to document this structure in the file itself because JSON does not allow comments.* Let&#39;s create Typescript Declaration called <code>config.d.ts</code> to describe this config object, and put it in a directory in our project called <code>types/</code>.</p>
 <pre><code class="hljs lang-typescript"><span class="hljs-keyword">declare</span> <span class="hljs-keyword">namespace</span> Demo{
   <span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> MapConfig {
       <span class="hljs-comment">/** Used as key to ID map in db  */</span>
