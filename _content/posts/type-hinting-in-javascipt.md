@@ -42,7 +42,7 @@ Nice! But we're more interested in Node.js annotations and sadly, VS Code does n
 
 ## Typings
 
-Typings is a "Typescript Definition Manager", which means it helps us install the Typescript Defintions (or "Declarations") we need for our IDE to know what the JavaScript APIs we're working with look like. We'll look more at the format of Typescript Declarations later, for now we'll stay focused on our goal of getting our IDE to recognize Node.js core APIs.
+Typings is a "Typescript Definition Manager", which means it helps us install the Typescript Definitions (or "Declarations") we need for our IDE to know what the JavaScript APIs we're working with look like. We'll look more at the format of Typescript Declarations later, for now we'll stay focused on our goal of getting our IDE to recognize Node.js core APIs.
 
 Install `typings` thus:
 
@@ -67,7 +67,7 @@ Now we have a new `typings/` directory containing the newly downloaded definitio
 
 ### One More Step...
 
-We now have these type definitions in our project, and VS Code loads all type definitions in your project automatically. However, it identifies the root of a JavaScript by the presence of a `jsconfig.json` file, and we don't have one yet. VS Code can usually guess if your project is JavaScript based, and when it does it will [display a little green lightbulb in the status bar](https://code.visualstudio.com/Docs/runtimes/nodejs#_adding-a-jsconfigjson-configuration-file), prompting you to create just such a `jsconfig.json` file. Click that button, save the file, start writing some Node and...
+We now have these type definitions in our project, and VS Code loads all type definitions in your project automatically. However, it identifies the root of a JavaScript project by the presence of a `jsconfig.json` file, and we don't have one yet. VS Code can usually guess if your project is JavaScript based, and when it does it will [display a little green lightbulb in the status bar](https://code.visualstudio.com/Docs/runtimes/nodejs#_adding-a-jsconfigjson-configuration-file), prompting you to create just such a `jsconfig.json` file. Click that button, save the file, start writing some Node and...
 
 ![demo of looking up core node.js api properties &amp; methods using external node.js typescript definition file](/img/typehint-node-core-apis.gif)
 
@@ -122,7 +122,7 @@ function contains(input, search){
 }
 ```
 
-While writing this, we realized it that this function actually works with regular expresssions as the `search` parameter as well as strings. Let's update that line to make clear that both types are supported:
+While writing this, we realized it that this function actually works with regular expressions as the `search` parameter as well as strings. Let's update that line to make clear that both types are supported:
 
 ```javascript
 /** 
@@ -200,7 +200,7 @@ Our `config.json` looks like this:
     ...
 ```
 
-We don't want to have to go read over this complex JSON file each time we want to find the name of a key or remember the type of a property. Furthermore, it's not possible to document this structure in the file itself because JSON does not allow comments.\* Let's create Typescript Declaration called `config.d.ts` to desribe this config object, and put it in a directory in our project called `types/`.
+We don't want to have to go read over this complex JSON file each time we want to find the name of a key or remember the type of a property. Furthermore, it's not possible to document this structure in the file itself because JSON does not allow comments.\* Let's create Typescript Declaration called `config.d.ts` to describe this config object, and put it in a directory in our project called `types/`.
 
 ```typescript
 declare namespace Demo{
