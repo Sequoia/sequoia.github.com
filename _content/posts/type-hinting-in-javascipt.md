@@ -61,9 +61,9 @@ Let's break that command down:
 1. `install` the `node` package...
 2. ...from `dt~`, the [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped) repository, which hosts a huge collection of typescript definitions
 3. we add the `--global` switch because we want access to definitions for `process` and `modules` from throughout our project
-4. Finally, the `--save` switch causes `typings` save this type definition as a project dependency in a `typings.json`, which we can check into our repo so others can insatll these same types. (`typings.json` is to `typings install` what `package.json` is to `npm install`.)
+4. Finally, the `--save` switch causes `typings` save this type definition as a project dependency in a `typings.json`, which we can check into our repo so others can install these same types. (`typings.json` is to `typings install` what `package.json` is to `npm install`.)
 
-Now we have a new `typings/` directory containing the newly downloaded defintions, as well as our `typings.json` file.
+Now we have a new `typings/` directory containing the newly downloaded definitions, as well as our `typings.json` file.
 
 ### One More Step...
 

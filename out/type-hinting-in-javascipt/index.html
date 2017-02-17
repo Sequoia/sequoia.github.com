@@ -32,9 +32,9 @@
 <li><code>install</code> the <code>node</code> package...</li>
 <li>...from <code>dt~</code>, the <a href="https://github.com/DefinitelyTyped/DefinitelyTyped">DefinitelyTyped</a> repository, which hosts a huge collection of typescript definitions</li>
 <li>we add the <code>--global</code> switch because we want access to definitions for <code>process</code> and <code>modules</code> from throughout our project</li>
-<li>Finally, the <code>--save</code> switch causes <code>typings</code> save this type definition as a project dependency in a <code>typings.json</code>, which we can check into our repo so others can insatll these same types. (<code>typings.json</code> is to <code>typings install</code> what <code>package.json</code> is to <code>npm install</code>.)</li>
+<li>Finally, the <code>--save</code> switch causes <code>typings</code> save this type definition as a project dependency in a <code>typings.json</code>, which we can check into our repo so others can install these same types. (<code>typings.json</code> is to <code>typings install</code> what <code>package.json</code> is to <code>npm install</code>.)</li>
 </ol>
-<p>Now we have a new <code>typings/</code> directory containing the newly downloaded defintions, as well as our <code>typings.json</code> file.</p>
+<p>Now we have a new <code>typings/</code> directory containing the newly downloaded definitions, as well as our <code>typings.json</code> file.</p>
 <h3 id="one-more-step-">One More Step...</h3>
 <p>We now have these type definitions in our project, and VS Code loads all type definitions in your project automatically. However, it identifies the root of a JavaScript by the presence of a <code>jsconfig.json</code> file, and we don&#39;t have one yet. VS Code can usually guess if your project is JavaScript based, and when it does it will <a href="https://code.visualstudio.com/Docs/runtimes/nodejs#_adding-a-jsconfigjson-configuration-file">display a little green lightbulb in the status bar</a>, prompting you to create just such a <code>jsconfig.json</code> file. Click that button, save the file, start writing some Node and...</p>
 <p><img src="/img/typehint-node-core-apis.gif" alt="demo of looking up core node.js api properties &amp; methods using external node.js typescript definition file"></p>
