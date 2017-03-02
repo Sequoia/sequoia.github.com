@@ -12,7 +12,7 @@ In my [last post](/what-is-javascript-part-1-the-problem) I outlined my concerns
 
 In this post I'll outline my proposals for addressing these issues.
 
-## Proposal 1a: `minimum-feature-stage`
+## Proposal 1a: `minimum-proposal-stage`
 
 This idea is lifted from Composer, which has [`minimum-stability` property](https://getcomposer.org/doc/04-schema.md#minimum-stability) for projects. My idea is as follows:
 
