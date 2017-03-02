@@ -32,7 +32,7 @@ Aurelia would indicate that it incorporates a Stage 2 proposed/experimental feat
 "lowest-proposal-stage" : 2
 ```
 
-Upon attempting to install Aurelia, npm warns you that the library's `lowest-proposal-stage` is lower than your `minimum-proposal-stage`. Basically: "hey!! You're about to install a library with features language more experimental than you might be comfortable with!"
+Upon attempting to install Aurelia, npm would warn you that the library's `lowest-proposal-stage` is lower than your `minimum-proposal-stage`. Basically: "hey! You're about to install a library with language features more experimental than you might be comfortable with!"
 
 ### Pros
 
@@ -96,7 +96,7 @@ Alternately, the language version could be used:
 
 ### Pros
 
-* Does not require tooling (npm) updates. Authors can start doing this right away
+* Does not require tooling (npm) updates&mdash;authors can start doing this right away
 * Human readable
 
 ### Cons
