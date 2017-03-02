@@ -112,3 +112,5 @@ Change is good, but stability is also good. Everyone should be able to easily ch
 3. Allow those who prioritize stability to *opt-out* of using experimental language features
 4. Give frazzled, overwhelmed users a bit of solid ground to stand on in the Churning Sea of JavaScript
 5. Make JavaScript look a bit less scary to enterprise organizations
+
+Please let me know what you think with a comment (below) or [on hackernews](https://news.ycombinator.com/item?id=13775534).
