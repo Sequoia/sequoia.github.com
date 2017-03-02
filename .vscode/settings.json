@@ -2,5 +2,6 @@
 {
   "markdown-checkbox.strikeThroughWhenChecked": true,
   "editor.quickSuggestions": false,
-  "cSpell.enabled": true
+  "cSpell.enabled": true,
+  "vsicons.presets.angular": false
 }

@@ -8,13 +8,16 @@ form#comment-form(
     input(type='hidden' name='post_title' value=title)
 
     .row
-
       .six.columns
         label(for='name') Name
         input.u-full-width(type='text', required='required' name='name' placeholder='Slim Pickens')
       .six.columns
         label(for='website') Website
         input.u-full-width(type='url', name='website' placeholder='www.example.com')
+    .row
+      .twelve.columns
+        label(for='email') Email
+        input.u-full-width(type='email', name='email' placeholder='webmaster@example.com')
 
     label(for='comment') Comment
     textarea.u-full-width(name='comment' required='required' placeholder='I didn\'t like your post… I LOVED it!')
