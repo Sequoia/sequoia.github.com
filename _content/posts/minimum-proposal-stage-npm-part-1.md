@@ -59,6 +59,10 @@ Also, as mentioned above, **these features are not officially stable**. This mea
 
 Finally, (this is my own opinion) it's **just plain annoying** to constantly encounter unfamiliar language syntax and be left wondering "Is this JavaScript? Is this Typescript? Is this JSX? Is this..." I don't want to have to google "javascript ::" to figure out what the heck that new syntax is and whether it's current JavaScript, a feature proposal, a super-lang, or Just Some Random Thing Someone Wrote a Babel Transform For.
 
+## Why Does in Matter if a Lib Uses Experimental Features *Internally*?
+
+This probably does not matter if the exposed interfaces do not use or require the use of experimental language features. A library could be written in JavaScript, Coffescript or Typescript as long as the `dist/` is plain JavaScript. Annotations are an example of an experimental feature that some libraries encourage or require the use of in user code. Further, some libraries do not distribute a build artifact, instead directing users to `npm install` the source and build locally. In these cases, there is the potential for breakage if draft specifications of experimental features change, and warning users of this is warranted (IMO).
+
 ## Are You Saying No One Should Use Experimental Features?
 
 No! By all means, use them! All I'm saying is that it would be useful to be able to make an **informed choice** to **opt-in** to using experimental features. That way, organizations that prefer stability can say "no thank you" and users who want to be on the bleeding edge can keep bleeding just as they're doing today.
