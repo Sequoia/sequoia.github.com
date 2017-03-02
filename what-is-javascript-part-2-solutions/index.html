@@ -18,7 +18,7 @@
 <p>Aurelia would indicate that it incorporates a Stage 2 proposed/experimental feature (<a href="http://tc39.github.io/proposal-decorators/">decorators</a>) by adding the following to its <code>package.json</code> files:</p>
 <pre><code class="hljs lang-js"><span class="hljs-string">"lowest-proposal-stage"</span> : <span class="hljs-number">2</span>
 </code></pre>
-<p>Upon attempting to install Aurelia, npm warns you that the library&#39;s <code>lowest-proposal-stage</code> is lower than your <code>minimum-proposal-stage</code>. Basically: &quot;hey!! You&#39;re about to install a library with features language more experimental than you might be comfortable with!&quot;</p>
+<p>Upon attempting to install Aurelia, npm would warn you that the library&#39;s <code>lowest-proposal-stage</code> is lower than your <code>minimum-proposal-stage</code>. Basically: &quot;hey! You&#39;re about to install a library with language features more experimental than you might be comfortable with!&quot;</p>
 <h3 id="pros">Pros</h3>
 <ul>
 <li>More granularity: This solution allows me to say &quot;I am comfortable with Stage 4 (finalized, but not yet released) features, but nothing below that.&quot;</li>
@@ -62,7 +62,7 @@
 <img src="/img/ecmascript--version-experimental-red.svg" alt=""></p>
 <h3 id="pros">Pros</h3>
 <ul>
-<li>Does not require tooling (npm) updates. Authors can start doing this right away</li>
+<li>Does not require tooling (npm) updates&mdash;authors can start doing this right away</li>
 <li>Human readable</li>
 </ul>
 <h3 id="cons">Cons</h3>
