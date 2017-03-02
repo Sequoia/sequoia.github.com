@@ -5,7 +5,7 @@ description: >
     "Bleeding edge" is all well and good, but can't we at least opt-in? Here's one weird trick to bring some transparency into the JavaScript module ecosystem with regard to new language features…
 ---
 
-In my [last post](what-is-javascript-part-1-the-problem) I outlined my concerns about lack of visibility into the incorporation of experimental features into popular JavaScript libraries. In short, the problems are:
+In my [last post](/what-is-javascript-part-1-the-problem) I outlined my concerns about lack of visibility into the incorporation of experimental features into popular JavaScript libraries. In short, the problems are:
 
 1. The lack of a **clear, standard indicator** of when a library incorporates experimental language features
 2. The inability to **consciously opt in** to using these features
