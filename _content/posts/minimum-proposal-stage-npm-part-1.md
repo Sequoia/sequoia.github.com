@@ -57,6 +57,8 @@ This matters because as anyone involved the JavaScript ecosystem these days know
 
 Also, as mentioned above, **these features are not officially stable**. This means that if you write code depending on the current (proposed) version of the feature, **that code may stop working when the feature is finalized**. While you may consider this an acceptable risk, I assure you there are many users and organizations that do not. Currently, making an informed decision to opt-in to using these experimental features is difficult and requires a high level of expertise&mdash;users must be able to **identify each new feature** & **manually check** where it is in the proposal or release phase. This is especially challenging for organizations for whom JavaScript is not a core-competency.
 
+Finally, (this is my own opinion) it's **just plain annoying** to constantly encounter unfamiliar language syntax and be left wondering "Is this JavaScript? Is this Typescript? Is this JSX? Is this..." I don't want to have to google "javascript ::" to figure out what the heck that new syntax is and whether it's current JavaScript, a feature proposal, a super-lang, or Just Some Random Thing Someone Wrote a Babel Transform For.
+
 ## Are You Saying No One Should Use Experimental Features?
 
 No! By all means, use them! All I'm saying is that it would be useful to be able to make an **informed choice** to **opt-in** to using experimental features. That way, organizations that prefer stability can say "no thank you" and users who want to be on the bleeding edge can keep bleeding just as they're doing today.
