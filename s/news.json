@@ -8,5 +8,10 @@
     "start" : "01/26/17",
     "end": "04/25/17",
     "html": "I'm giving two talks at the <a href='http://www.developermarch.com/developersummit/index.html'>Great Indian Developer Summit!!</a>"
+  },
+  {
+    "start" : "4/25/17",
+    "end": "05/10/17",
+    "html": "<a href='http://www.developermarch.com/developersummit/index.html'>GIDS</a> was a blast! Thanks organizers and attendees!! You can find my slides here: <ul><li><a href='http://bit.ly/shell-tools-slides'>Shell tools</a></li><li><a href='http://sequoia.makes.software/debugging-nodejs-talk/'>Node debugging</a></li>"
   }
 ]
