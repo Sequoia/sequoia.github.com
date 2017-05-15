@@ -247,6 +247,6 @@ Now we can access properties of the configuration object & get the same code-com
 
 ![example demonstrating looking up properties on an object based on a local Typescript Definition](/img/typehint-mapconfig.gif)
 
-I have been very much enjoying the benefits of JSDoc, Typescript Declarations and the `typings` repository in my work. Hopefully this article will help you get started up and running with type hinting in JavaScript. If you have any questions or corrections, or if this post was useful to you, [please let me know](/contact)!
+I have been very much enjoying the benefits of JSDoc, Typescript Declarations and the `typings` repository in my work. Hopefully this article will help you get started up and running with type hinting in JavaScript. If you have any questions or corrections, or if this post was useful to you, [please let me know](/contact/)!
 
 \* *There is in fact [a way to document the properties of json files](http://json-schema.org/), I hope to write about it in the future!*

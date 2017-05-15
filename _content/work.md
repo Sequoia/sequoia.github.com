@@ -5,7 +5,7 @@ slug: work
 
 If you have a [software development](#software-development) problem you'd like solved, [need fast and reliable support](#open-source-help-desk) for your OSS based project, or if you'd like to
 [improve your team's ability to effectively use modern tools and practices](#training),
-[contact me](/contact) and I'll let you know if I can help!
+[contact me](/contact/) and I'll let you know if I can help!
 
 ## Training
 
@@ -35,7 +35,7 @@ I can quickly bring your team up to speed and provide hands-on training on topic
 
 \- [Justine Lam](https://twitter.com/justine_lam), Web Developer, ShareProgress
 
-👉🏼 [Contact me](/contact) about training.
+👉🏼 [Contact me](/contact/) about training.
 
 ## Software Development
 
@@ -51,7 +51,7 @@ Technologies I am experienced with include:
 * AWS: Lambda, S3, etc.
 * Linux server administration
 
-👉🏼 [Contact me](/contact) about Software Development.
+👉🏼 [Contact me](/contact/) about Software Development.
 
 ## Open Source Help Desk
 
@@ -61,4 +61,4 @@ You may find, however, that when you're completely stuck, "free community suppor
 
 My **Open Source Help Desk** services fill that gap. When you are using Express, Laravel, React, or another popular framework and you need your support request moved to the front of the line and resolved fully, I can help. Platforms I can provide Help Desk support for include **JavaScript (browser)**, **Node.js**, and **PHP**. I have expert level experience with a variety of frameworks using these platforms including **Express.js**, **Laravel**, and **LoopBack**, and I'm able to support any OS JavaScript framework as long as its documentation is available online.
 
-👉🏼 [Contact me](/contact) for **one-time help** or to arrange **ongoing availability**
+👉🏼 [Contact me](/contact/) for **one-time help** or to arrange **ongoing availability**

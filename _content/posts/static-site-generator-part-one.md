@@ -26,7 +26,7 @@ It occurred to some people that it didn't make sense to run step three *every si
 4. ...or any service that offers free static hosting (namely [Github Pages](https://help.github.com/articles/what-is-github-pages/))
 5. Content written as flat markdown files can easily be tracked in a git repo & collaborated on thus
 
-Points one and two dramatically reduce the attack surface of a web server, which is great for security. Point three (in conjunction with one and two) allows for greater site reliability and allows a server to handle much more traffic without crashing. Point four is very attractive from a cost perspective (as are one, two, and three if you're paying for hosting). The benefits of static site generators are clear, which is why many organization and individuals are using them, including [the publisher of this blog](https://strongloop.com/strongblog/new-life-for-loopback-documentation/) and [the author of this post](http://sequoia.makes.software/)!
+Points one and two dramatically reduce the attack surface of a web server, which is great for security. Point three (in conjunction with one and two) allows for greater site reliability and allows a server to handle much more traffic without crashing. Point four is very attractive from a cost perspective (as are one, two, and three if you're paying for hosting). The benefits of static site generators are clear, which is why many organization and individuals are using them, including [the publisher of this blog](https://strongloop.com/strongblog/new-life-for-loopback-documentation/) and [the author of this post](https://sequoia.makes.software/)!
 
 ## OK, Let's Use an SSG
 
@@ -330,4 +330,4 @@ There is a lot we did not go over in this post, such as generating an index page
 
 By writing your own tool you miss out out on the reusability of existing tools, but you gain *full control* over your blog build and *less reliance on a third party tool you don't control*. For me, the tradeoff of effort for control was worth it. Perhaps it is for you too!
 
-\* *My [next post](https://strongloop.com/strongblog/lets-code-it-static-site-generator-with-rx-js/) will go over those features and more, so stay tuned!*
+\* *My [next post](https://sequoia.makes.software/lets-code-it-static-site-generator-with-rxjs/) will go over those features and more, so stay tuned!*

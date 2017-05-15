@@ -6,6 +6,6 @@ block content
   h2 Blog Posts
   section.blog-posts
     for post in posts
-      h3: a.title(href='/' + post.slug)= post.title
+      h3: a.title(href='/' + post.slug + '/')= post.title
       time= post.date
       p= post.description

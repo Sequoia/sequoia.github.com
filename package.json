@@ -23,7 +23,7 @@
     "type": "git",
     "url": "git+https://github.com/Sequoia/sequoia.github.com.git"
   },
-  "author": "Sequoia McDowell <sequoia.mcdowell@gmail.com> (http://sequoia.makes.software/)",
+  "author": "Sequoia McDowell <sequoia.mcdowell@gmail.com> (https://sequoia.makes.software/)",
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/Sequoia/sequoia.github.com/issues"

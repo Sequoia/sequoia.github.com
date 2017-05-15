@@ -1,9 +1,22 @@
 [
   {
+    "name" : "VS Code Extension: LoopBack JSON Schemas",
+    "description": "StrongLoop asked me to come up with creative ways to improve developer experience for their [LoopBack](http://loopback.io/) framework. The framework relies on lots of fairly complex JSON configuration files, and working on these files forces one to refer frequently back to the (also fairly complex) documentation. To address this challenge, I captured settings for the most frequently used configuration files in [JSON Schema](http://json-schema.org/), then created a [VS Code](https://code.visualstudio.com) extension that automatically maps each schema to the appropriate LoopBack configuration file, providing the user with inline code hints, documentation, and warnings when illegal configuration values are set. \"If you can't bring <abbr title='the developer'>Mohammed</abbr> to <abbr title='the documentation'>the mountain</abbr>, bring <abbr title='the documentation'>the mountain</abbr> to <abbr title='the developer'>Mohammed</abbr>!\"",
+    "links": [
+      ["Plugin","https://marketplace.visualstudio.com/items?itemName=sequoia.loopback-json-schemas"],
+      ["Plugin Repo", "https://github.com/Sequoia/loopback-json-schemas-vscode"],
+      ["JSON Schemas Repo", "https://github.com/Sequoia/loopback-json-schemas-vscode/blob/master/README.md"]
+    ],
+    "add this later" :[
+      ["Blog Post", "https://strongloop.com/strongblog/announcing-loopback-jsonschemas-vs-code-extension"]
+    ]
+  },
+  {
     "name" : "This Website",
     "description":"I was using Jekyll (with automatic github build), but when they updated the Jekyll version on github my blog exploded. :( I evaluated maaannnyyyy options for a blog/website, eventually deciding to build my own as it's mostly just reading `md` files & shoving them in a template! Take a look at the repo `src/index.js` file for the meat of this website builder.",
     "links": [
-      ["Repo", "https://github.com/Sequoia/sequoia.github.com"]
+      ["Repo", "https://github.com/Sequoia/sequoia.github.com"],
+      ["Proof of Concept RX.js rewrite", "https://github.com/Sequoia/rx-static-blog-example"]
     ]
   },
   {
@@ -53,7 +66,7 @@
       ["Repo" , "https://github.com/Sequoia/cluck"],
       ["Video", "https://www.youtube.com/watch?v=JQqkutx87nI" ],
       ["Data Stream", "https://data.sparkfun.com/streams/OGzpoQN9bAir9gEj5NDE" ],
-      ["Output Page", "http://sequoia.makes.software/cluck/" ]
+      ["Output Page", "https://sequoia.makes.software/cluck/" ]
     ]
   },
   {

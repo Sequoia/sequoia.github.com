@@ -309,6 +309,6 @@ Looks good!
 
 ## Conclusion
 
-While `debug` is a very small & easy-to-get-started-with module, it can tuned in very granular ways and is a powerful development tool. By attaching debug statements to all events, *outside* of our application code, we can trace the path of an event system & better understand how events interact, without adding any debug statments into our application code. If you've found another novel use of this library or have any questions about my post, [let me know](http://sequoia.makes.software/contact/). Happy logging!
+While `debug` is a very small & easy-to-get-started-with module, it can tuned in very granular ways and is a powerful development tool. By attaching debug statements to all events, *outside* of our application code, we can trace the path of an event system & better understand how events interact, without adding any debug statments into our application code. If you've found another novel use of this library or have any questions about my post, [let me know](https://sequoia.makes.software/contact/). Happy logging!
 
 *NB: I use the term "debugger function" and "debug logging" rather than "debugger" and "debugging" in this post advisedly. A "debugger" typically refers to a tool that can be used to pause execution & alter the code at runtime, for example the [VSCode debugger](https://code.visualstudio.com/docs/editor/debugging). What we're doing here is "logging."*
