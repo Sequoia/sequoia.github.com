@@ -5,18 +5,25 @@
     "links": [
       ["Plugin","https://marketplace.visualstudio.com/items?itemName=sequoia.loopback-json-schemas"],
       ["Plugin Repo", "https://github.com/Sequoia/loopback-json-schemas-vscode"],
-      ["JSON Schemas Repo", "https://github.com/Sequoia/loopback-json-schemas-vscode/blob/master/README.md"]
-    ],
-    "add this later" :[
-      ["Blog Post", "https://strongloop.com/strongblog/announcing-loopback-jsonschemas-vs-code-extension"]
+      ["JSON Schemas Repo", "https://github.com/Sequoia/loopback-json-schemas-vscode/blob/master/README.md"],
+      ["Announcement Blog Post", "https://strongloop.com/strongblog/announcing-loopback-jsonschemas-vs-code-extension"]
     ]
+  },
+  {
+    "name" : "Custom Map Editor/Annotator",
+    "description": "A client needed a map annotation tool to allow university students and faculty to mark on a map where they like to eat, what routes they bike or drive, what areas they feel unsafe in, and all sorts of other things, with the purpose of better understanding how the campus was used. Functionally speaking, this meant creating a map annotator that allowed users to add **paths**, **polygons** (\"areas\"), and **points** of various visual styles. I used Leaflet.js and its \"editable\" plugin for basic annotation mechanics, and added my own special hacks to allow multiple path & point styles on one map, as Leaflet does not support this by default. It was quite a fun exercise!",
+    "links": [
+      ["Live Project", "http://ema.comap.elkus-manfredi.com/"],
+      ["Debugging Blog Post (side result of this project)", "https://sequoia.makes.software/the-nodejs-debug-module-advanced-usage/"]
+    ] 
   },
   {
     "name" : "This Website",
     "description":"I was using Jekyll (with automatic github build), but when they updated the Jekyll version on github my blog exploded. :( I evaluated maaannnyyyy options for a blog/website, eventually deciding to build my own as it's mostly just reading `md` files & shoving them in a template! Take a look at the repo `src/index.js` file for the meat of this website builder.",
     "links": [
       ["Repo", "https://github.com/Sequoia/sequoia.github.com"],
-      ["Proof of Concept RX.js rewrite", "https://github.com/Sequoia/rx-static-blog-example"]
+      ["Proof of Concept RX.js rewrite", "https://github.com/Sequoia/rx-static-blog-example"],
+      ["Blog post about how this site is built", "/lets-code-it-static-site-generator/"]
     ]
   },
   {
