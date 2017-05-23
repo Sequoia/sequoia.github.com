@@ -102,6 +102,9 @@ function writeProjectsPage(){
   function getProjectJson(){
     let jsonRoute = root('_content/projects.json');
     return require(jsonRoute)
+      .map(addPropFn('anchor')(project => string(project.name).slugify().s))
+      // .map(addPropFn('anchor')(() => 'foo'))
+      // .map(x => {console.log(x); return x;})
       .map(onProp('description')(marked)); //markdown
   }
 }

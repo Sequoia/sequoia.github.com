@@ -1,14 +1,18 @@
 extends ./layout.jade
 block content
   h1= title
+  span.byline Published #{date}
+  if originalUrl
+    span.linkback Originally published at 
+      a(href=originalUrl)= originalBlog
   //-span.time Published&nbsp;
     //-time= date
   | !{body}
 
   include ./includes/comment_form.jade
 
-  footer
-    span.byline Published #{date}
-    if originalUrl
-      span.linkback Originally published at 
-        a(href=originalUrl)= originalBlog
+  //- footer
+  //-   span.byline Published #{date}
+  //-   if originalUrl
+  //-     span.linkback Originally published at 
+  //-       a(href=originalUrl)= originalBlog

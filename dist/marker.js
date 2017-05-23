@@ -26,7 +26,12 @@ var wordpress_compat_options = {
   }
 };
 
-_marked2.default.setOptions({
+var renderer = new _marked2.default.Renderer();
+renderer.heading = function (text, level) {
+  var escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
+
+  return '<h' + level + ' id="' + escapedText + '">\n    <a class="header-anchor" href="#' + escapedText + '">\n      <span class="header-link"></span>\n    </a>\n    ' + text + '</h' + level + '>';
+}, _marked2.default.setOptions({
   sanitize: false,
   langPrefix: 'hljs lang-',
   highlight: function highlight(code, lang) {
@@ -36,7 +41,8 @@ _marked2.default.setOptions({
       console.warn('highlight.js: LANGUAGE NOT FOUND: ```%s', lang);
       return code;
     }
-  }
+  },
+  renderer: renderer
 });
 
 // marked.setOptions(wordpress_compat_options);

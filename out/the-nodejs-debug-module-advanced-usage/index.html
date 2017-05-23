@@ -1,6 +1,9 @@
-<!DOCTYPE html><html lang="en"><head><title>The Node.js Debug Module: Advanced Usage &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="So you're familiar with the `debug` node module. Let's take a look at some more advanced uses and useful tricks!"><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/work/">Hire</a></li></ul></nav></header><aside id="announce" class="row hidden"><h2 class="three columns">News</h2><ul id="news-items" class="nine columns"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>The Node.js Debug Module: Advanced Usage</h1><p>In <a href="https://strongloop.com/strongblog/lets-code-it-the-debug-module/">a previous post</a>, I mentioned having used the <a href="https://www.npmjs.com/package/debug"><code>debug</code></a> module to help me understand some complex interactions between events in <a href="http://leafletjs.com">Leaflet</a> &amp; <a href="https://github.com/Leaflet/Leaflet.Editable">Leaflet.Editable</a>. Before we go over that, however, let&#39;s lay the groundwork with a couple organizational tips that makes <code>debug</code> easier to use. This post assumes you have either used <a href="https://www.npmjs.com/package/debug"><code>debug</code></a> or read the <a href="https://strongloop.com/strongblog/lets-code-it-the-debug-module/">previous post</a>, so please do one of those first!</p>
-<h2 id="namespacing-debug-functions">Namespacing Debug Functions</h2>
-<p>The <code>debug</code> module has a great namespacing feature which allows you to enable or disable debug functions in groups. It is very simple-- namespaces are separated by colons:</p>
+<!DOCTYPE html><html lang="en"><head><title>The Node.js Debug Module: Advanced Usage &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="So you're familiar with the `debug` node module. Let's take a look at some more advanced uses and useful tricks!"><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/work/">Hire</a></li></ul></nav></header><aside id="announce" class="row hidden"><h2 class="three columns">News</h2><ul id="news-items" class="nine columns"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>The Node.js Debug Module: Advanced Usage</h1><span class="byline">Published October 12, 2016</span><span class="linkback">Originally published at <a href="https://strongloop.com/strongblog/the-node-js-debug-module-advanced-usage/">StrongBlog</a></span><p>In <a href="https://strongloop.com/strongblog/lets-code-it-the-debug-module/">a previous post</a>, I mentioned having used the <a href="https://www.npmjs.com/package/debug"><code>debug</code></a> module to help me understand some complex interactions between events in <a href="http://leafletjs.com">Leaflet</a> &amp; <a href="https://github.com/Leaflet/Leaflet.Editable">Leaflet.Editable</a>. Before we go over that, however, let&#39;s lay the groundwork with a couple organizational tips that makes <code>debug</code> easier to use. This post assumes you have either used <a href="https://www.npmjs.com/package/debug"><code>debug</code></a> or read the <a href="https://strongloop.com/strongblog/lets-code-it-the-debug-module/">previous post</a>, so please do one of those first!</p>
+<h2 id="namespacing-debug-functions">
+    <a class="header-anchor" href="#namespacing-debug-functions">
+      <span class="header-link"></span>
+    </a>
+    Namespacing Debug Functions</h2><p>The <code>debug</code> module has a great namespacing feature which allows you to enable or disable debug functions in groups. It is very simple-- namespaces are separated by colons:</p>
 <pre><code class="hljs lang-js">debug(<span class="hljs-string">'app:meta'</span>)(<span class="hljs-string">'config loaded'</span>)
 debug(<span class="hljs-string">'app:database'</span>)(<span class="hljs-string">'querying db...'</span>);
 debug(<span class="hljs-string">'app:database'</span>)(<span class="hljs-string">'got results!'</span>, results);
@@ -19,8 +22,11 @@ debug(<span class="hljs-string">'app:database'</span>)(<span class="hljs-string"
 debug(<span class="hljs-string">'myapp:thirdparty:twitter:auth'</span>)(<span class="hljs-string">'success!'</span>);
 </code></pre>
 <p>...but don&#39;t overdo it. Personally, I try not to go deeper than two or sometimes three levels.</p>
-<h3 id="more-namespace-tricks">More Namespace Tricks</h3>
-<p>The &quot;splat&quot; character <code>*</code> can match a namespace at any level when enabling a debug function. Given the two debug functions above above, you can enable both thus:  </p>
+<h3 id="more-namespace-tricks">
+    <a class="header-anchor" href="#more-namespace-tricks">
+      <span class="header-link"></span>
+    </a>
+    More Namespace Tricks</h3><p>The &quot;splat&quot; character <code>*</code> can match a namespace at any level when enabling a debug function. Given the two debug functions above above, you can enable both thus:  </p>
 <pre><code class="hljs lang-nohighlight">$ DEBUG=&#39;myapp:thirdparty:*:auth&#39; node app.js
 </code></pre>
 <p>The <code>*</code> here will match <code>identica</code>, <code>twitter</code>, or any other string.</p>
@@ -35,8 +41,11 @@ debug(<span class="hljs-string">'myapp:thirdparty:twitter:auth'</span>)(<span cl
 <p>We can turn them all on with <code>HTTP:*</code>, but it turns out that <code>200</code> comes up way too frequently so we want it turned off. The <code>-</code> prefix operator can be used to explicitly disable a single debugger. Here, we&#39;ll enable all debuggers in this namespace then disable just <code>HTTP:200</code>:</p>
 <pre><code class="hljs lang-nohighlight">$ DEBUG=&#39;HTTP:*,-HTTP:200&#39; node app.js
 </code></pre>
-<h2 id="externalizing-debug-functions">Externalizing Debug Functions</h2>
-<p><code>debug()</code> is factory function, and when you call it it returns another function, which can be called to actually write to the console (more specifically, <code>STDERR</code> in Node.js):</p>
+<h2 id="externalizing-debug-functions">
+    <a class="header-anchor" href="#externalizing-debug-functions">
+      <span class="header-link"></span>
+    </a>
+    Externalizing Debug Functions</h2><p><code>debug()</code> is factory function, and when you call it it returns another function, which can be called to actually write to the console (more specifically, <code>STDERR</code> in Node.js):</p>
 <pre><code class="hljs lang-js">debug(<span class="hljs-string">'abc'</span>);        <span class="hljs-comment">// creates function, doesn't write anything </span>
 debug(<span class="hljs-string">'foo'</span>)(<span class="hljs-string">'bar'</span>); <span class="hljs-comment">// writes `foo: bar` (assuming that debugger is enabled)</span>
 </code></pre>
@@ -97,9 +106,15 @@ debugInit(<span class="hljs-string">'configuring application...'</span>);
 <pre><code class="hljs lang-nohighlight">app:init env not DEV, loading configs from DB +1ms
 </code></pre>
 <p>...and quickly discover that a missing environment variable is what&#39;s causing our issue.</p>
-<h2 id="debugging-all-known-events-on-an-event-emitter">Debugging All (known) Events on an Event Emitter</h2>
-<h3 id="background">Background</h3>
-<p>My goal was to run my <code>newFeatureAdded</code> function whenever a user created a new &quot;feature&quot; on the map. (<em>This example is browser-based, but the approach works just as well with <a href="https://nodejs.org/dist/latest-v6.x/docs/api/events.html">Node.js EventEmiters</a>.</em>)</p>
+<h2 id="debugging-all-known-events-on-an-event-emitter">
+    <a class="header-anchor" href="#debugging-all-known-events-on-an-event-emitter">
+      <span class="header-link"></span>
+    </a>
+    Debugging All (known) Events on an Event Emitter</h2><h3 id="background">
+    <a class="header-anchor" href="#background">
+      <span class="header-link"></span>
+    </a>
+    Background</h3><p>My goal was to run my <code>newFeatureAdded</code> function whenever a user created a new &quot;feature&quot; on the map. (<em>This example is browser-based, but the approach works just as well with <a href="https://nodejs.org/dist/latest-v6.x/docs/api/events.html">Node.js EventEmiters</a>.</em>)</p>
 <p>When I started, I attached my <code>newFeatureAdded</code> function to <code>editable:created</code>:</p>
 <pre><code class="hljs lang-js">map.on(<span class="hljs-string">'editable:created'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>)</span>{
   newFeatureAdded(e.layer);
@@ -128,8 +143,11 @@ map.on(<span class="hljs-string">'editable:vertex:clicked'</span>, <span class="
 });
 </code></pre>
 <p>This is starting to look redundant, and doubly bad as it&#39;s forcing us to wrap our handler calls in extra anonymous functions rather than delegate to them directly, i.e. <code>map.on(&#39;click&#39;, disableEdits)</code>. Furthermore, not knowing the event system well, I want to <em>discover</em> other events that fire at times that might be useful to me.</p>
-<h3 id="another-approach-">Another Approach...</h3>
-<p>In order to build my UI, I needed to understand the interactions between <a href="http://leafletjs.com/reference.html#map-events">Leaflet&#39;s 35 events</a> and <a href="https://github.com/Leaflet/Leaflet.Editable/tree/leaflet0.7#events">Leaflet.Editable&#39;s 18 events</a>, which overlap, trigger one another, and have somewhat ambiguous names (<code>layeradd</code>, <code>dragend</code>, <code>editable:drawing:dragend</code>, <code>editable:drawing:end</code>, <code>editable:drawing:commit</code>, <code>editable:created</code> etc.). </p>
+<h3 id="another-approach-">
+    <a class="header-anchor" href="#another-approach-">
+      <span class="header-link"></span>
+    </a>
+    Another Approach...</h3><p>In order to build my UI, I needed to understand the interactions between <a href="http://leafletjs.com/reference.html#map-events">Leaflet&#39;s 35 events</a> and <a href="https://github.com/Leaflet/Leaflet.Editable/tree/leaflet0.7#events">Leaflet.Editable&#39;s 18 events</a>, which overlap, trigger one another, and have somewhat ambiguous names (<code>layeradd</code>, <code>dragend</code>, <code>editable:drawing:dragend</code>, <code>editable:drawing:end</code>, <code>editable:drawing:commit</code>, <code>editable:created</code> etc.). </p>
 <p>We could pore over the docs and source code to find the exact event we need for each eventuality... or we could attach debug loggers to <em>all</em> events and see what we see!</p>
 <p>The approach is as follows:</p>
 <ol>
@@ -198,8 +216,11 @@ debugEvents(mapObject, leafletEvents, <span class="hljs-string">'event:map'</spa
 <pre><code class="hljs lang-js">&gt; localStorage.debug = <span class="hljs-string">'event:editable:*'</span> <span class="hljs-comment">//enable all editable</span>
 &gt; localStorage.debug = <span class="hljs-string">'event:editable:drawing:*'</span>  <span class="hljs-comment">//just editable:drawing events</span>
 </code></pre>
-<h3 id="fine-tuning-the-output">Fine Tuning the output</h3>
-<p>Let&#39;s enable all event debuggers and see what some interactions look like...</p>
+<h3 id="fine-tuning-the-output">
+    <a class="header-anchor" href="#fine-tuning-the-output">
+      <span class="header-link"></span>
+    </a>
+    Fine Tuning the output</h3><p>Let&#39;s enable all event debuggers and see what some interactions look like...</p>
 <p><img src="/img/debug_events_1.gif" alt="gif of debugger output with rapidly flowing debug statments during user interaction with map. Lots and lots of &quot;event:map:mousemove&quot; events."></p>
 <p>Looks nice, but the <code>mousemove</code> events are coming so fast they push everything else out of the console, i.e. they are noise. Some trial and error taught me it that <code>drag</code> events are equally noisy and that I don&#39;t need to know the core map events most of the time, just the <code>editable</code> events.</p>
 <p>With this info we can tune our logging down to just what we need, enabling only <code>editable:</code> events &amp; ignoring <em>all</em> drag &amp; mousemove events:</p>
@@ -207,7 +228,10 @@ debugEvents(mapObject, leafletEvents, <span class="hljs-string">'event:map'</spa
 </code></pre>
 <p><img src="/img/debug_events_2.gif" alt="gif of debugger output with a smaller number of events. Console screen does not overflow"></p>
 <p>Looks good!</p>
-<h2 id="conclusion">Conclusion</h2>
-<p>While <code>debug</code> is a very small &amp; easy-to-get-started-with module, it can tuned in very granular ways and is a powerful development tool. By attaching debug statements to all events, <em>outside</em> of our application code, we can trace the path of an event system &amp; better understand how events interact, without adding any debug statments into our application code. If you&#39;ve found another novel use of this library or have any questions about my post, <a href="https://sequoia.makes.software/contact/">let me know</a>. Happy logging!</p>
+<h2 id="conclusion">
+    <a class="header-anchor" href="#conclusion">
+      <span class="header-link"></span>
+    </a>
+    Conclusion</h2><p>While <code>debug</code> is a very small &amp; easy-to-get-started-with module, it can tuned in very granular ways and is a powerful development tool. By attaching debug statements to all events, <em>outside</em> of our application code, we can trace the path of an event system &amp; better understand how events interact, without adding any debug statments into our application code. If you&#39;ve found another novel use of this library or have any questions about my post, <a href="https://sequoia.makes.software/contact/">let me know</a>. Happy logging!</p>
 <p><em>NB: I use the term &quot;debugger function&quot; and &quot;debug logging&quot; rather than &quot;debugger&quot; and &quot;debugging&quot; in this post advisedly. A &quot;debugger&quot; typically refers to a tool that can be used to pause execution &amp; alter the code at runtime, for example the <a href="https://code.visualstudio.com/docs/editor/debugging">VSCode debugger</a>. What we&#39;re doing here is &quot;logging.&quot;</em></p>
-<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="The Node.js Debug Module: Advanced Usage"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form><footer><span class="byline">Published October 12, 2016</span><span class="linkback">Originally published at <a href="https://strongloop.com/strongblog/the-node-js-debug-module-advanced-usage/">StrongBlog</a></span></footer></section><footer>&copy; Sequoia McDowell 2017</footer></div></body></html>
+<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="The Node.js Debug Module: Advanced Usage"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form></section><footer>&copy; Sequoia McDowell 2017</footer></div></body></html>

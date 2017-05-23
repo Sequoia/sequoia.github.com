@@ -1,6 +1,9 @@
-<!DOCTYPE html><html lang="en"><head><title>Migrating a Legacy System to a Modern API Framework &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="LoopBack makes it easy to develop greenfield APIs, but in real business environments, data isn’t always tidy &amp; cooperative. In this case study we'll see what it takes to migrate a complex legacy application to LoopBack."><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/work/">Hire</a></li></ul></nav></header><aside id="announce" class="row hidden"><h2 class="three columns">News</h2><ul id="news-items" class="nine columns"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>Migrating a Legacy System to a Modern API Framework</h1><p>We know LoopBack <a href="https://strongloop.com/strongblog/compare-express-restify-hapi-loopback/">makes it a breeze</a> to create APIs that expose <a href="https://strongloop.com/strongblog/getting-started-with-the-mysql-connector-for-loopback/">SQL</a> &amp; <a href="https://strongloop.com/strongblog/node-js-loopback-js-couchbase-connector/">NoSQL</a> databases (<a href="https://strongloop.com/strongblog/node-js-loopback-api-gateway-sample-applications/">among others</a>), but in real business environments, data isn’t always this tidy. As business systems develop over years, it’s not uncommon for information to be scattered across databases, flat files, or even third party servers outside of your control. Given a complex situation like this, is it still possible to build an API using LoopBack? Yes it is, and that’s just what we’ll do now!</p>
-<h2 id="background">Background</h2>
-<p>Al’s Appliances is a retail chain that specializes in ACME products. Al’s has a website where customers can order products, but getting replacement parts for products is more complicated.</p>
+<!DOCTYPE html><html lang="en"><head><title>Migrating a Legacy System to a Modern API Framework &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="LoopBack makes it easy to develop greenfield APIs, but in real business environments, data isn’t always tidy &amp; cooperative. In this case study we'll see what it takes to migrate a complex legacy application to LoopBack."><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/work/">Hire</a></li></ul></nav></header><aside id="announce" class="row hidden"><h2 class="three columns">News</h2><ul id="news-items" class="nine columns"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>Migrating a Legacy System to a Modern API Framework</h1><span class="byline">Published March 3, 2016</span><span class="linkback">Originally published at <a href="https://strongloop.com/strongblog/migrating-a-legacy-system-to-loopback-even-with-complicated-data/">StrongBlog</a></span><p>We know LoopBack <a href="https://strongloop.com/strongblog/compare-express-restify-hapi-loopback/">makes it a breeze</a> to create APIs that expose <a href="https://strongloop.com/strongblog/getting-started-with-the-mysql-connector-for-loopback/">SQL</a> &amp; <a href="https://strongloop.com/strongblog/node-js-loopback-js-couchbase-connector/">NoSQL</a> databases (<a href="https://strongloop.com/strongblog/node-js-loopback-api-gateway-sample-applications/">among others</a>), but in real business environments, data isn’t always this tidy. As business systems develop over years, it’s not uncommon for information to be scattered across databases, flat files, or even third party servers outside of your control. Given a complex situation like this, is it still possible to build an API using LoopBack? Yes it is, and that’s just what we’ll do now!</p>
+<h2 id="background">
+    <a class="header-anchor" href="#background">
+      <span class="header-link"></span>
+    </a>
+    Background</h2><p>Al’s Appliances is a retail chain that specializes in ACME products. Al’s has a website where customers can order products, but getting replacement parts for products is more complicated.</p>
 <p>To wit:</p>
 <ol>
 <li>Customer calls Sales Rep with <strong>product name</strong>.</li>
@@ -16,8 +19,11 @@
 <li>Alternately, Customer can enter a part number and get up-to-date info for that part.</li>
 </ol>
 <p>Their team can build the web UI, but it’s up to us to tie the data together &amp; expose it via an API.</p>
-<h2 id="lay-of-the-land">Lay of the Land</h2>
-<p>We have the following assets to work with:</p>
+<h2 id="lay-of-the-land">
+    <a class="header-anchor" href="#lay-of-the-land">
+      <span class="header-link"></span>
+    </a>
+    Lay of the Land</h2><p>We have the following assets to work with:</p>
 <ol>
 <li><strong>Products Database</strong>: a SQL database with a Product table listing name, description, and ID of each product.</li>
 <li><p><strong>Parts lists (<a href="https://en.wikipedia.org/wiki/Comma-separated_values#Example">CSVs</a>)</strong>: ACME delivers CSV files, named by product number &amp; containing a list of part names &amp; <a href="https://en.wikipedia.org/wiki/Stock_keeping_unit">SKUs</a>. For example:</p>
@@ -47,8 +53,11 @@ rotator axel,15b4c
 <li><code>/v1/products/{id}/parts</code> → Array of parts for a product</li>
 <li><code>/v1/parts/{sku}</code> → Object representing a single part</li>
 </ol>
-<h1 id="why-loopback-">Why LoopBack?</h1>
-<p>Given this nonstandard, somewhat complicated data architecture, why not build a 100% custom solution instead of using LoopBack, which best shows its strengths with more structured data? Using LoopBack here will require us to go “off the beaten path” a bit, but in return we get…</p>
+<h1 id="why-loopback-">
+    <a class="header-anchor" href="#why-loopback-">
+      <span class="header-link"></span>
+    </a>
+    Why LoopBack?</h1><p>Given this nonstandard, somewhat complicated data architecture, why not build a 100% custom solution instead of using LoopBack, which best shows its strengths with more structured data? Using LoopBack here will require us to go “off the beaten path” a bit, but in return we get…</p>
 <ul>
 <li>easy extension of our application with any of the components in the LoopBack ecosystem</li>
 <li>API discovery and exploration tools</li>
@@ -83,8 +92,11 @@ invoke loopback:property
 </code></pre>
 <p><em>NB: You can see a detailed example of this process <a href="https://docs.strongloop.com/display/public/LB/Create+new+models">here</a>.</em></p>
 <p>Once we finish this process, we have models for Product, Part, and PartsList, with corresponding <code>js</code> and <code>json</code> files in <code>server/models/</code>. The PartsList is a join model that connects a Product to its Parts. That model requires some custom code, so we’ll save that bit for last and start by wiring the Product and Part model to their datasources.</p>
-<h2 id="product">Product</h2>
-<p>Our generated <code>server/models/product.json</code>:</p>
+<h2 id="product">
+    <a class="header-anchor" href="#product">
+      <span class="header-link"></span>
+    </a>
+    Product</h2><p>Our generated <code>server/models/product.json</code>:</p>
 <pre><code class="hljs lang-js">{
   <span class="hljs-string">"name"</span>: <span class="hljs-string">"Product"</span>,
   <span class="hljs-string">"properties"</span>: {
@@ -274,8 +286,11 @@ Our generated <code>server/models/part.json</code>:</p>
 </code></pre>
 <p>Endpoint 4 (<code>/v1/parts/{sku}</code>) is now working! It’s just a passthrough to the ACME API right now, but this has advantages: we can set up logging, caching, etc., we don’t have to worry about <a href="https://remysharp.com/2011/04/21/getting-cors-working">CORS</a>, and if ACME makes a breaking API change, we can fix it in one place in our server code and clients are none the wiser.</p>
 <p>With the easy parts out of the way, it’s time to tackle our CSVs…</p>
-<h2 id="partslist">PartsList</h2>
-<p>Although the part lists CSVs contain product names, we’re relying on the remote server for this, so the CSVs are being used as simple many-to-many
+<h2 id="partslist">
+    <a class="header-anchor" href="#partslist">
+      <span class="header-link"></span>
+    </a>
+    PartsList</h2><p>Although the part lists CSVs contain product names, we’re relying on the remote server for this, so the CSVs are being used as simple many-to-many
 join tables. Many-to-many tables don’t generally need their own model, so why are we creating one in this case? There are two reasons:</p>
 <ol>
 <li>Rather than a normal join table filled with <code>product_id</code>, <code>sku</code> pairs, we have a bunch of files named like <code>{product_id}.csv</code> that contain lists of <code>sku</code>s. This will require custom join logic, and,</li>
@@ -320,8 +335,11 @@ join tables. Many-to-many tables don’t generally need their own model, so why 
   <span class="hljs-string">'partsListFilePath'</span> : <span class="hljs-string">'/vol/NAS_2/shared/parts_lists'</span>
 }
 </code></pre>
-<h2 id="overriding-partslist-find-">Overriding <code>PartsList.find</code></h2>
-<p>We know that when querying related models, LoopBack will call <code>find</code> on the “through” model (aka join model), so we’ll override <code>PartsList.find</code> and make it:</p>
+<h2 id="overriding-code-partslist-find-code-">
+    <a class="header-anchor" href="#overriding-code-partslist-find-code-">
+      <span class="header-link"></span>
+    </a>
+    Overriding <code>PartsList.find</code></h2><p>We know that when querying related models, LoopBack will call <code>find</code> on the “through” model (aka join model), so we’ll override <code>PartsList.find</code> and make it:</p>
 <ol>
 <li>read <code>thing_123.csv</code></li>
 <li>get the <code>sku</code>s</li>
@@ -418,7 +436,10 @@ app.models.Part.getAll(skus, done);
 ]
 </code></pre>
 <p>It works!</p>
-<h2 id="next-steps">Next Steps</h2>
-<p>We managed to tie together a motley collection of data sources, represent them with LoopBack models, and expose them on an API built to IT’s specifications. That’s a good stopping point for now. Obvious next steps would be to <a href="https://docs.strongloop.com/display/public/LB/Exposing+models+over+REST#ExposingmodelsoverREST-HidingmethodsandRESTendpoints">disable unused methods</a> (this API is read-only, after all), build a client to interact with our API, and to <a href="https://docs.strongloop.com/display/public/LB/Authentication%2C+authorization%2C+and+permissions">set up auth</a> if needed. By using LoopBack to build our API, we’ve positioned ourselves to be able to complete these tasks easily. We can now answer my initial question with greater confidence: yes, LoopBack can do it!</p>
+<h2 id="next-steps">
+    <a class="header-anchor" href="#next-steps">
+      <span class="header-link"></span>
+    </a>
+    Next Steps</h2><p>We managed to tie together a motley collection of data sources, represent them with LoopBack models, and expose them on an API built to IT’s specifications. That’s a good stopping point for now. Obvious next steps would be to <a href="https://docs.strongloop.com/display/public/LB/Exposing+models+over+REST#ExposingmodelsoverREST-HidingmethodsandRESTendpoints">disable unused methods</a> (this API is read-only, after all), build a client to interact with our API, and to <a href="https://docs.strongloop.com/display/public/LB/Authentication%2C+authorization%2C+and+permissions">set up auth</a> if needed. By using LoopBack to build our API, we’ve positioned ourselves to be able to complete these tasks easily. We can now answer my initial question with greater confidence: yes, LoopBack can do it!</p>
 <p>Want to see all this stuff actually work? Check out the <a href="https://github.com/Sequoia/loopback-legacy-migration-example">demo app</a>!</p>
-<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="Migrating a Legacy System to a Modern API Framework"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form><footer><span class="byline">Published March 3, 2016</span><span class="linkback">Originally published at <a href="https://strongloop.com/strongblog/migrating-a-legacy-system-to-loopback-even-with-complicated-data/">StrongBlog</a></span></footer></section><footer>&copy; Sequoia McDowell 2017</footer></div></body></html>
+<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="Migrating a Legacy System to a Modern API Framework"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form></section><footer>&copy; Sequoia McDowell 2017</footer></div></body></html>

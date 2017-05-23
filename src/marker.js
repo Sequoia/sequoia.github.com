@@ -13,6 +13,17 @@ var wordpress_compat_options = {
   }
 }
 
+var renderer = new marked.Renderer();
+renderer.heading = function (text, level) {
+  var escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
+
+  return `<h${level} id="${escapedText}">
+    <a class="header-anchor" href="#${escapedText}">
+      <span class="header-link"></span>
+    </a>
+    ${text}</h${level}>`;
+},
+
 marked.setOptions({
   sanitize: false,
   langPrefix : 'hljs lang-',
@@ -23,7 +34,8 @@ marked.setOptions({
       console.warn('highlight.js: LANGUAGE NOT FOUND: ```%s', lang);
       return code;
     }
-  }
+  },
+  renderer: renderer
 });
 
 // marked.setOptions(wordpress_compat_options);

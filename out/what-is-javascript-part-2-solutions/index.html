@@ -1,12 +1,15 @@
 <!DOCTYPE html><html lang="en"><head><title>What is &quot;JavaScript?&quot; Part 2: Solutions &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="&quot;Bleeding edge&quot; is all well and good, but can't we at least opt-in? Here's one weird trick to bring some transparency into the JavaScript module ecosystem with regard to new language features…
-"><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/work/">Hire</a></li></ul></nav></header><aside id="announce" class="row hidden"><h2 class="three columns">News</h2><ul id="news-items" class="nine columns"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>What is &quot;JavaScript?&quot; Part 2: Solutions</h1><p>In my <a href="/what-is-javascript-part-1-the-problem">last post</a> I outlined my concerns about lack of visibility into the incorporation of experimental features into popular JavaScript libraries. In short, the problems are:</p>
+"><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/work/">Hire</a></li></ul></nav></header><aside id="announce" class="row hidden"><h2 class="three columns">News</h2><ul id="news-items" class="nine columns"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>What is &quot;JavaScript?&quot; Part 2: Solutions</h1><span class="byline">Published March 2, 2017</span><p>In my <a href="/what-is-javascript-part-1-the-problem">last post</a> I outlined my concerns about lack of visibility into the incorporation of experimental features into popular JavaScript libraries. In short, the problems are:</p>
 <ol>
 <li>The lack of a <strong>clear, standard indicator</strong> of when a library incorporates experimental language features</li>
 <li>The inability to <strong>consciously opt in</strong> to using these features</li>
 </ol>
 <p>In this post I&#39;ll outline my proposals for addressing these issues.</p>
-<h2 id="proposal-1a-minimum-proposal-stage-">Proposal 1a: <code>minimum-proposal-stage</code></h2>
-<p>This idea is lifted from Composer, which has <a href="https://getcomposer.org/doc/04-schema.md#minimum-stability"><code>minimum-stability</code> property</a> for projects. My idea is as follows:</p>
+<h2 id="proposal-1a-code-minimum-proposal-stage-code-">
+    <a class="header-anchor" href="#proposal-1a-code-minimum-proposal-stage-code-">
+      <span class="header-link"></span>
+    </a>
+    Proposal 1a: <code>minimum-proposal-stage</code></h2><p>This idea is lifted from Composer, which has <a href="https://getcomposer.org/doc/04-schema.md#minimum-stability"><code>minimum-stability</code> property</a> for projects. My idea is as follows:</p>
 <ol>
 <li>Libraries indicate if they are using experimental language features and from what stage</li>
 <li>Project authors specify the lowest proposal stage they&#39;re comfortable with</li>
@@ -19,17 +22,26 @@
 <pre><code class="hljs lang-js"><span class="hljs-string">"lowest-proposal-stage"</span> : <span class="hljs-number">2</span>
 </code></pre>
 <p>Upon attempting to install Aurelia, npm would warn you that the library&#39;s <code>lowest-proposal-stage</code> is lower than your <code>minimum-proposal-stage</code>. Basically: &quot;hey! You&#39;re about to install a library with language features more experimental than you might be comfortable with!&quot;</p>
-<h3 id="pros">Pros</h3>
-<ul>
+<h3 id="pros">
+    <a class="header-anchor" href="#pros">
+      <span class="header-link"></span>
+    </a>
+    Pros</h3><ul>
 <li>More granularity: This solution allows me to say &quot;I am comfortable with Stage 4 (finalized, but not yet released) features, but nothing below that.&quot;</li>
 </ul>
-<h3 id="cons">Cons</h3>
-<ul>
+<h3 id="cons">
+    <a class="header-anchor" href="#cons">
+      <span class="header-link"></span>
+    </a>
+    Cons</h3><ul>
 <li>Requires users to learn more about the TC39 feature proposal process (perhaps this is actually a &quot;pro&quot;?)</li>
 <li>Would require libraries to update their <code>lowest-proposal-stage</code> property as features are adopted into the language</li>
 </ul>
-<h2 id="proposal-1b-maximum-ecmascript-version-">Proposal 1b: <code>maximum-ecmascript-version</code></h2>
-<p>This is like above, but pegged to ECMAScript versions.</p>
+<h2 id="proposal-1b-code-maximum-ecmascript-version-code-">
+    <a class="header-anchor" href="#proposal-1b-code-maximum-ecmascript-version-code-">
+      <span class="header-link"></span>
+    </a>
+    Proposal 1b: <code>maximum-ecmascript-version</code></h2><p>This is like above, but pegged to ECMAScript versions.</p>
 <p>Example: in my project, I don&#39;t want code <em>newer than</em> ES7 (the current released standard at the time of this writing), i.e. I don&#39;t want unreleased features:</p>
 <pre><code class="hljs lang-js">    <span class="hljs-string">"maximum-ecmascript-version"</span> : <span class="hljs-number">7</span>
 </code></pre>
@@ -40,18 +52,27 @@
 <pre><code class="hljs lang-js">    <span class="hljs-string">"ecmascript-version"</span> : <span class="hljs-number">5</span>
 </code></pre>
 <p>because the <code>ecmascript-version</code> is lower than my maximum.</p>
-<h3 id="pros">Pros</h3>
-<ul>
+<h3 id="pros">
+    <a class="header-anchor" href="#pros">
+      <span class="header-link"></span>
+    </a>
+    Pros</h3><ul>
 <li>Simpler, easier to understand</li>
 <li>Released ES versions do not change, no need to update <code>ecmascript-version</code> if it&#39;s set to a released version</li>
 </ul>
-<h3 id="cons">Cons</h3>
-<ul>
+<h3 id="cons">
+    <a class="header-anchor" href="#cons">
+      <span class="header-link"></span>
+    </a>
+    Cons</h3><ul>
 <li>Not possible to allow some proposal stages but forbid others with this system</li>
 </ul>
 <p>The two systems could also be used in conjunction with one another; I won&#39;t go into that possibility here.</p>
-<h2 id="possible-solution-2-badges">Possible Solution 2: Badges</h2>
-<p>Add badges to <code>README.md</code> files to indicate whether experimental features are used in the library. Here are some sample badges that use the proposal stage <em>names</em> rather than numbers:</p>
+<h2 id="possible-solution-2-badges">
+    <a class="header-anchor" href="#possible-solution-2-badges">
+      <span class="header-link"></span>
+    </a>
+    Possible Solution 2: Badges</h2><p>Add badges to <code>README.md</code> files to indicate whether experimental features are used in the library. Here are some sample badges that use the proposal stage <em>names</em> rather than numbers:</p>
 <p><em>(Please excuse the largeness of these badges)</em></p>
 <p><img src="/img/ES--proposal--stage-proposal-red.svg" alt="">
 <img src="/img/ES--proposal--stage-draft-yellow.svg" alt="">
@@ -60,17 +81,26 @@
 <p><img src="/img/ecmascript--version-6-green.svg" alt="">
 <img src="/img/ecmascript--version-7-yellow.svg" alt="">
 <img src="/img/ecmascript--version-experimental-red.svg" alt=""></p>
-<h3 id="pros">Pros</h3>
-<ul>
+<h3 id="pros">
+    <a class="header-anchor" href="#pros">
+      <span class="header-link"></span>
+    </a>
+    Pros</h3><ul>
 <li>Does not require tooling (npm) updates&mdash;authors can start doing this right away</li>
 <li>Human readable</li>
 </ul>
-<h3 id="cons">Cons</h3>
-<ul>
+<h3 id="cons">
+    <a class="header-anchor" href="#cons">
+      <span class="header-link"></span>
+    </a>
+    Cons</h3><ul>
 <li>Not machine readable: npm cannot alert you if you attempt to install something with features less stable than you prefer</li>
 </ul>
-<h2 id="conclusion">Conclusion</h2>
-<p>Change is good, but stability is also good. Everyone should be able to easily choose to use <em>or not use</em> the latest and greatest JavaScript features and proposed features. Increasing visibility into experimental feature dependencies will...</p>
+<h2 id="conclusion">
+    <a class="header-anchor" href="#conclusion">
+      <span class="header-link"></span>
+    </a>
+    Conclusion</h2><p>Change is good, but stability is also good. Everyone should be able to easily choose to use <em>or not use</em> the latest and greatest JavaScript features and proposed features. Increasing visibility into experimental feature dependencies will...</p>
 <ol>
 <li>Give users a better understanding of the JavaScript feature development process and what it means for something to be &quot;JavaScript&quot;</li>
 <li>Allow users to consciously opt-in to using experimental language features</li>
@@ -79,4 +109,4 @@
 <li>Make JavaScript look a bit less scary to enterprise organizations</li>
 </ol>
 <p>Please let me know what you think with a comment (below) or <a href="https://news.ycombinator.com/item?id=13775534">on hackernews</a>.</p>
-<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="What is &quot;JavaScript?&quot; Part 2: Solutions"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form><footer><span class="byline">Published March 2, 2017</span></footer></section><footer>&copy; Sequoia McDowell 2017</footer></div></body></html>
+<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="What is &quot;JavaScript?&quot; Part 2: Solutions"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form></section><footer>&copy; Sequoia McDowell 2017</footer></div></body></html>
