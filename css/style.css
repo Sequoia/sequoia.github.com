@@ -4,7 +4,11 @@
 }
 /*color*/
 header, #wrap>footer{
-  background-color: lavender;
+  background-color: #f5f8fa;
+}
+
+a, a:visited{
+  color:#0275d8;
 }
 
 #wrap>*{
@@ -18,29 +22,51 @@ body{
 	font-family:sans-serif;
 }
 
-p{
+p, li{
   line-height: 1.3em;
 }
 
 #content h1{
   font-size:2em;
+  margin-top:1em;
+  border-bottom:solid 3px;
+  padding-bottom:.2em;
 }
 
 #content h2{
-  margin-top: 30px;
-  padding-top: 30px;
-  border-top: dashed 6px lavender;
+  margin-top: 2em;
+  /*padding-top: 30px;*/
+  /*border-top: dashed 6px lavender;*/
+  /*text-decoration:underline;*/
+  padding-bottom:.2em;
+  border-bottom: solid 2px;
 }
 
-h3{
-	margin:10px 0;
+#content h3{
+	margin-top:2em;
+  padding-bottom:.2em;
+  border-bottom: solid 1px;
+}
+
+#content > ul, #content > ol{
+  border-left: solid .5em lightgrey;
+  padding-left:1.5em;
+}
+
+#content li{
+  margin:.5em 0;
+}
+
+li > ul > li, li > ol > li{
+  margin:0;
 }
 
 header{
   position:relative;
   padding-top:.5em;
   padding-bottom:.5em;
-  margin-bottom:.5em;
+  margin-bottom:1em;
+  margin-top:1em;
 }
 
   header h1{
@@ -56,8 +82,9 @@ header{
   nav{
     min-height:1.4em;
     position:absolute;
-    right:1em;
-    bottom:.5em;
+    right:0;
+    /*top:0;*/
+    bottom:0em;
     font-size: 1.2em;
   }
     nav ul{
@@ -70,8 +97,24 @@ header{
         text-align: right;
         margin: .2em 0;
       }
-      nav ul li a, nav ul nav li a:visited{
-        color:blue;
+      nav ul li span,
+      nav ul li a{
+        padding-right:.25em;
+        border-right: solid .75em transparent;
+      }
+      nav ul li a,
+      nav ul li a:visited{
+        color:#0275d8;
+      }
+      nav ul li a:hover{
+        text-decoration:none;
+        color:#bd4147;
+        border-right: solid .75em #bd4147;
+      }
+      nav ul li.current span{
+        text-decoration:none;
+        color:black;
+        border-right: solid .75em black;
       }
 
 
@@ -94,13 +137,41 @@ header{
 pre{
 	margin:.1em;
 }
-code{
+/*code{
 	background: lavenderblush;
+}*/
+/* bootstrap */
+code {
+    padding: .2rem .4rem;
+    font-size: 90%;
+    color: #bd4147;
+    background-color: #f7f7f9;
+    border-radius: .25rem;
 }
+a > code{
+  text-decoration: underline;
+}
+a > code:hover, a > code:focus{
+    color: #fff;
+    background-color: #292b2c;
+}
+
+    /* bootstrap */
+    /* cool alt code style (originally "kbd") */
+/*code {
+    padding: .2rem .4rem;
+    font-size: 90%;
+    color: #fff;
+    background-color: #292b2c;
+    border-radius: .2rem;
+}*/
+
 pre code.hljs{
-	border-right: solid 8px lavender;
-	background: lavenderblush;
+	/*border-right: solid 8px lavender;*/
+	background: #f7f7f9;
 	/* padding-bottom: 5px; */
+  padding:1.5rem;
+  border-radius:.4em;
 }
 
 pre code.lang-nohighlight>*{
@@ -108,9 +179,8 @@ pre code.lang-nohighlight>*{
 }
 
 img{
-	width:98%;
-	border:outset 3px #CCC;
-	
+	width:100%;
+	/*border:outset 3px #CCC;*/
 }
 
 h2+p, h3+p{
@@ -215,7 +285,20 @@ section.blog-posts{
     pre code.hljs{
       overflow-x:scroll;
     }
+    header {
+      margin-top:0;
+    }
 
+    #content h1{
+      font-size:1.5em;
+    }
+    #content h2{
+      font-size:1.4em;
+    }
+
+    #content h3{
+      font-size:1.2em;
+    }
     header h1{
       font-size: 1.5em;
     }
@@ -240,12 +323,20 @@ section.blog-posts{
       font-size:.9em;
       /*width:80%;*/
     }
+    nav ul li span, nav ul li a, nav ul li.current span, nav ul li a:hover{
+      border-right:none;
+    }
     nav ul li:first-child{
       margin-left:0;
     }
     nav ul li:last-child{
       margin-right:0;
     }
+
+    nav ul li.current span{
+      color:black;
+    }
+
     #wrap aside#announce{
       display: block;
     }
@@ -266,17 +357,24 @@ section.blog-posts{
 }
 
 footer{
-  border-top:dashed 6px lavender;  
-}
-footer span{
-  display:block;
+  /*border-top:solid 2px;  */
 }
 
-footer span.byline::before{
-  content: "📝 ";
+span.byline, span.linkback{
+  text-align:right;
+  display:inline-block;
+  font-style:oblique;
+  padding-right: 1em;
+  /*font-size:em;*/
 }
-footer span.linkback::before{
+
+span.byline::before{
+  content: "📝 ";
+  font-style:normal;
+}
+span.linkback::before{
   content: "🔖 ";
+  font-style:normal;
 }
 
 @media print {
@@ -319,3 +417,55 @@ fieldset{
   border-width: 1px;
   padding: 1em;
 }
+
+a {
+  text-decoration:none;
+}
+a:hover, a:focus{
+  text-decoration: underline;
+}
+
+a.header-anchor{
+  display:block;
+  float:right;
+}
+a.header-anchor::before{
+  width:.8em;
+  height:.8em;
+  padding:.3em .2em .2em;
+  content:"🔗";
+}
+a.header-anchor:hover{
+  text-decoration:none;
+  background:lightgrey;
+  border-radius:.5em;
+}
+/* hide if it's h2+h3, immediately adjacent */
+
+h2+h3 > a.header-anchor{
+  display:none;
+}
+
+/* Bootstrap portions (marked above) carry the following license:
+
+The MIT License (MIT)
+
+Copyright (c) 2011-2016 Twitter, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.*/

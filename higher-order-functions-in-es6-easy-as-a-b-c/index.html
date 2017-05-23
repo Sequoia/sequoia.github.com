@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>Higher Order Functions in ES6: Easy as a =&gt; b =&gt; c; &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="New language features can make an expression that was cumbersome to write in ES5 easy in ES6, enabling and encouraging the use of this type of expression. We’re going to look at one such case here: how arrow functions make it easier to write higher-order functions in ES6."><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/work/">Hire</a></li></ul></nav></header><aside id="announce" class="row hidden"><h2 class="three columns">News</h2><ul id="news-items" class="nine columns"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>Higher Order Functions in ES6: Easy as a =&gt; b =&gt; c;</h1><p>ES6 is nigh! As more and more libraries &amp; Thought Leaders start incorporating ES6 into their code, what used to be nice-to-know ES6 features are becoming required knowledge. And it’s not just new syntax – in many cases, new language features can make an expression that was cumbersome to write in ES5 easy in ES6, enabling and encouraging the use of this type of expression. We’re going to look at one such case here: how arrow functions make it easier to write higher-order functions in ES6.</p>
+<!DOCTYPE html><html lang="en"><head><title>Higher Order Functions in ES6: Easy as a =&gt; b =&gt; c; &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="New language features can make an expression that was cumbersome to write in ES5 easy in ES6, enabling and encouraging the use of this type of expression. We’re going to look at one such case here: how arrow functions make it easier to write higher-order functions in ES6."><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/work/">Hire</a></li></ul></nav></header><aside id="announce" class="row hidden"><h2 class="three columns">News</h2><ul id="news-items" class="nine columns"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>Higher Order Functions in ES6: Easy as a =&gt; b =&gt; c;</h1><span class="byline">Published January 11, 2016</span><span class="linkback">Originally published at <a href="https://strongloop.com/strongblog/an-introduction-to-javascript-es6-arrow-functions/">StrongBlog</a></span><p>ES6 is nigh! As more and more libraries &amp; Thought Leaders start incorporating ES6 into their code, what used to be nice-to-know ES6 features are becoming required knowledge. And it’s not just new syntax – in many cases, new language features can make an expression that was cumbersome to write in ES5 easy in ES6, enabling and encouraging the use of this type of expression. We’re going to look at one such case here: how arrow functions make it easier to write higher-order functions in ES6.</p>
 <p>A higher order function is a function that does one or both of the following:</p>
 <ol>
 <li>takes one or more functions as arguments</li>
@@ -21,8 +21,11 @@ square(<span class="hljs-number">9</span>) === <span class="hljs-number">81</spa
 <span class="hljs-keyword">const</span> sortBy = <span class="hljs-function"><span class="hljs-params">p</span> =&gt;</span> (a, b) =&gt; a[p] &gt; b[p];
 </code></pre>
 <p>What’s this “p returns o returns o.hasOwnProperty…”? How can we use <code>has</code>?</p>
-<h2 id="understanding-the-syntax">Understanding the syntax</h2>
-<p>To illustrate writing higher order functions with arrows, let’s look at a classic example: add.  In ES5 that would look like this:</p>
+<h2 id="understanding-the-syntax">
+    <a class="header-anchor" href="#understanding-the-syntax">
+      <span class="header-link"></span>
+    </a>
+    Understanding the syntax</h2><p>To illustrate writing higher order functions with arrows, let’s look at a classic example: add.  In ES5 that would look like this:</p>
 <pre><code class="hljs lang-javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">add</span>(<span class="hljs-params">x</span>)</span>{
   <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">y</span>)</span>{
     <span class="hljs-keyword">return</span> y + x;
@@ -50,8 +53,11 @@ add(<span class="hljs-number">8</span>)(<span class="hljs-number">7</span>);    
 </code></pre>
 <p>Our <code>add</code> function isn’t terribly useful, but it should illustrate how an outer
 function can take an argument <code>(x)</code> and reference it in a function it returns.</p>
-<h2 id="sorting-our-users">Sorting our users</h2>
-<p>So you’re looking at an ES6 library on github and encounter code that looks like this:</p>
+<h2 id="sorting-our-users">
+    <a class="header-anchor" href="#sorting-our-users">
+      <span class="header-link"></span>
+    </a>
+    Sorting our users</h2><p>So you’re looking at an ES6 library on github and encounter code that looks like this:</p>
 <pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> has = <span class="hljs-function"><span class="hljs-params">p</span> =&gt;</span> o =&gt; o.hasOwnProperty(p);
 <span class="hljs-keyword">const</span> sortBy = <span class="hljs-function"><span class="hljs-params">p</span> =&gt;</span> (a, b) =&gt; a[p] &gt; b[p];
 
@@ -69,19 +75,28 @@ result = users
 <p>What’s going on here? We’re calling the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/prototype#Methods">Array prototype’s sort and filter
 methods</a>, each of which take a single function argument, but instead of writing function expressions and passing them to filter and sort, we’re calling functions that return functions, and passing those to filter and sort.</p>
 <p>Let’s take a look, with the expression that returns a function underlined in each case.</p>
-<h4 id="without-higher-order-functions">Without higher order functions</h4>
-<pre><code class="hljs lang-javascript">result = users
+<h4 id="without-higher-order-functions">
+    <a class="header-anchor" href="#without-higher-order-functions">
+      <span class="header-link"></span>
+    </a>
+    Without higher order functions</h4><pre><code class="hljs lang-javascript">result = users
   .filter(<span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> x.hasOwnProperty(<span class="hljs-string">'pets'</span>)) <span class="hljs-comment">//pass Function to filter</span>
   .sort(<span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> a.age &gt; b.age);        <span class="hljs-comment">//pass Function to sort</span>
 </code></pre>
-<h4 id="with-higher-order-functions">With higher order functions</h4>
-<pre><code class="hljs lang-javascript">result = users
+<h4 id="with-higher-order-functions">
+    <a class="header-anchor" href="#with-higher-order-functions">
+      <span class="header-link"></span>
+    </a>
+    With higher order functions</h4><pre><code class="hljs lang-javascript">result = users
   .filter(has(<span class="hljs-string">'pets'</span>))  <span class="hljs-comment">//pass Function to filter</span>
   .sort(sortBy(<span class="hljs-string">'age'</span>)); <span class="hljs-comment">//pass Function to sort</span>
 </code></pre>
 <p>In each case, <code>filter</code> is passed a function that checks if an object has a property called “pets.”</p>
-<h2 id="why-is-this-useful-">Why is this useful?</h2>
-<p>This is useful for a few reasons:</p>
+<h2 id="why-is-this-useful-">
+    <a class="header-anchor" href="#why-is-this-useful-">
+      <span class="header-link"></span>
+    </a>
+    Why is this useful?</h2><p>This is useful for a few reasons:</p>
 <ul>
 <li>It reduces repetitive code</li>
 <li>It allows for easier reuse of code</li>
@@ -117,8 +132,11 @@ methods</a>, each of which take a single function argument, but instead of writi
 hasPets(user);          <span class="hljs-comment">// false</span>
 has(<span class="hljs-string">'age'</span>)(user);       <span class="hljs-comment">//true</span>
 </code></pre>
-<h2 id="a-step-further">A Step Further</h2>
-<p>Let’s make a function that will produce a filter function that checks that an
+<h2 id="a-step-further">
+    <a class="header-anchor" href="#a-step-further">
+      <span class="header-link"></span>
+    </a>
+    A Step Further</h2><p>Let’s make a function that will produce a filter function that checks that an
 object has a <strong>key</strong> with a certain <strong>value</strong>. Our <code>has</code> function checked for a key, but to check value as well our filter function will need to know two things (key and value), not just one. Let’s take a look at one approach:</p>
 <pre><code class="hljs lang-javascript"><span class="hljs-comment">//[p]roperty, [v]alue, [o]bject:</span>
 <span class="hljs-keyword">const</span> is = <span class="hljs-function"><span class="hljs-params">p</span> =&gt;</span> v =&gt; <span class="hljs-function"><span class="hljs-params">o</span> =&gt;</span> o.hasOwnProperty(p) &amp;&amp; o[p] == v;
@@ -148,8 +166,11 @@ object has a <strong>key</strong> with a certain <strong>value</strong>. Our <co
 isEmployed(user);   <span class="hljs-comment">// true</span>
 isContractor(user); <span class="hljs-comment">// false</span>
 </code></pre>
-<h2 id="a-note-on-style">A note on style</h2>
-<p>Scan this function, and note the time it takes you to figure out what’s going on:</p>
+<h2 id="a-note-on-style">
+    <a class="header-anchor" href="#a-note-on-style">
+      <span class="header-link"></span>
+    </a>
+    A note on style</h2><p>Scan this function, and note the time it takes you to figure out what’s going on:</p>
 <pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> i = <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> y =&gt; <span class="hljs-function"><span class="hljs-params">z</span> =&gt;</span> h(x)(y) &amp;&amp; y[x] == z;
 </code></pre>
 <p>Now take a look at this same function, written slightly differently:</p>
@@ -158,8 +179,11 @@ isContractor(user); <span class="hljs-comment">// false</span>
 <p>There is a tendency when writing one line functions to be as terse as possible,
 at the expense of readability. Fight this urge! Short, meaningless names make
 for cute-looking, <strong>hard to understand</strong> functions. Do yourself and your fellow coders a favor and spend the extra few characters for meaningful variable and function names.</p>
-<h2 id="one-more-thing-">One more thing. . .</h2>
-<p>What if you want to sort by age in descending order rather than ascending? Or find out who’s not an employee? Do we have to write new utility functions <code>sortByDesc</code> and <code>notHas</code>? No we do not! We can wrap our functions, which return Booleans, with a function that inverts that boolean, true to false and vice versa:</p>
+<h2 id="one-more-thing-">
+    <a class="header-anchor" href="#one-more-thing-">
+      <span class="header-link"></span>
+    </a>
+    One more thing. . .</h2><p>What if you want to sort by age in descending order rather than ascending? Or find out who’s not an employee? Do we have to write new utility functions <code>sortByDesc</code> and <code>notHas</code>? No we do not! We can wrap our functions, which return Booleans, with a function that inverts that boolean, true to false and vice versa:</p>
 <pre><code class="hljs lang-javascript"><span class="hljs-comment">//take args, pass them thru to function x, invert the result of x</span>
 <span class="hljs-keyword">const</span> invert = <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> (...args) =&gt; !x(...args);
 <span class="hljs-keyword">const</span> noPets = invert(hasPets);
@@ -168,6 +192,9 @@ for cute-looking, <strong>hard to understand</strong> functions. Do yourself and
   .filter(noPets)
   .sort(invert(sortBy(<span class="hljs-string">'age'</span>)));
 </code></pre>
-<h2 id="conclusion">Conclusion</h2>
-<p>Functional programming has been gaining momentum throughout the programming world and ES6 arrow functions make it easier to use this style in JavaScript. If you haven’t encountered FP style code in JavaScript yet, it’s likely you will in the coming months. This means that even if you don’t love the style, it’s important to understand the basics of this style, some of which we’ve gone over here. Hopefully the concepts outlined in this post have helped prepare you for when you see this code in the wild, and maybe even inspired you to give this style a try!</p>
-<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="Higher Order Functions in ES6: Easy as a =&gt; b =&gt; c;"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form><footer><span class="byline">Published January 11, 2016</span><span class="linkback">Originally published at <a href="https://strongloop.com/strongblog/an-introduction-to-javascript-es6-arrow-functions/">StrongBlog</a></span></footer></section><footer>&copy; Sequoia McDowell 2017</footer></div></body></html>
+<h2 id="conclusion">
+    <a class="header-anchor" href="#conclusion">
+      <span class="header-link"></span>
+    </a>
+    Conclusion</h2><p>Functional programming has been gaining momentum throughout the programming world and ES6 arrow functions make it easier to use this style in JavaScript. If you haven’t encountered FP style code in JavaScript yet, it’s likely you will in the coming months. This means that even if you don’t love the style, it’s important to understand the basics of this style, some of which we’ve gone over here. Hopefully the concepts outlined in this post have helped prepare you for when you see this code in the wild, and maybe even inspired you to give this style a try!</p>
+<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="Higher Order Functions in ES6: Easy as a =&gt; b =&gt; c;"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form></section><footer>&copy; Sequoia McDowell 2017</footer></div></body></html>

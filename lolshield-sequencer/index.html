@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>LoLshield Sequencer &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="How do you encode animations for a 9x14 LED matrix? By building a web-app, of course!"><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/work/">Hire</a></li></ul></nav></header><aside id="announce" class="row hidden"><h2 class="three columns">News</h2><ul id="news-items" class="nine columns"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>LoLshield Sequencer</h1><p>The goal of this project was to create a tool to make it easier to create &quot;animations&quot; on the <a href="http://jimmieprodgers.com/kits/lolshield/makelolshield/">LoL Shield</a>, an <a href="http://arduino.cc/">Arduino</a> shield with a bunch of LEDs.  <a href="https://docs.google.com/spreadsheet/ccc?key=0Aj5ldW_o2jR3dEJXMnI2Q1V4dkNQa0x5U0J2QVdyWHc&amp;hl=en#gid=0">The existing tool</a> that was offered to assist in mapping out the shield states was a Google spreadsheet which I could never figure out how to use.  I wanted a tool that:</p>
+<!DOCTYPE html><html lang="en"><head><title>LoLshield Sequencer &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="How do you encode animations for a 9x14 LED matrix? By building a web-app, of course!"><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/work/">Hire</a></li></ul></nav></header><aside id="announce" class="row hidden"><h2 class="three columns">News</h2><ul id="news-items" class="nine columns"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>LoLshield Sequencer</h1><span class="byline">Published July 18, 2012</span><p>The goal of this project was to create a tool to make it easier to create &quot;animations&quot; on the <a href="http://jimmieprodgers.com/kits/lolshield/makelolshield/">LoL Shield</a>, an <a href="http://arduino.cc/">Arduino</a> shield with a bunch of LEDs.  <a href="https://docs.google.com/spreadsheet/ccc?key=0Aj5ldW_o2jR3dEJXMnI2Q1V4dkNQa0x5U0J2QVdyWHc&amp;hl=en#gid=0">The existing tool</a> that was offered to assist in mapping out the shield states was a Google spreadsheet which I could never figure out how to use.  I wanted a tool that:</p>
 <ul>
 <li>was point &amp; click (&amp; generally easy to use)</li>
 <li>made it easy to visualize how a state would look on the actual board</li>
@@ -56,26 +56,35 @@ The impetus for the project was as follows: I wanted to do an Arduino project an
 <img src="/img/lss_hi.jpg" alt="Young man using the LSS in the browser with the Arduino shield updating in real time">
 <img src="/img/lss_group.jpg" alt="A small group of people messing with the LSS">
 What heartwarming hacker-con moments!  Later I added a <code>localStorage</code> component so people could make little animations &amp; save them, then see what others had done.  I&#39;ll have that up and running next con for sure.</p>
-<h2 id="tools-technologies-i-used">Tools &amp; Technologies I used</h2>
-<ul>
+<h2 id="tools-amp-technologies-i-used">
+    <a class="header-anchor" href="#tools-amp-technologies-i-used">
+      <span class="header-link"></span>
+    </a>
+    Tools &amp; Technologies I used</h2><ul>
 <li>Arduino &amp; soldering iron</li>
 <li>Arduino IDE &amp; C</li>
 <li>underscore, jquery &amp; require.js &amp; Jam.js</li>
 <li>Mousetrap.js (ok not yet but soon!)</li>
 <li>PHP &amp; Linux</li>
 </ul>
-<h2 id="what-i-learned">What I learned</h2>
-<ul>
+<h2 id="what-i-learned">
+    <a class="header-anchor" href="#what-i-learned">
+      <span class="header-link"></span>
+    </a>
+    What I learned</h2><ul>
 <li>Serial programming is much harder than I expected! It turns out the software can read faster than the hardware can write so if you write your code wrong your reads will actually &quot;overtake&quot; the serial buffer on the Arduino.</li>
 <li>Require.js seems useful but jam.js doesn&#39;t really offer much.  The latter doesn&#39;t keep an up-to-date version of the former, which makes it much less useful (lost a lot of time figuring out why my shims didn&#39;t work)</li>
 <li>Linux writes to serial port at 9600 baud by default</li>
 <li>Learned to solder</li>
 </ul>
-<h2 id="next-steps">Next steps</h2>
-<ul>
+<h2 id="next-steps">
+    <a class="header-anchor" href="#next-steps">
+      <span class="header-link"></span>
+    </a>
+    Next steps</h2><ul>
 <li>Add a few more functions: shift right, left, up, &amp; down; invert (yay more bitwise math!)</li>
 <li>Abstract the DOM interactions (writing to DOM, listening for events) to its own module so one could conceivably use the LSS module without the browser</li>
 <li>Get Jimmie Rodgers to link to the tool instead of the Google doc!!!</li>
 <li>Tests? ehh... we&#39;ll see :)</li>
 </ul>
-<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="LoLshield Sequencer"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form><footer><span class="byline">Published July 18, 2012</span></footer></section><footer>&copy; Sequoia McDowell 2017</footer></div></body></html>
+<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="LoLshield Sequencer"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form></section><footer>&copy; Sequoia McDowell 2017</footer></div></body></html>

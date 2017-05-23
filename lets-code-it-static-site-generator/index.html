@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>Let's Code It: Static Site Generator &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Markdown in, HTML out... do we really need a framework for this? I Don't Think So!!"><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/work/">Hire</a></li></ul></nav></header><aside id="announce" class="row hidden"><h2 class="three columns">News</h2><ul id="news-items" class="nine columns"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>Let's Code It: Static Site Generator</h1><p>Traditionally, if you wanted to create a blog or website that you can update easily without having to directly edit HTML, you&#39;d use a tool like Wordpress. The basic flow for serving a website from a CMS like Wordpress is as follows:</p>
+<!DOCTYPE html><html lang="en"><head><title>Let's Code It: Static Site Generator &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Markdown in, HTML out... do we really need a framework for this? I Don't Think So!!"><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/work/">Hire</a></li></ul></nav></header><aside id="announce" class="row hidden"><h2 class="three columns">News</h2><ul id="news-items" class="nine columns"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>Let's Code It: Static Site Generator</h1><span class="byline">Published January 5, 2017</span><span class="linkback">Originally published at <a href="https://strongloop.com/strongblog/lets-code-it-static-site-generator/">StrongBlog</a></span><p>Traditionally, if you wanted to create a blog or website that you can update easily without having to directly edit HTML, you&#39;d use a tool like Wordpress. The basic flow for serving a website from a CMS like Wordpress is as follows:</p>
 <ol>
 <li>Store content (e.g. &quot;posts&quot;) in a database</li>
 <li>Store display configuration (templates, CSS, etc.) separately</li>
@@ -10,8 +10,11 @@
 </ol>
 </li>
 </ol>
-<h2 id="enter-static-site-generators">Enter Static Site Generators</h2>
-<p>It occurred to some people that it didn&#39;t make sense to run step three <em>every single time</em> someone hit a page on their site. If step three (combining template with page content) were done in batch beforehand, all of the site&#39;s pages could be stored on disk and served from a static server! An application that takes this approach, generating &quot;static&quot; webpages and storing them as flat HTML files, is referred to as a Static Site Generator (or SSG). An SSG has the following benefits over a CMS: </p>
+<h2 id="enter-static-site-generators">
+    <a class="header-anchor" href="#enter-static-site-generators">
+      <span class="header-link"></span>
+    </a>
+    Enter Static Site Generators</h2><p>It occurred to some people that it didn&#39;t make sense to run step three <em>every single time</em> someone hit a page on their site. If step three (combining template with page content) were done in batch beforehand, all of the site&#39;s pages could be stored on disk and served from a static server! An application that takes this approach, generating &quot;static&quot; webpages and storing them as flat HTML files, is referred to as a Static Site Generator (or SSG). An SSG has the following benefits over a CMS: </p>
 <ol>
 <li>It eliminates the need to run a database server</li>
 <li>It eliminates the need to execute PHP or any application logic on the server</li>
@@ -20,8 +23,11 @@
 <li>Content written as flat markdown files can easily be tracked in a git repo &amp; collaborated on thus</li>
 </ol>
 <p>Points one and two dramatically reduce the attack surface of a web server, which is great for security. Point three (in conjunction with one and two) allows for greater site reliability and allows a server to handle much more traffic without crashing. Point four is very attractive from a cost perspective (as are one, two, and three if you&#39;re paying for hosting). The benefits of static site generators are clear, which is why many organization and individuals are using them, including <a href="https://strongloop.com/strongblog/new-life-for-loopback-documentation/">the publisher of this blog</a> and <a href="https://sequoia.makes.software/">the author of this post</a>!</p>
-<h2 id="ok-let-s-use-an-ssg">OK, Let&#39;s Use an SSG</h2>
-<p>There are many available SSG tools, one hundred and sixty two listed on <a href="https://www.staticgen.com/">a site that tracks such tools</a> at the time of writing. One of the reasons there are so many options is that building an SSG isn&#39;t terribly complicated. The core functionality is:</p>
+<h2 id="ok-let-39-s-use-an-ssg">
+    <a class="header-anchor" href="#ok-let-39-s-use-an-ssg">
+      <span class="header-link"></span>
+    </a>
+    OK, Let&#39;s Use an SSG</h2><p>There are many available SSG tools, one hundred and sixty two listed on <a href="https://www.staticgen.com/">a site that tracks such tools</a> at the time of writing. One of the reasons there are so many options is that building an SSG isn&#39;t terribly complicated. The core functionality is:</p>
 <ol>
 <li>Read markdown files (content)</li>
 <li>Parse frontmatter (we&#39;ll look at this more later)</li>
@@ -32,9 +38,15 @@
 </ol>
 <p>I&#39;ve simplified the process a bit here, but overall, this is a pretty straightforward programming task. Given libraries to do the heavy lifting of parsing markdown, highlighting code, etc., all that&#39;s left is the &quot;read input files, process, write output files.&quot;</p>
 <p>So can we write our own static site generator in Node.js? In this blog post we&#39;ll step through each of the steps outlined above to create the skeleton of an SSG. We&#39;ll skip over some non-page-generation tasks such as organizing images &amp; CSS, but there&#39;s enough here to give you a good overview of what an SSG does. Let&#39;s get started!</p>
-<h1 id="building-an-ssg">Building an SSG</h1>
-<h2 id="1-read-markdown-files">1. Read Markdown Files</h2>
-<p> No Wordpress means no WYSIWYG editor, so we&#39;ll be authoring our posts in a text editor. Like most static site generators, we will store our page content as <a href="https://en.wikipedia.org/wiki/Markdown">Markdown</a> files. Markdown is a lightweight markup alternative to HTML that&#39;s designed to be easy to type, human readable, and typically used to author content that will ultimately be converted to and published as HTML, so it&#39;s ideal for our purpose here. A post written in markdown might look like this:</p>
+<h1 id="building-an-ssg">
+    <a class="header-anchor" href="#building-an-ssg">
+      <span class="header-link"></span>
+    </a>
+    Building an SSG</h1><h2 id="1-read-markdown-files">
+    <a class="header-anchor" href="#1-read-markdown-files">
+      <span class="header-link"></span>
+    </a>
+    1. Read Markdown Files</h2><p> No Wordpress means no WYSIWYG editor, so we&#39;ll be authoring our posts in a text editor. Like most static site generators, we will store our page content as <a href="https://en.wikipedia.org/wiki/Markdown">Markdown</a> files. Markdown is a lightweight markup alternative to HTML that&#39;s designed to be easy to type, human readable, and typically used to author content that will ultimately be converted to and published as HTML, so it&#39;s ideal for our purpose here. A post written in markdown might look like this:</p>
 <pre><code class="hljs lang-md"><span class="hljs-section"># The Hotdog Dilemma</span>
 
 <span class="hljs-emphasis">*Are hotdogs sandwiches*</span>? There are [<span class="hljs-string">many people</span>](<span class="hljs-link">https://en.wikipedia.org/wiki/Weasel_word</span>) who say they are, including:
@@ -66,8 +78,11 @@
   <span class="hljs-comment">//...</span>
 </code></pre>
 <p>This set up will make it easy to write functions to transform out input to our output step by step, and apply those functions, in order, to each post.</p>
-<h2 id="2-parse-frontmatter">2. Parse Frontmatter</h2>
-<p>In a traditional CMS, the <code>Posts</code> table holds not just the contents of the post, but also metadata such as its title, author, publish date, and perhaps a permanent URL or canonical link. This metadata is used both on the post page or in a page <code>&lt;title&gt;</code> and on index pages. In our flat-file system, all the information for a post must be contained in the markdown file for that post. We&#39;ll use the same solution for this challenge that is used by Jekyll and others: YAML frontmatter.</p>
+<h2 id="2-parse-frontmatter">
+    <a class="header-anchor" href="#2-parse-frontmatter">
+      <span class="header-link"></span>
+    </a>
+    2. Parse Frontmatter</h2><p>In a traditional CMS, the <code>Posts</code> table holds not just the contents of the post, but also metadata such as its title, author, publish date, and perhaps a permanent URL or canonical link. This metadata is used both on the post page or in a page <code>&lt;title&gt;</code> and on index pages. In our flat-file system, all the information for a post must be contained in the markdown file for that post. We&#39;ll use the same solution for this challenge that is used by Jekyll and others: YAML frontmatter.</p>
 <p><a href="http://yaml.org/">YAML</a> is a data serialization format that&#39;s basically like JSON but lighter weight. It looks like this:</p>
 <pre><code class="hljs lang-yaml"><span class="hljs-attr">key:</span> value
 <span class="hljs-attr">author:</span> Sequoia McDowell
@@ -104,8 +119,11 @@ getFiles(<span class="hljs-string">'_posts'</span>, {<span class="hljs-attr">mat
   });
 </code></pre>
 <p>Now that our metadata is parsed and removed from the rest of the markdown content, we can work on converting the markdown to HTML. </p>
-<h2 id="3-convert-markdown-to-html">3. Convert Markdown to HTML</h2>
-<p>As mentioned, Markdown is a markup language that provides an easy, flexible way to mark up documents text in a human readable way. It was created by John Gruber in 2004 and introduced in <a href="http://daringfireball.net/projects/markdown/">a blog post</a> that serves as the de-facto standard for the markdown format. This blog post would go on to be referenced by others who wished to build markdown parsers in Ruby, Javascript, PHP, and other languages.</p>
+<h2 id="3-convert-markdown-to-html">
+    <a class="header-anchor" href="#3-convert-markdown-to-html">
+      <span class="header-link"></span>
+    </a>
+    3. Convert Markdown to HTML</h2><p>As mentioned, Markdown is a markup language that provides an easy, flexible way to mark up documents text in a human readable way. It was created by John Gruber in 2004 and introduced in <a href="http://daringfireball.net/projects/markdown/">a blog post</a> that serves as the de-facto standard for the markdown format. This blog post would go on to be referenced by others who wished to build markdown parsers in Ruby, Javascript, PHP, and other languages.</p>
 <p>The problem with having only a &quot;de-facto&quot; standard for a format like markdown is that this means <em>there is no actual, detailed standard</em>. The result is that over the years different markdown parsers introduced their own quirks and differences in parsing behavior, <em>as well as</em> extensions for things like <a href="https://github.com/blog/1375-task-lists-in-gfm-issues-pulls-comments">checklists</a> or <a href="https://help.github.com/articles/basic-writing-and-formatting-syntax/#quoting-code">fenced code blocks</a>. The upshot is this: there is no single &quot;markdown&quot; format-- the markdown you write for one parser <strong>may not be be rendered the same by another parser</strong>.</p>
 <p>In response to this ambiguity, the <a href="http://commonmark.org/">CommonMark</a> standard was created to provide &quot;a strongly defined, highly compatible specification of Markdown.&quot; This means that if you use a CommonMark compatible parser in JavaScript and later switch to a CommonMark compatible parser in Ruby, you should get the exact same output.</p>
 <p>The main JavaScript implementation of CommonMark is <a href="https://github.com/markdown-it/markdown-it"><code>markdown-it</code></a>, which is what we&#39;ll use:</p>
@@ -127,8 +145,11 @@ getFiles(<span class="hljs-string">'_posts'</span>, {<span class="hljs-attr">mat
   });
 </code></pre>
 <p>Now our markdown is HTML!</p>
-<h2 id="4-highlight-code-snippets">4. Highlight Code Snippets</h2>
-<p>We&#39;re writing a technical blog, so we want to display code with syntax highlighting. If I write:</p>
+<h2 id="4-highlight-code-snippets">
+    <a class="header-anchor" href="#4-highlight-code-snippets">
+      <span class="header-link"></span>
+    </a>
+    4. Highlight Code Snippets</h2><p>We&#39;re writing a technical blog, so we want to display code with syntax highlighting. If I write:</p>
 <pre><code class="hljs lang-markdown">Here's a <span class="hljs-emphasis">*pretty good*</span> function:
 
 <span class="hljs-code">```js
@@ -160,8 +181,11 @@ function greet(name){
 <span class="hljs-comment">// ... unchanged ...</span>
 </code></pre>
 <p>Now we can used fenced code blocks as above. We&#39;re almost there!</p>
-<h2 id="5-templating">5. Templating</h2>
-<p>There are plenty of templating libraries in JavaScript; we&#39;ll use <a href="https://pugjs.org/api/getting-started.html">Pug</a> (formerly &quot;Jade&quot;) here. First we&#39;ll create a template for posts:</p>
+<h2 id="5-templating">
+    <a class="header-anchor" href="#5-templating">
+      <span class="header-link"></span>
+    </a>
+    5. Templating</h2><p>There are plenty of templating libraries in JavaScript; we&#39;ll use <a href="https://pugjs.org/api/getting-started.html">Pug</a> (formerly &quot;Jade&quot;) here. First we&#39;ll create a template for posts:</p>
 <pre><code class="hljs lang-jade">//templates/post.pug
 - var thisYear = (new Date()).getFullYear();
 doctype html
@@ -212,8 +236,11 @@ getFiles(<span class="hljs-string">'_posts'</span>, {<span class="hljs-attr">mat
   })
 </code></pre>
 <p>Finally we&#39;re at the last step: writing posts to an output directory.</p>
-<h2 id="6-writing-html-output">6. Writing HTML output</h2>
-<p>We&#39;re going to write our HTML files to a directory named <code>out</code>. This will contain the final output, ready to publish to a web server. Our function should, for each post, write the <code>post.content</code> to a path specified by <code>post.path</code>. Since we&#39;re using Bluebird already, we&#39;ll use the <a href="http://bluebirdjs.com/docs/api/promise.promisifyall.html">promisified</a> version of the file system API.</p>
+<h2 id="6-writing-html-output">
+    <a class="header-anchor" href="#6-writing-html-output">
+      <span class="header-link"></span>
+    </a>
+    6. Writing HTML output</h2><p>We&#39;re going to write our HTML files to a directory named <code>out</code>. This will contain the final output, ready to publish to a web server. Our function should, for each post, write the <code>post.content</code> to a path specified by <code>post.path</code>. Since we&#39;re using Bluebird already, we&#39;ll use the <a href="http://bluebirdjs.com/docs/api/promise.promisifyall.html">promisified</a> version of the file system API.</p>
 <pre><code class="hljs lang-js"><span class="hljs-comment">//...</span>
 <span class="hljs-keyword">const</span> <span class="hljs-built_in">Promise</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">'bluebird'</span>);
 <span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">Promise</span>.promisifyAll(<span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>));
@@ -224,8 +251,11 @@ getFiles(<span class="hljs-string">'_posts'</span>, {<span class="hljs-attr">mat
   <span class="hljs-keyword">return</span> fs.writeFileAsync(path.join(outdir, post.path), post.content);
 }
 </code></pre>
-<h2 id="putting-it-all-together">Putting it All Together</h2>
-<p>Now we have a script that fulfills all of our original goals.</p>
+<h2 id="putting-it-all-together">
+    <a class="header-anchor" href="#putting-it-all-together">
+      <span class="header-link"></span>
+    </a>
+    Putting it All Together</h2><p>Now we have a script that fulfills all of our original goals.</p>
 <pre><code class="hljs lang-js"><span class="hljs-comment">// requires...</span>
 <span class="hljs-comment">// utility functions...</span>
 
@@ -246,8 +276,11 @@ getFiles(<span class="hljs-string">'_posts'</span>, {<span class="hljs-attr">mat
   });
 </code></pre>
 <p>That&#39;s it!</p>
-<h1 id="conclusion-and-next-steps">Conclusion and Next Steps</h1>
-<p>There is a lot we did not go over in this post, such as generating an index page, file watching and automatic re-running and publishing*, but this post shows the <em>basics</em> of static site generation, and how the main logic can be captured on just a few dozen lines. (Admittedly, my production version is <a href="https://github.com/Sequoia/sequoia.github.com/blob/f0a4488c0979dee4dbcb16a8e30eef73620166e9/src/index.js">a bit more complex</a>.)</p>
+<h1 id="conclusion-and-next-steps">
+    <a class="header-anchor" href="#conclusion-and-next-steps">
+      <span class="header-link"></span>
+    </a>
+    Conclusion and Next Steps</h1><p>There is a lot we did not go over in this post, such as generating an index page, file watching and automatic re-running and publishing*, but this post shows the <em>basics</em> of static site generation, and how the main logic can be captured on just a few dozen lines. (Admittedly, my production version is <a href="https://github.com/Sequoia/sequoia.github.com/blob/f0a4488c0979dee4dbcb16a8e30eef73620166e9/src/index.js">a bit more complex</a>.)</p>
 <p>By writing your own tool you miss out out on the reusability of existing tools, but you gain <em>full control</em> over your blog build and <em>less reliance on a third party tool you don&#39;t control</em>. For me, the tradeoff of effort for control was worth it. Perhaps it is for you too!</p>
 <p>* <em>My <a href="https://sequoia.makes.software/lets-code-it-static-site-generator-with-rxjs/">next post</a> will go over those features and more, so stay tuned!</em></p>
-<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="Let's Code It: Static Site Generator"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form><footer><span class="byline">Published January 5, 2017</span><span class="linkback">Originally published at <a href="https://strongloop.com/strongblog/lets-code-it-static-site-generator/">StrongBlog</a></span></footer></section><footer>&copy; Sequoia McDowell 2017</footer></div></body></html>
+<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="Let's Code It: Static Site Generator"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form></section><footer>&copy; Sequoia McDowell 2017</footer></div></body></html>
