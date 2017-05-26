@@ -23,7 +23,7 @@ body{
 }
 
 p, li{
-  line-height: 1.3em;
+  line-height: 1.6em;
 }
 
 #content h1{
@@ -96,6 +96,7 @@ header{
         display:block;
         text-align: right;
         margin: .2em 0;
+        line-height:1.3em;
       }
       nav ul li span,
       nav ul li a{
