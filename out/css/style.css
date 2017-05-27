@@ -65,19 +65,23 @@ header{
   position:relative;
   padding-top:.5em;
   padding-bottom:.5em;
-  margin-bottom:1em;
+  margin-bottom:2em;
   margin-top:1em;
 }
 
+  header nav, header h1, header h2{
+    font-weight:100;
+  }
   header h1{
     margin:5px 0;
     font-size: 3em;
   }
   header h2{
-    text-transform:uppercase;
+    /*text-transform:uppercase;*/
     font-style:oblique;
     color: #333;
     margin-bottom:0;
+    margin-top:.5rem;
   }
   nav{
     min-height:1.4em;
@@ -95,7 +99,7 @@ header{
       nav ul li{
         display:block;
         text-align: right;
-        margin: .2em 0;
+        margin: 0.1em 0;
         line-height:1.3em;
       }
       nav ul li span,

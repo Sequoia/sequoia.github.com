@@ -1,3 +1,12 @@
+# New Styles
+
+* [X] ~~*font-weight:100 on all header items*~~
+  * experiment with just on post pages vs. on all pages
+* [X] ~~*header h2{ margin-top: .5rem; }*~~
+  * [X] ~~*Be sure to fix menu after*~~
+* [X] ~~*h2 : remove uppercase*~~
+
+
 # Random stuff
 
 ## New pages
