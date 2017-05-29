@@ -12,7 +12,7 @@ The microservice architecture is the New Hot Thing in server application archite
 When we split authentication off from a "monolith" application, we have two challenges to contend with:
 
 1. **Sharing cookies between the auth server(s) and application server(s)**
-   On one server on one domain, this was not. With multiple servers on multiple domains, it is. We'll address this challenge by **running all servers under one domain** and proxying to the various servers. (Don't worry, it's easier than it sounds!)
+   On one server on one domain, this was not an issue. With multiple servers on multiple domains, it is. We'll address this challenge by **running all servers under one domain** and proxying to the various servers. (Don't worry, it's easier than it sounds!)
 2. **Sharing a session store across server(s)**
    With a single monolith, we can write sessions to disk, store them in memory, or write them to a database running on the same container. This won't work if we want to be able to scale our application server to many instances as they will not share memory or a local filesystem. We'll address this challenge by **externalizing our session store and sharing it across instances**.
 
@@ -106,7 +106,7 @@ For our demo, our express-based auth server will have three paths:
 
 ### Running the Server
 
-* Our server is set up to run via `npm start` in our package.json file:
+Our server is set up to run via `npm start` in our package.json file:
 
 ```js
 ...
@@ -174,7 +174,7 @@ In order to ensure users who hit our "application" server have logged in, we'll 
 // reader/index.js
 app.use(function checkSession(req, res, next){
   if(!req.session.user){
-    //alternately, res.redirect('/increment'), res.redirect('/login'), etc.
+    //alternately: res.redirect('/login')
     return res.json(403, {
       'message' : 'Please go "log in!" (set up your session)',
       'login': '/login'
@@ -242,7 +242,7 @@ This works fine locally, now let's see it in The Cloud. We'll be using <https://
 
 ```no-highlight
 $ cd writer
-$ now
+$ now     # missing environment variables...
 > Deploying ~/projects/demos/sharing-cookies/writer under sequoia
 > Using Node.js 7.10.0 (default)
 > Ready! https://writer-xyz.now.sh (copied to clipboard) [1s]
@@ -252,7 +252,7 @@ $ now
 ...
 ```
 
-This will deploy our application to now, but it won't actually work, because we the application will not have the environment variables we need set! We can achieve this easily by putting the environment variables in a file calle `.env` (that we **do not check in to git!!!**) and passing that file as a parameter to `now`. It will read the file and load those variables into the environment of our deployment.
+This will deploy our application to `now`, but it won't actually work, because the application will not have the environment variables it needs. We can fix this by putting the environment variables in a file calle `.env` (that we **do not check in to git!!!**) and passing that file as a parameter to `now`. It will read the file and load those variables into the environment of our deployment.
 
 
 ```no-highlight
