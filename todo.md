@@ -6,6 +6,20 @@
   * [X] ~~*Be sure to fix menu after*~~
 * [X] ~~*h2 : remove uppercase*~~
 
+you put h1 and h2 in a div
+1 minute ago
+J
+Jesse Kochis
+then on your header put display: flex
+1 minute ago
+J
+Jesse Kochis
+then on your nav put margin-left: auto
+now
+J
+Jesse Kochis
+and take off position: absolute
+
 
 # Random stuff
 

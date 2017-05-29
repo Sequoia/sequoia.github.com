@@ -1,0 +1,318 @@
+<!DOCTYPE html><html lang="en"><head><title>Session Management with Microservices &#128123; Sequoia's Website</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Microservices make some tasks easier and introduce some challenges where they didn't exist before. In this post we'll look at sharing sessions across microservices on the `now` platform.
+"><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><!--does this do anything? who knows--><link href="https://twitter.com/_sequoia" rel="me"><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Programmer, Educator</h2><nav><ul id="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/work/">Hire</a></li></ul></nav></header><aside id="announce" class="row hidden"><h2 class="three columns">News</h2><ul id="news-items" class="nine columns"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>Session Management with Microservices</h1><span class="byline">Published May 29, 2017</span><p>The microservice architecture is the New Hot Thing in server application architecture and it presents various benefits, including ease of scaling and the ability to use multiple programming languages across one application. As we know, however, there&#39;s no such thing as free lunch! This flexibility comes with costs and presents some challenges that are not present in classic &quot;monolith&quot; applications. In this post we&#39;ll examine one such challenge: sharing sessions across services.</p>
+<h2 id="sharing-sessions">
+    <a class="header-anchor" href="#sharing-sessions">
+      <span class="header-link"></span>
+    </a>
+    Sharing Sessions</h2><p>When we split authentication off from a &quot;monolith&quot; application, we have two challenges to contend with:</p>
+<ol>
+<li><strong>Sharing cookies between the auth server(s) and application server(s)</strong>
+On one server on one domain, this was not. With multiple servers on multiple domains, it is. We&#39;ll address this challenge by <strong>running all servers under one domain</strong> and proxying to the various servers. (Don&#39;t worry, it&#39;s easier than it sounds!)</li>
+<li><strong>Sharing a session store across server(s)</strong>
+With a single monolith, we can write sessions to disk, store them in memory, or write them to a database running on the same container. This won&#39;t work if we want to be able to scale our application server to many instances as they will not share memory or a local filesystem. We&#39;ll address this challenge by <strong>externalizing our session store and sharing it across instances</strong>.</li>
+</ol>
+<p>For the purposes of demonstrating session sharing, we&#39;ll be creating two simple servers: <code>writer</code>, our &quot;auth&quot; server that <em>sets and modifies</em> sessions, and <code>reader</code>, our &quot;application&quot; server that <em>checks login and reads</em> sessions. Code for this demo can be found here: <a href="https://github.com/Sequoia/sharing-cookies">https://github.com/Sequoia/sharing-cookies</a>.</p>
+<p><em>NB: You may be thinking &quot;let&#39;s use JWTs! They are stateless and circumvent the cookie sharing issue completely.&quot; Using JWTs to reimplement sessions is <a href="http://cryto.net/~joepie91/blog/2016/06/13/stop-using-jwt-for-sessions/">a bad idea for various reasons</a>, so we won&#39;t be doing it here</em></p>
+<h2 id="setting-up-quot-auth-quot-server">
+    <a class="header-anchor" href="#setting-up-quot-auth-quot-server">
+      <span class="header-link"></span>
+    </a>
+    Setting up &quot;Auth&quot; Server</h2><p>In order to share sessions across servers, we&#39;ll use an external redis server to store session info. I&#39;m using a free redis instance from <a href="https://redislabs.com/">https://redislabs.com/</a> for this demo.</p>
+<h3 id="setup">
+    <a class="header-anchor" href="#setup">
+      <span class="header-link"></span>
+    </a>
+    Setup</h3><p>Here we set up an express server with redis-based session tracking and run our server on port <code>8090</code>.</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">// writer/index.js</span>
+<span class="hljs-keyword">const</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>);
+<span class="hljs-keyword">const</span> session = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express-session'</span>);
+<span class="hljs-keyword">const</span> RedisStore = <span class="hljs-built_in">require</span>(<span class="hljs-string">'connect-redis'</span>)(session);
+<span class="hljs-keyword">const</span> app = express();
+
+<span class="hljs-keyword">const</span> redisOptions = {
+  <span class="hljs-attr">url</span> : process.env.REDIS_SESSION_URL
+}
+
+<span class="hljs-keyword">const</span> sessionOptions = {
+  <span class="hljs-attr">store</span>: <span class="hljs-keyword">new</span> RedisStore(redisOptions),
+  <span class="hljs-attr">secret</span>: process.env.SESSION_SECRET,
+  <span class="hljs-attr">logErrors</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">unset</span>: <span class="hljs-string">'destroy'</span>
+}
+
+app.use(session(sessionOptions));
+
+app.listen(<span class="hljs-number">8090</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'WRITE server listening'</span>);
+});
+</code></pre>
+<h3 id="environment-variables">
+    <a class="header-anchor" href="#environment-variables">
+      <span class="header-link"></span>
+    </a>
+    Environment Variables</h3><p>Our application relies on <code>REDIS_SESSION_URL</code> and <code>SESSION_SECRET</code> being available as environment variables. These are externalized both for security and to allow us to share these values across different application instances.</p>
+<h3 id="routes">
+    <a class="header-anchor" href="#routes">
+      <span class="header-link"></span>
+    </a>
+    Routes</h3><p>For our demo, our express-based auth server will have three paths:</p>
+<ol>
+<li><p><code>/login</code>: set a user session.</p>
+<pre><code class="hljs lang-js">app.get(<span class="hljs-string">'/login'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>)</span>{
+  <span class="hljs-comment">// .. insert auth logic here .. //</span>
+  <span class="hljs-keyword">if</span>(!req.session.user){
+    req.session.user = {
+      <span class="hljs-attr">id</span> : <span class="hljs-built_in">Math</span>.random()
+    };
+  }
+
+  res.json({
+    <span class="hljs-attr">message</span> : <span class="hljs-string">'you are now logged in'</span>,
+    <span class="hljs-attr">user</span> : req.session.user
+  });
+});
+</code></pre>
+</li>
+<li><code>/increment</code>: increment a counter on the session (update session data)<pre><code class="hljs lang-js">app.get(<span class="hljs-string">'/increment'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">incrementCounter</span>(<span class="hljs-params">req, res</span>)</span>{
+  <span class="hljs-keyword">if</span>(req.session.count){
+    req.session.count++;
+  }<span class="hljs-keyword">else</span>{
+    req.session.count = <span class="hljs-number">1</span>;
+  }
+  res.json({
+    <span class="hljs-attr">message</span> : <span class="hljs-string">'Incremented Count'</span>,
+    <span class="hljs-attr">count</span>: req.session.count
+  });
+});
+</code></pre>
+</li>
+<li><code>/logout</code>: destroy a session<pre><code class="hljs lang-js">app.get(<span class="hljs-string">'/logout'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">destroySession</span>(<span class="hljs-params">req, res</span>)</span>{
+  <span class="hljs-keyword">if</span>(req.session){
+    req.session.destroy(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">done</span>(<span class="hljs-params"></span>)</span>{
+      res.json({
+        <span class="hljs-attr">message</span>: <span class="hljs-string">'logged out : count reset'</span>
+      });
+    });
+  }
+});
+</code></pre>
+</li>
+</ol>
+<h3 id="running-the-server">
+    <a class="header-anchor" href="#running-the-server">
+      <span class="header-link"></span>
+    </a>
+    Running the Server</h3><ul>
+<li>Our server is set up to run via <code>npm start</code> in our package.json file:</li>
+</ul>
+<pre><code class="hljs lang-js">...
+  <span class="hljs-string">"scripts"</span> : {
+    <span class="hljs-string">"start"</span> : <span class="hljs-string">"node index.js"</span>
+  }
+...
+</code></pre>
+<p>We start by running <code>npm run</code> with the appropriate environment variables set. There are many ways to set environment variables, here we will simply pass them at startup time:</p>
+<pre><code class="hljs lang-no-highlight">$ REDIS_SESSION_URL=redis://hostname:port?password=s3cr3t SESSION_SECRET=&#39;abc123&#39; npm start
+</code></pre>
+<p>Now, assuming redis connected properly, we can start testing our URLS</p>
+<p><code>GET localhost:8090/login</code>:</p>
+<pre><code class="hljs lang-json">{
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"you are now logged in"</span>,
+  <span class="hljs-attr">"user"</span>: {
+    <span class="hljs-attr">"id"</span>: <span class="hljs-number">0.36535326065695717</span>
+  }
+}
+</code></pre>
+<p><code>GET localhost:8090/increment</code></p>
+<pre><code class="hljs lang-json">{
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Incremented Count"</span>,
+  <span class="hljs-attr">"count"</span>: <span class="hljs-number">1</span>
+}
+</code></pre>
+<p>It works! To verify that the session is independent of the server instance, you can try shutting down the server, restarting it, and checking that your <code>user.id</code> and <code>count</code> remain intact.</p>
+<h3 id="checking-our-session">
+    <a class="header-anchor" href="#checking-our-session">
+      <span class="header-link"></span>
+    </a>
+    Checking our Session</h3><p>We can see our sessions in redis by connecting with the <code>redis-cli</code>:</p>
+<pre><code class="hljs lang-no-highlight">$ redis-cli -h &lt;host&gt; -p &lt;port&gt; -a &lt;password&gt;
+host:43798&gt; keys *
+1) &quot;sess:q5t7q67lzOsCJDca-kvT63Yk6n6kVvpL&quot;
+host:43798&gt; get &quot;sess:q5t7q67lzOsCJDca-kvT63Yk6n6kVvpL&quot;
+&quot;{\&quot;cookie\&quot;:{\&quot;originalMaxAge\&quot;:null,\&quot;expires\&quot;:null,\&quot;httpOnly\&quot;:true,\&quot;path\&quot;:\&quot;/\&quot;},\&quot;user\&quot;:{\&quot;id\&quot;:0.36535326065695717},\&quot;count\&quot;:1}&quot;
+</code></pre>
+<h2 id="setting-up-our-quot-app-quot-server">
+    <a class="header-anchor" href="#setting-up-our-quot-app-quot-server">
+      <span class="header-link"></span>
+    </a>
+    Setting up Our &quot;App&quot; Server</h2><p>The application (<code>reader</code>) server has one single path:</p>
+<ol>
+<li><code>/</code>: read current count.</li>
+</ol>
+<p>The server setup code is the same as above, with the exception that our server is run on <code>8080</code> rather than <code>8090</code> so we can run both locally at the same time.</p>
+<h3 id="requiring-login">
+    <a class="header-anchor" href="#requiring-login">
+      <span class="header-link"></span>
+    </a>
+    Requiring Login</h3><p>In order to ensure users who hit our &quot;application&quot; server have logged in, we&#39;ll add a middleware that checks that the session is set and it has a <code>user</code> key:</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">// reader/index.js</span>
+app.use(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">checkSession</span>(<span class="hljs-params">req, res, next</span>)</span>{
+  <span class="hljs-keyword">if</span>(!req.session.user){
+    <span class="hljs-comment">//alternately, res.redirect('/increment'), res.redirect('/login'), etc.</span>
+    <span class="hljs-keyword">return</span> res.json(<span class="hljs-number">403</span>, {
+      <span class="hljs-string">'message'</span> : <span class="hljs-string">'Please go "log in!" (set up your session)'</span>,
+      <span class="hljs-string">'login'</span>: <span class="hljs-string">'/login'</span>
+    });
+  }<span class="hljs-keyword">else</span>{
+    next();
+  }
+});
+</code></pre>
+<p>Then we&#39;ll add our single route:</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">// reader/index.js</span>
+app.get(<span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">displayCount</span>(<span class="hljs-params">req, res</span>)</span>{
+  res.json({
+    <span class="hljs-attr">user</span> : req.session.user,
+    <span class="hljs-attr">count</span>: req.session.count
+  })
+});
+</code></pre>
+<h3 id="running-the-server">
+    <a class="header-anchor" href="#running-the-server">
+      <span class="header-link"></span>
+    </a>
+    Running the server</h3><p>Start this server as we started the other:</p>
+<ol>
+<li>Pass the appropriate environment variables</li>
+<li><code>npm run</code></li>
+</ol>
+<p>Now we can check that it works:</p>
+<p><code>GET localhost:8080</code></p>
+<pre><code class="hljs lang-json">{
+  <span class="hljs-attr">"user"</span>: {
+    <span class="hljs-attr">"id"</span>: <span class="hljs-number">0.36535326065695717</span>
+  },
+  <span class="hljs-attr">"count"</span>: <span class="hljs-number">1</span>
+}
+</code></pre>
+<p>Try it from a private tab or different browser, where we haven&#39;t yet logged in:</p>
+<p><code>GET localhost:8080</code></p>
+<pre><code class="hljs lang-json">{
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Please go \"log in!\" (set up your session)"</span>,
+  <span class="hljs-attr">"login"</span>:<span class="hljs-string">"/login"</span>
+}
+</code></pre>
+<p>It works!</p>
+<h3 id="i-thought-cookies-couldn-39-t-be-shared-">
+    <a class="header-anchor" href="#i-thought-cookies-couldn-39-t-be-shared-">
+      <span class="header-link"></span>
+    </a>
+    I thought Cookies Couldn&#39;t Be Shared?!</h3><p>In fact, browsers do not take port number into consideration when determining what the host is and what cookies belong to that host! This means that we can run our auth server locally on <code>:8090</code> and the app server on <code>:8080</code> and they can share cookies, as long as we use the hostname <code>localhost</code> for both!</p>
+<h2 id="deploying">
+    <a class="header-anchor" href="#deploying">
+      <span class="header-link"></span>
+    </a>
+    Deploying</h2><p>This works fine locally, now let&#39;s see it in The Cloud. We&#39;ll be using <a href="https://zeit.co/now">https://zeit.co/now</a> for hosting. <code>now</code> is microservice oriented hosting platform that allows us to easily deploy Node.js applications and compose application instances to work together, so it&#39;s a great choice for this demo!</p>
+<p><code>now</code> expects node.js applications to start with <code>npm start</code>, luckily we&#39;ve already configured our application to do that, so all that&#39;s left to do is to deploy it!</p>
+<pre><code class="hljs lang-no-highlight">$ cd writer
+$ now
+&gt; Deploying ~/projects/demos/sharing-cookies/writer under sequoia
+&gt; Using Node.js 7.10.0 (default)
+&gt; Ready! https://writer-xyz.now.sh (copied to clipboard) [1s]
+&gt; Synced 2 files (1.19kB) [2s]
+&gt; Initializing…
+&gt; Building
+...
+</code></pre>
+<p>This will deploy our application to now, but it won&#39;t actually work, because we the application will not have the environment variables we need set! We can achieve this easily by putting the environment variables in a file calle <code>.env</code> (that we <strong>do not check in to git!!!</strong>) and passing that file as a parameter to <code>now</code>. It will read the file and load those variables into the environment of our deployment.</p>
+<pre><code class="hljs lang-no-highlight"># .env
+REDIS_SESSION_URL=&quot;your redis url here&quot;
+SESSION_SECRET=&quot;abc123&quot;
+</code></pre>
+<pre><code class="hljs lang-no-highlight">$ echo &#39;.env&#39; &gt;&gt; ../.gitignore  # important!!
+$ now --dotenv=../.env
+&gt; Deploying ~/projects/demos/sharing-cookies/writer under sequoia
+&gt; Using Node.js 7.10.0 (default)
+&gt; Ready! https://writer-gkdldldejq.now.sh (copied to clipboard) [1s]
+&gt; Synced 2 files (1.19kB) [2s]
+&gt; Initializing…
+&gt; Building
+</code></pre>
+<p>Once the command finishes, we can load that URL in our browser:</p>
+<p><code>GET https://writer-gkdldldejq.now.sh/login</code></p>
+<pre><code class="hljs lang-json">{
+<span class="hljs-attr">"message"</span>: <span class="hljs-string">"you are now logged in"</span>,
+  <span class="hljs-attr">"user"</span>: {
+    <span class="hljs-attr">"id"</span>: <span class="hljs-number">0.31483764592524177</span>
+  }
+}
+</code></pre>
+<h3 id="deploying-the-application-server-code-reader-code-">
+    <a class="header-anchor" href="#deploying-the-application-server-code-reader-code-">
+      <span class="header-link"></span>
+    </a>
+    Deploying the Application Server (<code>reader</code>)</h3><p>We repeat the above steps in our <code>/reader</code> directory, passing <strong>the same <code>.env</code> file</strong> to <code>now --dotenv</code>...</p>
+<pre><code class="hljs lang-no-highlight">$ cd ../reader
+$ now --dotenv=../.env
+&gt; Deploying ~/projects/demos/sharing-cookies/reader under sequoia
+&gt; Using Node.js 7.10.0 (default)
+&gt; Ready! reader-irdrsmayqv.now.sh (copied to clipboard) [1s]
+&gt; Synced 2 files (1.19kB) [2s]
+&gt; Initializing…
+&gt; Building
+...
+</code></pre>
+<p>Once it&#39;s done we check via our browser...</p>
+<p><code>GET https://reader-irdrsmayqv.now.sh</code></p>
+<pre><code class="hljs lang-json">{
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Please go \"log in!\" (set up your session)"</span>,
+  <span class="hljs-attr">"login"</span>: <span class="hljs-string">"/login"</span>
+}
+</code></pre>
+<p>We&#39;re not logged in! What happened?</p>
+<p>We noted above that in order to share sessions, we needed to share two things:</p>
+<ol>
+<li>A session store (redis)</li>
+<li><strong>Cookies</strong></li>
+</ol>
+<p>Because our servers run on different domains now, we&#39;re not sharing cookies. We&#39;ll fix that with a simple reverse-proxy set up <code>now</code> refers to as &quot;aliases.&quot;</p>
+<h2 id="aliases">
+    <a class="header-anchor" href="#aliases">
+      <span class="header-link"></span>
+    </a>
+    Aliases</h2><p>We want both of our applications running on the same domain so they can share cookies (as well as other reasons including avoiding extra DNS lookups and obviating the need for CORS headers). <code>now</code> allows aliasing to any arbitrary subdomain under <code>now.sh</code>, and I&#39;ve chosen <code>counter-demo.now.sh</code> for this post.</p>
+<p>We want routing to work as follows:</p>
+<ul>
+<li><code>/</code>: application server (<code>https://reader-irdrsmayqv.now.sh/</code>)</li>
+<li><code>login</code>, <code>increment</code>, <code>logout</code>: &quot;auth&quot; server (<code>https://writer-gkdldldejq.now.sh/</code>)</li>
+</ul>
+<p>To configure multiple forwarding rules for one &quot;alias&quot; (domain), we&#39;ll first define them in a json file:</p>
+<pre><code class="hljs lang-js">{
+  <span class="hljs-string">"rules"</span> : [
+    { <span class="hljs-string">"pathname"</span> : <span class="hljs-string">"/login"</span>, <span class="hljs-string">"dest"</span> : <span class="hljs-string">"writer-gkdldldejq.now.sh"</span> },
+    { <span class="hljs-string">"pathname"</span> : <span class="hljs-string">"/increment"</span>, <span class="hljs-string">"dest"</span> : <span class="hljs-string">"writer-gkdldldejq.now.sh"</span> },
+    { <span class="hljs-string">"pathname"</span> : <span class="hljs-string">"/logout"</span>, <span class="hljs-string">"dest"</span> : <span class="hljs-string">"writer-gkdldldejq.now.sh"</span> },
+    { <span class="hljs-string">"dest"</span> : <span class="hljs-string">"reader-irdrsmayqv.now.sh"</span> }
+  ]
+}
+</code></pre>
+<p>We pass these to <code>now alias</code> using the <code>--rules</code> switch, along with our desired subdomain:</p>
+<pre><code>$ now alias counter-demo.now.sh --rules=./now-aliases.json
+&gt; Success! 3 rules configured for counter-demo.now.sh [1s]
+</code></pre><p>Now to try it out:</p>
+<p><img src="/img/counter-demo.gif" alt="logging into counter-demo.now.sh"></p>
+<p>It works! Two servers running two separate applications, each sharing sessions and cookies.</p>
+<h2 id="next-steps">
+    <a class="header-anchor" href="#next-steps">
+      <span class="header-link"></span>
+    </a>
+    Next Steps</h2><p>This is a rudimentary reverse proxy set up, but with this in place we can...</p>
+<ol>
+<li>Deploy new versions of our application and switch the alias to point to them, allowing us to switch back if there&#39;s a problem</li>
+<li>Run any number of applications in different containers (yes, docker containers!) while still presenting one face to the client</li>
+<li>Proxy requests through to external servers (a server run by your IT department) or external services (AWS lambda etc.), still presenting a single domain to the client</li>
+<li>Scale our application server up or down (<code>now scale reader-irdrsmayqv.now.sh 2</code>) without breaking our session management system</li>
+<li>Turn the whole thing off and turn it back on again without disrupting user sessions.</li>
+</ol>
+<p>Good luck and happy decomposing!</p>
+<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="Session Management with Microservices"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form></section><footer>&copy; Sequoia McDowell 2017</footer></div></body></html>
