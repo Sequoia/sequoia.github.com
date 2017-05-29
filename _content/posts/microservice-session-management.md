@@ -366,4 +366,4 @@ This is a rudimentary reverse proxy set up, but with this in place we can...
 4. Scale our application server up or down (`now scale reader-irdrsmayqv.now.sh 2`) without breaking our session management system
 5. Turn the whole thing off and turn it back on again without disrupting user sessions.
 
-Good luck and happy decomposing!
+Now go try it out! https://github.com/Sequoia/sharing-cookies
