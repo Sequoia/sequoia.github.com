@@ -252,7 +252,7 @@ $ now     # missing environment variables...
 ...
 ```
 
-This will deploy our application to `now`, but it won't actually work, because the application will not have the environment variables it needs. We can fix this by putting the environment variables in a file calle `.env` (that we **do not check in to git!!!**) and passing that file as a parameter to `now`. It will read the file and load those variables into the environment of our deployment.
+This will deploy our application to `now`, but it won't actually work, because the application will not have the environment variables it needs. We can fix this by putting the environment variables in a file called `.env` (that we **do not check in to git!!!**) and passing that file as a parameter to `now`. It will read the file and load those variables into the environment of our deployment.
 
 
 ```no-highlight
@@ -367,3 +367,11 @@ This is a rudimentary reverse proxy set up, but with this in place we can...
 5. Turn the whole thing off and turn it back on again without disrupting user sessions.
 
 Now go try it out! https://github.com/Sequoia/sharing-cookies
+
+# Comments
+
+> Really nice article, but I think the last part (aliases) should be longer and more in-depth. The current implementation is dependent on now.sh's particular feature and the actual mechanism isn't detailed. It would be great if you provided more implementations for the aliasing with different servers (like apache or nginx), so we could build a production environment without using now.sh. What do you think?
+
+\- [Semmu](http://semmu.net) <time datetime="2017-06-10 16:00:57 UTC">July 10, 2017</time>
+
+Thanks, Semmu! It's true, the approach described here is dependant on now.sh's aliasing feature, and yes, there are certainly other ways to do it! I featured now.sh here in part because it *is* very simple to use and explain. An explanation of how to tie this together with nginx (I'd pick it over Apache for this use-case) would be useful! I don't have such an explanation on hand but I'll try to write a blog post in the future describing reverse proxying with nginx. Thanks for the comment!
