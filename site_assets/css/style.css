@@ -161,16 +161,6 @@ a > code:hover, a > code:focus{
     background-color: #292b2c;
 }
 
-    /* bootstrap */
-    /* cool alt code style (originally "kbd") */
-/*code {
-    padding: .2rem .4rem;
-    font-size: 90%;
-    color: #fff;
-    background-color: #292b2c;
-    border-radius: .2rem;
-}*/
-
 pre code.hljs{
 	/*border-right: solid 8px lavender;*/
 	background: #f7f7f9;
@@ -214,22 +204,11 @@ section.blog-posts{
 	padding:.5em;
 }
 
-/* http://codepen.io/Sequoia/pen/zrXrdj?editors=1100 */
 #wrap aside#announce{
-  background-color:lightgreen;
+  background-color:bisque;
   /*border-radius:10px;*/
   padding: 15px;
   margin: -21px 0 20px;
-  background-size: 37px 6px, 37px 6px, 6px 37px, 6px 37px;
-  background-position: 0 0,  0 100%,  0 0,  100% 0;
-  background-repeat: repeat-x,  repeat-x,  repeat-y,  repeat-y;
-  animation-name: marching-ants;
-  animation-duration: 2s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  background-image: linear-gradient(to right, lightgreen 50%, lavender 50%), linear-gradient(to right, lightgreen 50%, lavender 50%), linear-gradient(to bottom, lightgreen 50%, lavender 50%), linear-gradient(to bottom, lightgreen 50%, lavender 50%);
-  animation-direction: reverse;
-
 }
 
 #wrap aside#announce{
@@ -241,12 +220,16 @@ section.blog-posts{
 #wrap aside#announce h2{
   text-align:right;
   margin:.1em 0;
+  font-weight:100;
 }
 #wrap aside#announce p{
   margin:0;
 }
-#wrap aside#announce ul{
+ul#news-items{
   margin: .2em;
+}
+ul#news-items li{
+  line-height:1.2em;
 }
 
 #wrap aside#announce:hover{
@@ -283,7 +266,7 @@ section.blog-posts{
       padding-right:.3em;
       padding-left:.3em;
     }
-    #content {
+    #content, aside#announce {
       font-size:.8em;
     }
 
