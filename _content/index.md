@@ -1,8 +1,7 @@
 ---
 title: Home
 ---
-My name's Sequoia, I'm a [Free Software](https://www.fsf.org/about/what-is-free-software)
-developer and educator, and you can find out a bit about what I do here on this website!
+My name's Sequoia, and you can find out a bit about what I do here on this website!
 
 Out of respect for your privacy I do not use google analytics or other third
 party scripts that track you on my site, so if you read an
