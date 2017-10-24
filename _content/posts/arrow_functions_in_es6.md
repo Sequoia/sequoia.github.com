@@ -248,3 +248,11 @@ let petlessUsersOldestFirst = users
 ## Conclusion
 
 Functional programming has been gaining momentum throughout the programming world and ES6 arrow functions make it easier to use this style in JavaScript. If you haven’t encountered FP style code in JavaScript yet, it’s likely you will in the coming months. This means that even if you don’t love the style, it’s important to understand the basics of this style, some of which we’ve gone over here. Hopefully the concepts outlined in this post have helped prepare you for when you see this code in the wild, and maybe even inspired you to give this style a try!
+
+# Comments
+
+> I think you did a very good (difficult to do a great) job, particularly with your examples. Your post motivates me to dive deeper into FP.
+
+\- Brent Enright, <time datetime="2017-08-25 17:55:54 UTC">August 25, 2017</time>
+
+Thanks Brent!! Feedback like this makes my day!

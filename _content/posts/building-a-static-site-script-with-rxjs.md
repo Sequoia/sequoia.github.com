@@ -446,7 +446,7 @@ If you made it this far, congratulations! My goal was not to explain each Rx.js 
 
 > This is a great overview - thank you! What are you using to do those awesome terminal gifs?
 
-\- [Mark](http://mrh.io) <time datetime="2017-01-31 16:04:27 UTC">January 31, 2017</time>
+\- [Mark](http://mrh.io), <time datetime="2017-01-31 16:04:27 UTC">January 31, 2017</time>
 
 Thanks, Mark! I use [licecap](http://www.cockos.com/licecap/) to make gifs on my Macintosh. Tips to keep the sizes/zoom consistent:
 * Use a tiling tool like [Spectacle](https://www.spectacleapp.com/) to tile to e.g. ¼ screen
