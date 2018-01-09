@@ -144,4 +144,4 @@ Grunt tasks used here were [`grunt-template`](https://npmjs.org/package/grunt-te
 
 **Is it realy a good idea to be switching branches, rebasing, etc. as part of an automated build?** Probably not. :)  But it's very useful in this case!
 
-Please [let me know](mailto:sequoia.mcdowell@gmail.com) if you found this post useful or if you have questions or [feedback](https://twitter.com/_sequoia).
+Please [let me know](mailto:sequoia.mcdowell@gmail.com) if you found this post useful or if you have questions or [feedback](/contact/).

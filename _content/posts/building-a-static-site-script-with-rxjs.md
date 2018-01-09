@@ -440,7 +440,7 @@ That's it!
 
 ## Conclusion and Next Steps
 
-If you made it this far, congratulations! My goal was not to explain each Rx.js concept introduced herein in detail, but to walk through the process of using Rx.js to complete a real-world programming task. I hope this was useful! If this post has piqued your interest, I highly recommend running the full version of the code this post was based on, which you can find in [this repository](https://github.com/Sequoia/rx-static-blog-example). As always, if you have any questions or Rx.js corrections please feel free to [contact me](https://twitter.com/_sequoia). Happy coding!
+If you made it this far, congratulations! My goal was not to explain each Rx.js concept introduced herein in detail, but to walk through the process of using Rx.js to complete a real-world programming task. I hope this was useful! If this post has piqued your interest, I highly recommend running the full version of the code this post was based on, which you can find in [this repository](https://github.com/Sequoia/rx-static-blog-example). As always, if you have any questions or Rx.js corrections please feel free to [contact me](/contact/). Happy coding!
 
 # Comments
 

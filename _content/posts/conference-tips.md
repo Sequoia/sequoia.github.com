@@ -5,7 +5,7 @@ description: Some thoughts on getting the most out of tech conferences.
 hidden: true
 ---
 
-I've travelled to a good number of tech conferences over the years, and I've learned a few things along the way. Here's I've collected some of the strategies I've learned for maximizing value and minimizing stress at conferences. Without further ado:
+I've travelled to a good number of tech conferences over the years and learned a few things along the way. Here of some of the strategies I've developed for getting the most out of a conference:
 
 1. [🥗 Bring Food](#-bring-food)
 2. [🏃‍ Pace Yourself!](#-pace-yourself-)
@@ -17,25 +17,24 @@ I've travelled to a good number of tech conferences over the years, and I've lea
 
 ## 🥗 Bring Food
 
-When I arrive in a new town for a conference I will be spending more that one night at, immediately after checking into the hotel I head to the grocery store for:
+Conferences are usually catered, but many catering services, well, leave something to be desired. In particular, breakfasts can be rough: pastries, fruit, more pastries... you get the idea. Eating a healthy breakfast that makes you feel good is **more than just a luxury** when travelling: it can be the difference between having a good morning and a crummy one. Take care of your body at meal-time and it will take care of you later!
 
-* Kefir (a "probiotic" fermented milk drink)
+When I arrive in a new town for a conference that I will be spending more that one night at, immediately after checking into the hotel I head to the grocery store for:
+
 * Fruit
 * Bread
 * Cheese
+* Apples
 * Yogurt
 
-Plane travel, being in a new place, eating out three times a day&mdash;**this is all hard on your body**! I like to have kefir because I believe that probiotic foods like kefir & yogurt help with digestion (do they? I have no idea! But I *believe* they do 😅).
+Obviously, your shopping list will be different from mine, but whatever foods you can make a simple meal out of that makes _you_ feel healthy and sated, **get some for your hotel room fridge**.
 
-Conferences are usually catered, but many hotel or venue catering services, well, leave something to be desired. In particular, breakfasts can be rough: pastries, fruit, more pastries... you get the idea. Eating a healthy breakfast that makes you feel good is **more than just a luxury** when travelling: it can be the difference between having a good morning and a crummy one. Take care of your body at meal-time and it will take care of you later!
-
-Eating out (or catered) three times a day can be taxing on your brain and your wallet. When you're tired, need food, relaxing alone in your hotel can be a lot more appealing than hitting the street in search of a burger. That's where the fruit, bread, and cheese come in: when you need food and a quiet break, you have a meal ready in your hotel room!
+Plane travel, being in a new place, eating out three times a day&mdash;**this is all hard on your body**! Not to mention your wallet and brain. Sometimes siting quietly and eating a simple meal beats another hour of socializing over beers & burgers. That's where the fruit, bread, and cheese come in: when you need food and a quiet break, you have a meal ready in your hotel room!
 
 To summarize:
 
-1. Consider eating probiotics or other things that settle your stomach
-2. Don't be 100% reliant on conference catering
-3. Have a meal or two on hand to save money and brainwaves when you're tired & hungry
+1. Don't be 100% reliant on conference catering
+2. Have a meal or two on hand to save money and brainwaves when you're tired & hungry
 
 ## 🏃‍♀️ Pace Yourself!
 
@@ -45,6 +44,7 @@ I know the <abbr title="Fear Of Missing Out">FOMO</abbr> is strong, but no matte
 
 1. Limit the number of talks you see in a day to something reasonable (for me this is about 4 talks)
 2. Don't worry about missing talks! There are always more talks. 😊
+3. Take a break when you're feeling tired or frazzled. You'll enjoy the rest of the day a lot more!
 
 What to do when you're not in talks?
 
@@ -59,9 +59,9 @@ It's tempting to google the topic being presented, check twitter, email, try to 
 
 ## 📝 Take Notes on Paper
 
-Taking notes is a great way to remember what you heard, note things you want to look up later, and to capture follow-up questions. Why not take notes on your computer? Because when you get out your computer, **it's really hard to stick to just taking notes**. You probably have better self-control than me, but when I'm taking notes on my computer, and I have a question, and the talk is a bit slow, and it will only take _just a second_ to find the answer on google..... 
+Taking notes is a great way to remember what you heard, note things you want to look up later, and to capture follow-up questions. So take out your laptop and fire up Evernote, right? Wrong! When you get out your computer, **it's really hard to stick to just taking notes**. You probably have better self-control than me, but when I'm taking notes on my computer, and I have a question, and the talk is a bit slow, and it will only take _just a second_ to find the answer on google..... 
 
-Carrying a pen or pencil and a [notebook](http://bulletjournal.com/) is a great strategy for those of us who are easily distracted by the wide internet. If you've never tried this remove-the-temptation strategy, **you may be surprised how much more you get you get out of a talk when you give it 100% of your attention**. Paper notes are also useful whilst chatting at the after-party: peek at your notebook to easily recall insights and questions without having to whip out your laptop. Plus, it makes you look super organized! 😄
+Carrying a pen or pencil and a [notebook](http://bulletjournal.com/) is a great strategy for those of us who are easily distracted by the wide internet. If you've never tried this remove-the-temptation strategy, **you may be surprised how much more you get you get out of a talk when you give it 100% of your attention**. Paper notes [may help you retain the information better](http://www.pbs.org/wgbh/nova/next/body/taking-notes-by-hand-could-improve-memory-wt/), and they're useful whilst chatting at the after-party: peek at your notebook to easily recall insights and questions. (Bonus: it makes you look super organized! 😄)
 
 ## 🚶‍♀️ Don't Be Afraid to Leave A Talk
 
