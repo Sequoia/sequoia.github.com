@@ -4,7 +4,7 @@ date: January 15, 2018
 description: Some thoughts on getting the most out of tech conferences.
 ---
 
-I've travelled to a good number of tech conferences over the years and learned a few things along the way. Here of some of the strategies I've developed for getting the most out of a conference:
+I've travelled to a number of tech conferences over the years and learned a few things along the way. Here are some of the strategies I've developed for getting the most out of a conference:
 
 1. [🥗 Bring Food](#-bring-food)
 2. [🏃‍ Pace Yourself!](#-pace-yourself-)
