@@ -18,5 +18,10 @@
     "start" : "6/12/17",
     "end": "06/23/17",
     "html": "I'm <a href='https://conferences.oreilly.com/fluent/fl-ca/public/schedule/detail/59358'>giving a training</a> at FluentConf on the 19th and 20th. I'll be at the conference the 21st & 22nd as well so if you're there, say hi!"
+  },
+  {
+    "start" : "7/09/18",
+    "end": "7/23/18",
+    "html": "I'm at <a href='https://www.hope.net/workshops.html#-getting-up-and-running-with-encryption-'>doing a workshop on Encrypted Communication</a> at HOPE on the 21st.<br>Come say hi!!"
   }
 ]
