@@ -68,7 +68,7 @@
   },
   {
     "name" : "IoT Chicken Enclosure Door",
-    "description":"I was tired of having to go out to my back yard to check whether we'd closed the chickens in at night, so I made this tool with a [SparkFun ESP8266 Thing](https://www.sparkfun.com/products/13231). Basically the device reads the open/closed state of a door with a [hall sensor](https://en.wikipedia.org/wiki/Hall_effect_sensor), pushes new states to <data.sparkfun.com>, then when you go to the output page (hosted on github) it reads from data.sparkfun & tells you whether the door's open or closed! So ESP8266+github.io+data.sparkfun.com = **cluck**.",
+    "description":"I was tired of having to go out to my back yard to check whether we'd closed the chickens in at night, so I made this tool with a [SparkFun ESP8266 Thing](https://www.sparkfun.com/products/13231). Basically the device reads the open/closed state of a door with a [hall sensor](https://en.wikipedia.org/wiki/Hall_effect_sensor), pushes new states to `data.sparkfun.com`, then when you go to the output page (hosted on github) it reads from data.sparkfun & tells you whether the door's open or closed! So ESP8266+github.io+data.sparkfun.com = **cluck**.",
     "links" : [
       ["Repo" , "https://github.com/Sequoia/cluck"],
       ["Video", "https://www.youtube.com/watch?v=JQqkutx87nI" ],

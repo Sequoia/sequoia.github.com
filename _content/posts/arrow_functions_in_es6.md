@@ -256,3 +256,9 @@ Functional programming has been gaining momentum throughout the programming worl
 \- Brent Enright, <time datetime="2017-08-25 17:55:54 UTC">August 25, 2017</time>
 
 Thanks Brent!! Feedback like this makes my day!
+
+> Thanks. This gave me a bit to think about and mull over. It's not something that I have spent a lot of time on, but it's pretty important as I try to better grok the functional programming thing.
+
+\- [Brian](http://brianbancroft.io), <time datetime="2018-06-06 17:43:14 UTC">June 6, 2018</time>
+
+Nice!! FP is fun, I hope you keep it up!

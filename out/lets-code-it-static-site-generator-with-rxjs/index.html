@@ -188,7 +188,7 @@ latestFileContents$.subscribe(<span class="hljs-function"><span class="hljs-para
   <span class="hljs-keyword">return</span> singleFileLatestContents$;
 
 })
-.mergeAll(); <span class="hljs-comment">//unwrap per-file Observable of changes</span>
+.mergeAll(); <span class="hljs-comment">//unwrap per-file Observable of changes </span>
 </code></pre>
 <p>We&#39;re using <code>.mergeAll</code> twice because we&#39;re mapping strings to Observables twice:</p>
 <ol>
