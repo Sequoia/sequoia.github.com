@@ -1,0 +1,235 @@
+= Sequoia's Readme 
+Sequoia McDowell <sequoia.mcdowell@gmail.com>
+2018-07-17
+
+// Stuff to include
+
+== Communication channels
+
+I am online from 9-5 on weekdays, and will typically respond to messages outside of those times if I see them.
+I am *not* online on weekends, barring on-call schedule for incidents (critical service outages).
+
+I am almost always available & willing (during work hours) to lend a hand with technical challenges.
+If you have a question about JavaScript, application engineering, or anything else, don't hesitate to ask!
+I am happy to help.
+
+=== Slack
+
+I am not fond of Slack, generally (see https://ux.useronboard.com/slack-i-m-breaking-up-with-you-54600ace03ea[this post] for somse of the reasons).
+When using Slack, I prefer to keep as much as possible in *channels* rather than direct messages.
+When discussions happen in-channel:
+1. Others can learn more about what everyone is doing by passive consumption
+2. Others may have useful contributions that they cannot offer if chat is in DM
+3. Others may be facing similar challenges and benefit from the problem solving
+
+Slack messages are easy to lose track of or overlook.
+Please do not send important requests over Slack, or if you do, also send an email.
+*I may not get your Slack message.*
+
+I read Slack throughout the day sometimes, sometimes I turn it off in order to focus on work.
+I have no SLA for slack messages: I will read them when I read them.
+If something is critically important and time sensitive, feel free to walk over to me, text, or call (number is on Slack profile).
+
+=== Email
+
+Email is my *inbox of to-dos* from other people.
+If you need me to do something that doesn't fit into our workflow tracker (e.g. Jira), *please send me an email rather than a Slack message*.
+I typically check email throughout the day, but always in the morning and at the end of the day.
+If you send me an email, *you should expect a response within one business day*.
+
+=== Wikis, blog posts, etc.
+
+I like using blog posts as a lightweight to communicate information and findings that may be useful to others.
+Blog posts go away over time (unlike pages), they have a clear time-bound component (i.e. it's clear that the info will age), and it's not necessary to figure out "where to put" a blog post which lowers the barrier to writing them.
+If I have figured something out in our codebase, compared some libraries, or investigated a possible solution, it's likely I've written a blog post on in our internal wiki!
+
+I only use pages for things that are not time-bound, i.e. information that is unlikely to change in the next year.
+
+It's my opinion that slide decks are for supporting live presentations, not for reading like a book.
+I will generally not ask you to read a slide deck, and like to avoid doing so myself.
+
+=== Meetings
+
+> Why have a meeting when you could write an email?
+> -- Sequoia McDowell, 2018
+
+I generally prefer to have large (>3 people) ad-hoc meetings only when attempts to resolve an issue via email have failed.
+Meetings are much more costly and disruptive than emails, and easier to execute poorly.
+
+==== Scheduling meetings
+
+I like to schedule my day, and I like to have time to prepare for a meeting, so I strongly prefer to get meeting invites at least twenty four hours before a meeting time (ideally two days out or longer).
+The more advanced notice, the better!
+If I'm invited to a meeting with less than twenty four hours of notice, there is a possibility I will not be able to attend.
+
+I prefer to be checked in with before being booked into a meeting, even if my calendar says "free."
+My calendar saying “free” doesn’t always mean I can take another meeting (I may have 7 hours of meetings that day & you booked the last open hour).
+I strongly disprefer being overbooked for a meeting without being asked beforehand.
+I will do my best to attend your meeting but keeping commitments is important to me, so existing commitments may take precedence.
+
+==== Meeting structure
+
+I expect meetings to have...
+
+1. Clear goals
+2. An agenda
+3. An indication of how to prepare for the meeting (read a document, compile questions etc.)
+
+I generally put meetings into one of three categories:
+
+Working Meeting::
+A meeting where a problem or challenge is discussed in order to generate *options or questions* to be researched after the meeting.
+The product of this type of meeting is *options or questions*.
+Informational Meeting::
+A meeting where one party *shares information* with another party.
+For example, a weekly meeting for a department head to communicate priorities to managers in the department. 
+The product of this type of meeting is *information flow from one party to another*.
+Decision Meeting::
+A meeting where people bring the results of research (or just their own opinions & experiences) in order to *come to a decision*.
+Having a meeting of this type can be a follow-up action to a working meeting, where questions were generated and people parted to research the options.
+The product of this type of meeting is *decisions*.
+
+I find that it's very beneficial to *be clear about which category a meeting falls into*.
+
+== Working style
+
+My generalized workflow:
+
+1. *Define the problem/goal*: If you don't know what problem you're solving, what are you doing?
+2. *Develop a plan*: This can start as high level as "create a checklist of things to consider," but there should be _some_ sort of plan.
+3. *Execute*: step through the list of actions from step two, repeating steps one or two as neccessary.
+
+I apply this workflow to as many problems as possible.
+I consider it very important to define goals at the outset of most work tasks and meetings.
+If I'm called into a meeting or asked for assistance, *I will almost always ask at the outset about the goal or the problem being solved.*
+When defining goals, I prefer to start at as high a level as possible and step down.
+See http://xyproblem.info/[the XY problem] for more information on articulating goals.
+
+=== Systems
+
+I like to rely on *systems* such as Jira for tracking work, the Calendar for scheduling meetings, and agendas to guide meetings.
+If there is a system in place for a particular workflow, *I will use that system and disprefer using other channels.*
+For example, if work requests go to a particular board on Jira, *I do not want to recieve work requests over Slack as well.*
+More inboxes means less clarity, more difficulty finding things, and greater chance something will fall through the cracks because it's not in the main system or list.
+
+If you need something from me, I a greatly appreciate having a clear request written into our ticketing system and being assigned to me.
+Write a ticket explicitly outlining a problem, what outcome you’d like, assign that ticket to me (or the team), and I will be very happy.
+I do not consider it a burden or annoyance!
+If I cannot or will not do that task for some reason, I’ll let you know
+
+=== Values
+
+I value the following things.
+If you see me acting in a manner at variance with these values, please do not hesitate to point that out to me.
+
+* Willingness to help
+* Empathy for users & beginners
+
+== Communication Style
+
+=== Directness
+
+I prefer *direct*, *explicit* communication.
+I do not always catch hints: it's much better to be explicit.
+When given a vague request, I consider it my responsibility to clarify the request until I am reasonably certain that my understanding of what I'm supposed to deliver is the same as what the requester is expecting me to deliver.
+If you ask for something from me and I ask a lots of clarifying questions, *this is because I want to effectively fulfil your request*, not because I just like to hassle people with questions.
+
+=== Openness About Issues
+
+I believe issues with processes or systems should be acknowledged & addressed openly.
+I do not believe it's good to hide or paper over problems.
+If a problem is not acknowledged, it is very difficult to address the problem.
+For example, if your computer is slow but you never bring it up to your manager, *your manager cannot possibly fix the issue, because s/he is unaware of it*.
+Only by acknowledging and articulating problems can we hope to fix them.
+
+[TIP]
+=======
+✅ Acknowledging and tabling a problem
+
+❌ Refusing to acknowledge a problem
+
+=======
+
+WARNING: Don't try to do this on CircleCI
+
+*This is not to say that every problem needs to be fixed right away.*
+I consider it OK to acknowledge and table a problem.
+I consider it not OK to avoid acknowledging a problem.
+Given a problem that I am attempting to communicate...
+
+* "That problem that you perceive **does not exist**" will throw me into an infinite loop of attempting to communicate the problem, as I seem to be failing to communicate it clearly.
+* "I see that that's a problem, but I don't want to address it right now" will let me know I've communicated the issue successfully, the message has been received, and we can table it and move on.
+
+I happily acknowledge that I can be wrong, and I just because I perceive something as a problem doesn't mean that it is one.
+Feel free to correct me!
+
+=== Feedback
+
+I want to do my job well.
+If I’m doing something poorly, I want to know.
+In order to know if I'm doing something poorly, I need feedback from others on how they think I'm performing.
+If you think I'm doing my job poorly, *I want you to tell me.*
+If I am doing something that annoys or frustrates you, *I want you to tell me.*
+If you give me feedback directly I promise I will not get upset about it (feel free to remind me of this promise beforehand :) ).
+
+I 
+
+===
+    * Argumentation <— This is how I change my opinion!
+        * Feel free to criticize my opinion, criticize my code, criticize my architecture or whatever! I always want to improve and I can’t do so without having my existing knowledge challenged & upgraded
+        * If I’m asking you “why did you do this, why did you do that”, that’s because I don’t understand and I know I can miss things, not because I think it’s wrong.
+            * ❌ “This is done wrong”
+            * ✅ “This doesn’t make sense to me; what am I missing?”
+    * Prefer proposals to discussion
+        * Let’s start with a proposal and work from there! In many cases, everyone can just say “that sounds good” an we’re done.
+* Managing
+    * 1:1s: what are they for
+        * Asking for feedback (I’ll do it a lot)
+        * Giving feedback
+        * Keeping lines of communication open
+    * “I’ve created a private Slack channel for the two us of to capture future topics for our 1:1s” <— idea?!
+    * Advocating for team members: I see take my role as a leader very seriously and this as top priority. If you need something to do your job I’ll do everything in my power to get it for you.
+    * Training & Education
+    * Focus on growth & advancement
+* Programming/coding style?
+    * Developer time $$$$ > CPU time $; optimize for the former (we can fix the latter as needed)
+    * Links to talks I like (simple made easy, code quality talk from devote)
+* Principals
+    * Empathy
+    * Pride in work
+        * Big & small (avoiding 1000 tiny cuts)
+    * Willingness to make mistakes
+* Values
+    * Critical thinking. Nothing is sacred and we don’t do anything “because we’ve always done it that way”. (cribbed from Ben Morris)
+    * Honesty
+    * Transparency
+* Assumptions
+    * “You feel safe debating with me. I find that ideas improve by being examined from all angles. If it sounds like I’m disagreeing I’m most likely just playing devil’s advocate. This does rely on us being able to have a safe debate.” (cribbed from Ben Morris)
+    * You understand code you write and/or approve. If you don’t understand it, stop! Ask for an explanation. Ongoing learning opportunity & better code
+* How can I help you?
+    * Ask for help! When you do, I’m likely to ask these questions right away: (* = required field)
+        * * What is your goal? http://xyproblem.info/
+        * * What have you tried?
+        * What step did you get stuck on?
+        * What options are available?
+        * Are you able to isolate the issue with a minimal use-case?
+            * If so, have you done it?
+            * If not, why not? (e.g. “it only occurs on prod for a particular customer & attempts to reproduce locally have failed”)
+    * Let me know what I can do to enable your work!
+        * Do you have the right equipment? Software? Training? Platform/3rd party tools?
+* How can you help me?
+    * “Let me know if I don’t do well”
+* Personal info
+    * Kids, where I’m from, etc.
+    * Languages I speak
+
+Themes in other peoples’ readmes
+* Approachability
+    * Feedback!! Give it to me! Let me know if I’m doing poorly
+        * Seems like a major hurdle to get people to give you feedback
+        * 3 feedback dimensions:
+            * Safety should be high (no fear of retaliation)
+            * Effort should be low (no rebuttals)
+            * Benefit should be high (positive results)
+    * “Talking is important, I want to talk”
+* “I’m here to support you”
