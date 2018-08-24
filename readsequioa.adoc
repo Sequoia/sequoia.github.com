@@ -43,9 +43,9 @@ I like using blog posts as a lightweight to communicate information and findings
 Blog posts go away over time (unlike pages), they have a clear time-bound component (i.e. it's clear that the info will age), and it's not necessary to figure out "where to put" a blog post which lowers the barrier to writing them.
 If I have figured something out in our codebase, compared some libraries, or investigated a possible solution, it's likely I've written a blog post on in our internal wiki!
 
-I only use pages for things that are not time-bound, i.e. information that is unlikely to change in the next year.
+I only use pages for things that are not time-bound, i.e. information that is likely to still be useful in one year's time.
 
-It's my opinion that slide decks are for supporting live presentations, not for reading like a book.
+It is my opinion that slide decks are for supporting live presentations, not for reading like a book.
 I will generally not ask you to read a slide deck, and like to avoid doing so myself.
 
 === Meetings
@@ -150,8 +150,6 @@ Only by acknowledging and articulating problems can we hope to fix them.
 
 =======
 
-WARNING: Don't try to do this on CircleCI
-
 *This is not to say that every problem needs to be fixed right away.*
 I consider it OK to acknowledge and table a problem.
 I consider it not OK to avoid acknowledging a problem.
@@ -172,8 +170,7 @@ If you think I'm doing my job poorly, *I want you to tell me.*
 If I am doing something that annoys or frustrates you, *I want you to tell me.*
 If you give me feedback directly I promise I will not get upset about it (feel free to remind me of this promise beforehand :) ).
 
-I 
-
+////
 ===
     * Argumentation <— This is how I change my opinion!
         * Feel free to criticize my opinion, criticize my code, criticize my architecture or whatever! I always want to improve and I can’t do so without having my existing knowledge challenged & upgraded
@@ -233,3 +230,4 @@ Themes in other peoples’ readmes
             * Benefit should be high (positive results)
     * “Talking is important, I want to talk”
 * “I’m here to support you”
+////
