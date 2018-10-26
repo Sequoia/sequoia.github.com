@@ -72,3 +72,11 @@ Composer has a mechanism to allow users to [allow or disallow unstable versions 
 An added benefit of increasing visibility into experimental feature use would be to help users understand the TC39 process. Currently there is not enough understanding of what it means for something to be ES6, or ES7, or Proposal Stage 2, as evidenced by the way these terms are thrown around willy-nilly.
 
 In [my next post](/what-is-javascript-part-2-solutions) I'll go over my proposals for addressing this issue.
+
+# Comments
+
+> Thank you for this post. You are doing the Lord's work
+
+\- [Uzo Olisemeka](http://designbymobi.us), <time datetime="2018-10-25 08:36:45 UTC">October 25, 2018</time>
+
+Thanks Uzo! I really like [your post on the subject](http://designbymobi.us/341/) as well, especially this point: "On a language level, overlap is a problem. If there’s more than 3 ways of doing a thing, I must know all three and everyone I’m working with must know all three."
