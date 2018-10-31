@@ -26,7 +26,7 @@ When I arrive in a new town for a conference that I will be spending more that o
 * Apples
 * Yogurt
 
-Plane travel, being in a new place, eating out three times a day&mdash;**this is all hard on your body**! Not to mention your wallet and brain. Sometimes siting quietly and eating a simple meal beats another hour of socializing over beers & burgers. That's where the fruit, bread, and cheese come in: when you need food and a quiet break, you have a meal ready in your hotel room.
+Plane travel, being in a new place, eating out three times a day&mdash;**this is all hard on your body**! Not to mention your wallet and brain. Sometimes sitting quietly and eating a simple meal beats another hour of socializing over beers & burgers. That's where the fruit, bread, and cheese come in: when you need food and a quiet break, you have a meal ready in your hotel room.
 
 To summarize:
 
