@@ -84,15 +84,15 @@
     </a>
     2. Parse Frontmatter</h2><p>In a traditional CMS, the <code>Posts</code> table holds not just the contents of the post, but also metadata such as its title, author, publish date, and perhaps a permanent URL or canonical link. This metadata is used both on the post page or in a page <code>&lt;title&gt;</code> and on index pages. In our flat-file system, all the information for a post must be contained in the markdown file for that post. We&#39;ll use the same solution for this challenge that is used by Jekyll and others: YAML frontmatter.</p>
 <p><a href="http://yaml.org/">YAML</a> is a data serialization format that&#39;s basically like JSON but lighter weight. It looks like this:</p>
-<pre><code class="hljs lang-yaml"><span class="hljs-attr">key:</span> <span class="hljs-string">value</span>
-<span class="hljs-attr">author:</span> <span class="hljs-string">Sequoia</span> <span class="hljs-string">McDowell</span>
+<pre><code class="hljs lang-yaml"><span class="hljs-attr">key:</span> value
+<span class="hljs-attr">author:</span> Sequoia McDowell
 <span class="hljs-attr">Object:</span>
-<span class="hljs-attr">  key:</span> <span class="hljs-attr">http://example.com</span>
-<span class="hljs-attr">  wikipedia:</span> <span class="hljs-attr">https://wikipedia.com</span>
+<span class="hljs-attr">  key:</span> http://example.com
+<span class="hljs-attr">  wikipedia:</span> https://wikipedia.com
 <span class="hljs-attr">List:</span>
-<span class="hljs-bullet">  -</span> <span class="hljs-string">First</span>
-<span class="hljs-bullet">  -</span> <span class="hljs-string">Second</span>
-<span class="hljs-bullet">  -</span> <span class="hljs-string">Third</span>
+<span class="hljs-bullet">  -</span> First
+<span class="hljs-bullet">  -</span> Second
+<span class="hljs-bullet">  -</span> Third
 </code></pre>
 <p>&quot;<a href="https://jekyllrb.com/docs/frontmatter/">Frontmatter</a>&quot; on Markdown files is an idea borrowed from Jekyll. Very simply, it means putting a block of YAML at the top of your markdown file containing metadata for that file. The SSG separates this YAML data from the rest of the file (the contents) and parses it for use in generating the page for that post. With YAML frontmatter, our post looks like this:</p>
 <pre><code class="hljs lang-md">---
@@ -213,7 +213,7 @@ html(lang=&#39;en&#39;)
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderPost</span>(<span class="hljs-params"></span>)</span>{
   post.content = postRenderer(post);
   <span class="hljs-keyword">return</span> post;
-}   
+}
 </code></pre>
 <p>We&#39;ll also need a function to flatten the post object for Pug&#39;s consumption</p>
 <pre><code class="hljs lang-js"><span class="hljs-comment">// IN:  { content, data : { title, description, ...} }</span>
@@ -249,7 +249,7 @@ getFiles(<span class="hljs-string">'_posts'</span>, {<span class="hljs-attr">mat
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">writeHTML</span>(<span class="hljs-params">post</span>)</span>{
   <span class="hljs-keyword">return</span> fs.writeFileAsync(path.join(outdir, post.path), post.content);
-} 
+}
 </code></pre>
 <h2 id="putting-it-all-together">
     <a class="header-anchor" href="#putting-it-all-together">

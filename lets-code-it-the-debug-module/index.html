@@ -93,7 +93,7 @@ DEBUG = <span class="hljs-literal">undefined</span>;           <span class="hljs
 <pre><code class="hljs lang-js"><span class="hljs-comment">// process.env.DEBUG = 'database,http'</span>
 DEBUG = localEnv.DEBUG.split(<span class="hljs-string">','</span>);
 
-DEBUG === [<span class="hljs-string">'database'</span>, <span class="hljs-string">'http'</span>] <span class="hljs-comment">// =&gt; true </span>
+DEBUG === [<span class="hljs-string">'database'</span>, <span class="hljs-string">'http'</span>] <span class="hljs-comment">// =&gt; true</span>
 </code></pre>
 <p>Now we have an array of keys for debuggers we want enabled. The simplest way to allow us to enable just http or just database debugging would be to add an argument to the <code>log</code> function, specifying which &quot;key&quot; each debug statement should be associated with:</p>
 <pre><code class="hljs lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">log</span>(<span class="hljs-params">key, ...items</span>)</span>{
@@ -127,7 +127,7 @@ logHttp(<span class="hljs-string">'foo'</span>); <span class="hljs-comment">// -
 dbDebug(<span class="hljs-string">'connection established'</span>);     <span class="hljs-comment">// runs if "database" is enabled</span>
 dbDebug(<span class="hljs-string">'Results recieved'</span>);           <span class="hljs-comment">// runs if "database" is enabled</span>
 
-http(<span class="hljs-string">`Request took <span class="hljs-subst">${requestTime}</span>ms`</span>); <span class="hljs-comment">// runs if "http" is enabled </span>
+http(<span class="hljs-string">`Request took <span class="hljs-subst">${requestTime}</span>ms`</span>); <span class="hljs-comment">// runs if "http" is enabled</span>
 </code></pre>
 <h2 id="that-39-s-it-">
     <a class="header-anchor" href="#that-39-s-it-">
