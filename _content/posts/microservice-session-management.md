@@ -375,3 +375,21 @@ Now go try it out! https://github.com/Sequoia/sharing-cookies
 \- [Semmu](http://semmu.net) <time datetime="2017-06-10 16:00:57 UTC">July 10, 2017</time>
 
 Thanks, Semmu! It's true, the approach described here is dependant on now.sh's aliasing feature, and yes, there are certainly other ways to do it! I featured now.sh here in part because it *is* very simple to use and explain. An explanation of how to tie this together with nginx (I'd pick it over Apache for this use-case) would be useful! I don't have such an explanation on hand but I'll try to write a blog post in the future describing reverse proxying with nginx. Thanks for the comment!
+
+> Hi Sequoia, Great article! A downside I see from sharing the same session storage is the coupling between the services. In your example, if someone decides to use a different web framework (like Rails) or even a different version of express js, the session format created by the services might not be compatible anymore. In other words, we would be giving up on the tech-agnostic benefit that microservices are supposed to provide. I see two possible solutions to this problem:
+> 
+> 1. Make the session format standard across all the microservices and implement the standard in libraries for each language (instead of using express-session)
+> 2. Have every microservice use a sidecar container that writes and reads sessions from the shared session storage. This sidecar container will return the session in a standard JSON format.
+> 
+> Please, let me know if you see other solutions or if I have any faulty assumption on my analysis. Thanks,
+> 
+> Arturo
+
+
+\- Arturo <time datetime="2018-11-23 23:18:17 UTC">November 23, 2018</time>
+
+Thank you Arturo for the thoughtful feedback! I would agree that any time that you share _any_ data between systems, each system will need to be designed to accommodate that format of data, and sessions is no exception. For _this_ example of sharing session data, I think creating a "standard" format for session data would be overkill, as the concept is the same regardless of the format of the session data or the specific tools used in each service.
+
+Even if this were production, I would use out-of-the-box Express session to start and keep the system as simple as possible. I would consider making a cross-framework session format [only at the point where that became an actual requirement, and not a minute sooner](https://en.wikipedia.org/wiki/You_aren%27t_gonna_need_it "YAGNI")! At that point, I'd tweak the easiest-to-tweak system to fit the format of the other one. Only once there were three or four different systems that all needed to share sessions would I consider a system as complex as a sidecar container (which, incidentally, would force you off the Node deploys on Now.sh and onto Docker deploys).
+
+Thank you again for your well-considered feedback, and don't forget to [Keep It Simple](https://www.infoq.com/presentations/Simple-Made-Easy "Simple Made Easy - Rich Hickey")!
