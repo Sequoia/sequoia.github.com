@@ -58,7 +58,7 @@ function writeIndexPage(posts){
     .then(page => { page.posts = reject(has('hidden'))(posts); return page; })
     .then(onProp('body')(marked)) //markdown
     .then(tmpl.index) //template
-    .then(rendered => fs.writeFile(join(outDir, 'index.html'), rendered));
+    .then(rendered => fs.writeFileAsync(join(outDir, 'index.html'), rendered));
 }
 
 /**

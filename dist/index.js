@@ -91,7 +91,7 @@ function writeIndexPage(posts) {
   }).then((0, _util.onProp)('body')(_marker2.default)) //markdown
   .then(tmpl.index) //template
   .then(function (rendered) {
-    return fs.writeFile(join(outDir, 'index.html'), rendered);
+    return fs.writeFileAsync(join(outDir, 'index.html'), rendered);
   });
 }
 
