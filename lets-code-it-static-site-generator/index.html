@@ -84,15 +84,15 @@
     </a>
     2. Parse Frontmatter</h2><p>In a traditional CMS, the <code>Posts</code> table holds not just the contents of the post, but also metadata such as its title, author, publish date, and perhaps a permanent URL or canonical link. This metadata is used both on the post page or in a page <code>&lt;title&gt;</code> and on index pages. In our flat-file system, all the information for a post must be contained in the markdown file for that post. We&#39;ll use the same solution for this challenge that is used by Jekyll and others: YAML frontmatter.</p>
 <p><a href="http://yaml.org/">YAML</a> is a data serialization format that&#39;s basically like JSON but lighter weight. It looks like this:</p>
-<pre><code class="hljs lang-yaml"><span class="hljs-attr">key:</span> <span class="hljs-string">value</span>
-<span class="hljs-attr">author:</span> <span class="hljs-string">Sequoia</span> <span class="hljs-string">McDowell</span>
+<pre><code class="hljs lang-yaml"><span class="hljs-attr">key:</span> value
+<span class="hljs-attr">author:</span> Sequoia McDowell
 <span class="hljs-attr">Object:</span>
-<span class="hljs-attr">  key:</span> <span class="hljs-attr">http://example.com</span>
-<span class="hljs-attr">  wikipedia:</span> <span class="hljs-attr">https://wikipedia.com</span>
+<span class="hljs-attr">  key:</span> http://example.com
+<span class="hljs-attr">  wikipedia:</span> https://wikipedia.com
 <span class="hljs-attr">List:</span>
-<span class="hljs-bullet">  -</span> <span class="hljs-string">First</span>
-<span class="hljs-bullet">  -</span> <span class="hljs-string">Second</span>
-<span class="hljs-bullet">  -</span> <span class="hljs-string">Third</span>
+<span class="hljs-bullet">  -</span> First
+<span class="hljs-bullet">  -</span> Second
+<span class="hljs-bullet">  -</span> Third
 </code></pre>
 <p>&quot;<a href="https://jekyllrb.com/docs/frontmatter/">Frontmatter</a>&quot; on Markdown files is an idea borrowed from Jekyll. Very simply, it means putting a block of YAML at the top of your markdown file containing metadata for that file. The SSG separates this YAML data from the rest of the file (the contents) and parses it for use in generating the page for that post. With YAML frontmatter, our post looks like this:</p>
 <pre><code class="hljs lang-md">---
@@ -213,7 +213,7 @@ html(lang=&#39;en&#39;)
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderPost</span>(<span class="hljs-params"></span>)</span>{
   post.content = postRenderer(post);
   <span class="hljs-keyword">return</span> post;
-}   
+}
 </code></pre>
 <p>We&#39;ll also need a function to flatten the post object for Pug&#39;s consumption</p>
 <pre><code class="hljs lang-js"><span class="hljs-comment">// IN:  { content, data : { title, description, ...} }</span>
@@ -249,7 +249,7 @@ getFiles(<span class="hljs-string">'_posts'</span>, {<span class="hljs-attr">mat
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">writeHTML</span>(<span class="hljs-params">post</span>)</span>{
   <span class="hljs-keyword">return</span> fs.writeFileAsync(path.join(outdir, post.path), post.content);
-} 
+}
 </code></pre>
 <h2 id="putting-it-all-together">
     <a class="header-anchor" href="#putting-it-all-together">
@@ -283,4 +283,4 @@ getFiles(<span class="hljs-string">'_posts'</span>, {<span class="hljs-attr">mat
     Conclusion and Next Steps</h1><p>There is a lot we did not go over in this post, such as generating an index page, file watching and automatic re-running and publishing*, but this post shows the <em>basics</em> of static site generation, and how the main logic can be captured on just a few dozen lines. (Admittedly, my production version is <a href="https://github.com/Sequoia/sequoia.github.com/blob/f0a4488c0979dee4dbcb16a8e30eef73620166e9/src/index.js">a bit more complex</a>.)</p>
 <p>By writing your own tool you miss out out on the reusability of existing tools, but you gain <em>full control</em> over your blog build and <em>less reliance on a third party tool you don&#39;t control</em>. For me, the tradeoff of effort for control was worth it. Perhaps it is for you too!</p>
 <p>* <em>My <a href="https://sequoia.makes.software/lets-code-it-static-site-generator-with-rxjs/">next post</a> will go over those features and more, so stay tuned!</em></p>
-<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="Let's Code It: Static Site Generator"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form></section><footer>&copy; Sequoia McDowell 2018</footer></div></body></html>
+<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="Let's Code It: Static Site Generator"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form></section><footer>&copy; Sequoia McDowell 2019</footer></div></body></html>
