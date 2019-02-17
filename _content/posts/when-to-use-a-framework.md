@@ -101,3 +101,11 @@ The candidate had clearly learned to use `create-react-app` to start projects, a
 Programming frameworks can be useful tools, but they can only be deployed appropriately if you've learned enough to be able to pick the right tool for the job. To learn this skill, you must first learn to work _without_ frameworks.
 
 Put another way, the best way to ensure you use frameworks properly (as a beginner) is to not use them at all. Does that make sense?
+
+# Comments
+
+> I remember that my first contact with the world of web apps was using Ruby on Rails. It surely felt like magic and it was amazing working with the framework, but years later I started struggling to understand simple HTTP requests and MVC concepts. Therefore, I couldn't have put it better: the better way to start learning how to build professional web apps is to start with just a piece of wood, a hammer and a nail - but not with an IKEA box with a book containing complicated instructions. Thanks Sequoia!
+
+\- <a href="https://leosl.github.io">Leonardo Lima</a>, <time datetime="2019-02-17 18:32:33 UTC">February 16, 2019</time>
+
+Thank you for the generous feedback, and I'm glad to hear this post reflects your experience well. I like your "Ikea" analogy–I kept struggling for analogy around a gas-powered ditch digger vs. a shovel, but Ikea furniture is much better. Cheers!
