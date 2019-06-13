@@ -16,7 +16,8 @@ mixin menuitem(name, url)
     li: a(href=url)= name
 
 nav
-  ul#nav
+  ul
     each item in menu
       +menuitem(item.name, item.url)
       //- h1= slug
+.clearfix
