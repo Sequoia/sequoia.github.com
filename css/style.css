@@ -83,49 +83,20 @@ header{
     margin-bottom:0;
     margin-top:.5rem;
   }
-  nav{
-    min-height:1.4em;
-    position:absolute;
-    right:0;
-    /*top:0;*/
-    bottom:0em;
-    font-size: 1.2em;
-  }
-    nav ul{
-      margin:0;
-      padding:.2em 0 0 0;
-      list-style-type:none;
-    }
-      nav ul li{
-        display:block;
-        text-align: right;
-        margin: 0.1em 0;
-        line-height:1.3em;
-      }
-      nav ul li span,
-      nav ul li a{
-        padding-right:.25em;
-        border-right: solid .75em transparent;
-      }
-      nav ul li a,
-      nav ul li a:visited{
-        color:#0275d8;
-      }
-      nav ul li a:hover{
-        text-decoration:none;
-        color:#bd4147;
-        border-right: solid .75em #bd4147;
-      }
-      nav ul li.current span{
-        text-decoration:none;
-        color:black;
-        border-right: solid .75em black;
-      }
-
-
+  
+nav ul{
+  margin:.5em 0;
+  padding:0;
+  border-top: solid 1px black;
+}
+nav ul li{
+  list-style-type:none;
+  float: left; 
+  margin-right:.5em;
+}
 
 #wrap{
-	max-width: 960px;
+  max-width: 960px;
 	margin:10px auto;
 	padding: 0 1em;
 }
@@ -275,6 +246,8 @@ ul#news-items li{
     }
     header {
       margin-top:0;
+      margin-bottom:.5em;
+      padding:.2em;
     }
 
     #content h1{
@@ -282,6 +255,10 @@ ul#news-items li{
     }
     #content h2{
       font-size:1.4em;
+    }
+    #content h2, #content h3{
+      margin-top:1.25em;
+      margin-bottom:.5em;
     }
 
     #content h3{
@@ -294,35 +271,9 @@ ul#news-items li{
       margin-top:.2em;
       font-size: .9em;
     }
-    nav {
-      margin-top:.5em;
-      position: relative;
-      right:inherit;
-      bottom:inherit;
-    }
-    nav ul{
-      padding:0;
-      font-size: .9em;
-    }
-    nav ul li{
-      margin: .2em;
-      display:block;
-      float:left;
-      font-size:.9em;
-      /*width:80%;*/
-    }
-    nav ul li span, nav ul li a, nav ul li.current span, nav ul li a:hover{
-      border-right:none;
-    }
-    nav ul li:first-child{
-      margin-left:0;
-    }
-    nav ul li:last-child{
-      margin-right:0;
-    }
+    header nav ul li {
+      font-size:.8em;
 
-    nav ul li.current span{
-      color:black;
     }
 
     #wrap aside#announce{
