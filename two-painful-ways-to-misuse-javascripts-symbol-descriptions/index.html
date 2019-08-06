@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="en"><head><title>Two Painful Ways to Misuse JavaScript's Symbol Descriptions | Sequoia McDowell</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="ES2019 introduced a new way to access the (non-unique) description property of (unique) Symbol objects. As with any new JS feature, every developer's first question is &quot;how can I shoot myself in the foot with this?&quot; Read and find out!
+"><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><!--does this do anything? who knows--><link href="https://github.com/Sequoia" rel="me"></head><body><div id="wrap"><header role="banner"><h1>Sequoia McDowell</h1><h2>Computer Systems Analyst</h2><nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/work/">Hire</a></li></ul></nav><div class="clearfix"></div></header><aside id="announce" class="row hidden"><h2>News</h2><ul id="news-items"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>Two Painful Ways to Misuse JavaScript's Symbol Descriptions</h1><span class="byline">Published August 6, 2019</span><p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol">Symbols</a> were introduced in ECMAScript 6 (ES2015) as a way to create truly unique values in JavaScript applications. They have several cool features, but the main point of Symbols is that they are <strong>unique</strong>. Although multiple Symbols can be created with identical descriptions (e.g. <code>x = Symbol(&#39;a&#39;); y = Symbol(&#39;a&#39;)</code>), the Symbols themselves are different. The description is just a helpful label, almost like a comment: it cannot be directly accessed from the Symbol once it&#39;s created.</p>
+<p><a href="https://blog.tildeloop.com/posts/javascript-what%E2%80%99s-new-in-es2019#symboldescription">Until ES2019!</a> Now the Symbol&#39;s description property can be directly accessed via <code>mySymbol.description</code>. Why is useful? Who cares!<sup>1</sup> <em>This</em> blog post is not about what&#39;s useful, it&#39;s about misusing JavaScript for pain and heartache! So without further ado,</p>
+<h2 id="method-1-comparing-symbols-by-description">
+    <a class="header-anchor" href="#method-1-comparing-symbols-by-description">
+      <span class="header-link"></span>
+    </a>
+    Method 1: Comparing Symbols by Description</h2><p>As mentioned, Symbols are <strong>unique</strong>.<sup>2</sup> This means if one is created by a vendor:</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">// vendor/x.js</span>
+catalog_id = <span class="hljs-built_in">Symbol</span>(<span class="hljs-string">'cat_id'</span>);
+<span class="hljs-built_in">module</span>.export = catalog_id;
+</code></pre>
+<p>...and then another by me...</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">// lib/y.js</span>
+cat_id = <span class="hljs-built_in">Symbol</span>(<span class="hljs-string">'cat_id'</span>);
+<span class="hljs-built_in">module</span>.export = cat_id;
+</code></pre>
+<p>they will be unique values:</p>
+<pre><code class="hljs lang-js">catalog_id = <span class="hljs-built_in">require</span>(<span class="hljs-string">'vendor/x.js'</span>);
+cat_id = <span class="hljs-built_in">require</span>(<span class="hljs-string">'lib/y.js'</span>);
+
+<span class="hljs-keyword">const</span> item = {};
+item[catalog_id] = <span class="hljs-number">123</span>;
+
+<span class="hljs-comment">// Check if catalog id is set:</span>
+<span class="hljs-comment">// 1. get the properties where the keys are symbols:</span>
+<span class="hljs-keyword">const</span> symbolProps = <span class="hljs-built_in">Object</span>.getOwnPropertySymbols(item);
+<span class="hljs-comment">// 2. see if that array contains catalog id</span>
+hasCatalogId = symbolProps.contains(cat_id);
+</code></pre>
+<p><code>hasCatalogId</code> is <code>false</code>! Boo! My Symbol is supposed to reference the same property as that referenced by the Symbol created in <code>vendor/x.js</code>! I created mine to match theirs (they have the same description). There must be a way to see that they are actually &quot;the same&quot;... <code>Symbol.prototype.description</code> to the rescue:</p>
+<pre><code class="hljs lang-js"><span class="hljs-comment">//... require(), const item etc.</span>
+
+<span class="hljs-comment">// 1. get the DESCRIPTION of properties where the keys are symbols:</span>
+<span class="hljs-keyword">const</span> symbolProps = <span class="hljs-built_in">Object</span>.getOwnPropertySymbols(item)
+  .map(<span class="hljs-function"><span class="hljs-params">symb</span> =&gt;</span> symb.description);
+<span class="hljs-comment">// 2. see if that array contains catalog id</span>
+hasCatalogId = symbolProps.contains(cat_id.description);
+</code></pre>
+<p>Problem solved: <code>hasCatalogId</code> is now (correctly) <code>true</code>!</p>
+<h2 id="method-2-serializing-using-description">
+    <a class="header-anchor" href="#method-2-serializing-using-description">
+      <span class="header-link"></span>
+    </a>
+    Method 2: Serializing Using Description</h2><p>In this case, I have Symbols representing the unique roles my user&#39;s might have (author, admin, etc).</p>
+<pre><code class="hljs lang-js"><span class="hljs-keyword">const</span> admin = <span class="hljs-built_in">Symbol</span>(<span class="hljs-string">'admin'</span>);
+<span class="hljs-keyword">const</span> author = <span class="hljs-built_in">Symbol</span>(<span class="hljs-string">'author'</span>);
+</code></pre>
+<p>I also have a collection of users with their roles defined:</p>
+<pre><code class="hljs lang-js"><span class="hljs-keyword">const</span> users = [
+    {<span class="hljs-attr">name</span>: <span class="hljs-string">'vimukt'</span>, <span class="hljs-attr">role</span>: admin},
+    {<span class="hljs-attr">name</span>: <span class="hljs-string">'danilo'</span>, <span class="hljs-attr">role</span>: admin}
+];
+
+log(users[<span class="hljs-number">0</span>].role === admin); <span class="hljs-comment">// true</span>
+log(users[<span class="hljs-number">0</span>].role.description); <span class="hljs-comment">// "admin"</span>
+</code></pre>
+<p>I want to serialize these for some reason:</p>
+<pre><code class="hljs lang-js">usersJSON = <span class="hljs-built_in">JSON</span>.stringify(users);
+</code></pre>
+<p>But when I deserialize, my roles are gone:</p>
+<pre><code class="hljs lang-js">deserialized = <span class="hljs-built_in">JSON</span>.stringify(usersJSON);
+log(deserialized[<span class="hljs-number">0</span>].role); <span class="hljs-comment">// undefined</span>
+</code></pre>
+<p><code>JSON.stringify</code> is refusing to converty my Symbol values to strings!! Don&#39;t worry, with a little trickery, we can outsmart it:</p>
+<pre><code class="hljs lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">serializeWithRoles</span>(<span class="hljs-params">users</span>)</span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">JSON</span>.stringify(
+        users.map(<span class="hljs-function"><span class="hljs-params">user</span> =&gt;</span> {
+            <span class="hljs-comment">// convert the role Symbols to strings so they serialize</span>
+            user.role = user.role.description;
+            <span class="hljs-keyword">return</span> user;
+        })
+    )
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">deserializeWithRoles</span>(<span class="hljs-params">userJSON</span>)</span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">JSON</span>.parse(userJSON)
+        .map(<span class="hljs-function"><span class="hljs-params">user</span> =&gt;</span> {
+            <span class="hljs-comment">// convert role strings back to symbols</span>
+            user.role = <span class="hljs-built_in">Symbol</span>(user.role);
+            <span class="hljs-keyword">return</span> user;
+        });
+}
+</code></pre>
+<p>Let&#39;s try it:</p>
+<pre><code class="hljs lang-js"><span class="hljs-keyword">const</span> usersJSON = serializeWithRoles(users);
+<span class="hljs-keyword">const</span> deserialized = deserializeWithRoles(usersJSON);
+
+log(deserialized[<span class="hljs-number">0</span>].role); <span class="hljs-comment">// Symbol(admin)</span>
+log(deserialized[<span class="hljs-number">0</span>].role.description); <span class="hljs-comment">// "admin"</span>
+</code></pre>
+<p>Et voilà! Serializing &amp; deserializing with our roles &quot;works&quot;, and we have Symbols at the finish, just as we did at the start.</p>
+<h2 id="spoilers-why-these-methods-are-bad">
+    <a class="header-anchor" href="#spoilers-why-these-methods-are-bad">
+      <span class="header-link"></span>
+    </a>
+    Spoilers: Why These Methods Are Bad</h2><p>TODO</p>
+<h2 id="footnotes">
+    <a class="header-anchor" href="#footnotes">
+      <span class="header-link"></span>
+    </a>
+    Footnotes</h2><p><sup>1</sup> <em>If you do want to learn more about the uses of Symbols, see <a href="https://www.keithcirkel.co.uk/metaprogramming-in-es6-symbols/">this informative article</a>.</em><br>
+<sup>2</sup> *With the exception of global symbols find-or-create&#39;ed using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/for"><code>Symbol.for</code></a>, but these will never have the same value as a Symbol created using <code>Symbol()</code>.</p>
+<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="Two Painful Ways to Misuse JavaScript's Symbol Descriptions"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form></section><footer>&copy; Sequoia McDowell 2019</footer></div></body></html>
