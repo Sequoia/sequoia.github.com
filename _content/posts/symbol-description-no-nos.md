@@ -4,7 +4,6 @@ date: August 6, 2019
 tags: javascript, antipatterns
 description: >
     ES2019 introduced a new way to access the (non-unique) description property of (unique) Symbol objects. As with any new JS feature, every developer's first question is "how can I shoot myself in the foot with this?" Read and find out!
-hidden: true
 ---
 
 I was reading [an article on new features in ES2019](https://blog.tildeloop.com/posts/javascript-what%E2%80%99s-new-in-es2019#symboldescription) earlier today, and one jumped out at me: `Symbol.prototype.description`. "Wow," I thought, "this feature will be *really* easy to misuse!" In this post, we'll look at a couple of ways *you* can start misusing this cutting edge JavaScript feature today!
