@@ -95,7 +95,7 @@ usersJSON = JSON.stringify(users);
 But when I deserialize, my roles are gone:
 
 ```js
-deserialized = JSON.stringify(usersJSON);
+deserialized = JSON.parse(usersJSON);
 log(deserialized[0].role); // undefined
 ```
 

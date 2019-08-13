@@ -1,5 +1,12 @@
 [
   {
+    "name" : "Github 2 Jira",
+    "description": "At work we used Jira to track issue status. We also use Pull Request workflow on Github, where PRs *also* have a status. I grew weary of having to check two places to figure out what status a PR was in (review requested? changes requested? merged?). I created this proof of concept to automatically transition tickets on Jira when the Github PR status changed. This allowed me to see ticket status viewing *only* Jira, which automatically reflected the up-to-date status of PRs on Github.",
+    "links": [
+      ["Repo", "https://github.com/Sequoia/gh-to-jira"]
+    ]
+  },
+  {
     "name" : "VS Code Extension: LoopBack JSON Schemas",
     "description": "StrongLoop asked me to come up with creative ways to improve developer experience for their [LoopBack](http://loopback.io/) framework. The framework relies on lots of fairly complex JSON configuration files, and working on these files forces one to refer frequently back to the (also fairly complex) documentation. To address this challenge, I captured settings for the most frequently used configuration files in [JSON Schema](http://json-schema.org/), then created a [VS Code](https://code.visualstudio.com) extension that automatically maps each schema to the appropriate LoopBack configuration file, providing the user with inline code hints, documentation, and warnings when illegal configuration values are set. \"If you can't bring <abbr title='the developer'>Mohammed</abbr> to <abbr title='the documentation'>the mountain</abbr>, bring <abbr title='the documentation'>the mountain</abbr> to <abbr title='the developer'>Mohammed</abbr>!\"",
     "links": [
@@ -80,7 +87,7 @@
     "name" : "trello-toy",
     "description":"I built this to prepare for an interview where I was told I'd have to build a UI to connect to a JSON REST server. I was thrilled when I was told it \"could even be a CLI,\" as that greatly simplified things! No html, css, etc., just text in text out. Had fun with commander, superagent, cli-table & more-- this is what inspired my later CLI building talk!",
     "links": [
-      ["Repo", "https://github.com/Sequoia/checkrunning"],
+      ["Repo", "https://github.com/Sequoia/trello-toy"],
       ["Usage Example", "/s/trello-toy-output.html"]
     ]
 
