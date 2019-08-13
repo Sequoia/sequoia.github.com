@@ -67,7 +67,7 @@ log(users[<span class="hljs-number">0</span>].role.description); <span class="hl
 <pre><code class="hljs lang-js">usersJSON = <span class="hljs-built_in">JSON</span>.stringify(users);
 </code></pre>
 <p>But when I deserialize, my roles are gone:</p>
-<pre><code class="hljs lang-js">deserialized = <span class="hljs-built_in">JSON</span>.stringify(usersJSON);
+<pre><code class="hljs lang-js">deserialized = <span class="hljs-built_in">JSON</span>.parse(usersJSON);
 log(deserialized[<span class="hljs-number">0</span>].role); <span class="hljs-comment">// undefined</span>
 </code></pre>
 <p><code>JSON.stringify</code> is refusing to convert my Symbol values to strings! Don&#39;t worry, with a little trickery, we can get around this limitation:</p>
