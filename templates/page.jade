@@ -4,5 +4,6 @@ block announce
   //- disabled
   
 block content
-  h1= title
+  if title
+    h1= title
   | !{body}

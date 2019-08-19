@@ -41,7 +41,7 @@ Promise.all([
   writeProjectsPage(),
   writeContactsPage(),
   writeThanksPage(),
-  writeWorkPage()
+  writeTalksPage()
 ]).then(() => l('EVERYTHING done :)'));
 
 ////homepage
@@ -118,12 +118,12 @@ function writeContactsPage(){
 
 //TODO: create a generic "page" function so index & work page fns can be merged
 // merge it with existing createPage fn?
-function writeWorkPage(){
+function writeTalksPage(){
   //params:
   // markdown (filename)
   // template fn
   // outfile name
-  return fs.readFileAsync(root('_content/work.md'), 'utf-8')
+  return fs.readFileAsync(root('_content/talks.md'), 'utf-8')
     .then(frontmatter) // => { body, attributes }
     //merge attributes to top level
     .then(p => { p.attributes.body = p.body; return p.attributes; })

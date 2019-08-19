@@ -70,7 +70,7 @@ function formatDate(d) {
   return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 }
 
-_bluebird2.default.all([getPosts().tap(writeIndexPage).then(writePosts), writeProjectsPage(), writeContactsPage(), writeThanksPage(), writeWorkPage()]).then(function () {
+_bluebird2.default.all([getPosts().tap(writeIndexPage).then(writePosts), writeProjectsPage(), writeContactsPage(), writeThanksPage(), writeTalksPage()]).then(function () {
   return (0, _util.l)('EVERYTHING done :)');
 });
 
@@ -150,12 +150,12 @@ function writeContactsPage() {
 
 //TODO: create a generic "page" function so index & work page fns can be merged
 // merge it with existing createPage fn?
-function writeWorkPage() {
+function writeTalksPage() {
   //params:
   // markdown (filename)
   // template fn
   // outfile name
-  return fs.readFileAsync((0, _rootPath2.default)('_content/work.md'), 'utf-8').then(_frontMatter2.default) // => { body, attributes }
+  return fs.readFileAsync((0, _rootPath2.default)('_content/talks.md'), 'utf-8').then(_frontMatter2.default) // => { body, attributes }
   //merge attributes to top level
   .then(function (p) {
     p.attributes.body = p.body;return p.attributes;
