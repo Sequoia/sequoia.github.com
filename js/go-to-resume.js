@@ -1,6 +1,4 @@
-target = 'resume'.split('');
-nextKey = 0;
-
+// skip it if browser does not have KeyboardEvent.key
 if((new KeyboardEvent('')).key !== 'undefined'){
     document.addEventListener('DOMContentLoaded', typeToResume)
 }
@@ -9,6 +7,9 @@ if((new KeyboardEvent('')).key !== 'undefined'){
  * send the user to my resume if they type "resume"
  */
 function typeToResume(){
+    target = 'resume'.split('');
+    nextKey = 0;
+
     document.body.addEventListener('keydown', function(e){
         if(e.key.toLowerCase() === target[nextKey]){
             nextKey++;
