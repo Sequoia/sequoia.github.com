@@ -18,7 +18,7 @@ a, a:visited{
 
 body{
   text-rendering: optimizeLegibility;
-	font-size:16pt;
+	font-size:14pt;
 	font-family:sans-serif;
 }
 
@@ -83,10 +83,13 @@ header{
     margin-bottom:0;
     margin-top:.5rem;
   }
-  
+
 nav ul{
-  margin:.5em 0;
+  margin:0;
   padding:0;
+}
+h2+nav ul{
+  margin:.5em 0;
   border-top: solid 1px black;
 }
 nav ul li{
@@ -151,6 +154,13 @@ img{
 
 h2+p, h3+p{
 	margin-top:0;
+}
+
+h3>time{
+  float: right;
+  font-size: .8em;
+  font-weight: normal;
+  margin-top: 0.1em;
 }
 
 li>p{
