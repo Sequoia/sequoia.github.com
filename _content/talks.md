@@ -1,5 +1,5 @@
 ---
-title:
+title: Talks and Trainings
 slug: talks-and-trainings
 ---
 

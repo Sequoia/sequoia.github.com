@@ -365,6 +365,7 @@ a:hover, a:focus{
 }
 
 a.header-anchor{
+  display:none;
   display:block;
   float:right;
 }

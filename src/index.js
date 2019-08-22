@@ -35,10 +35,13 @@ function formatDate(d){
 }
 
 Promise.all([
-  getPosts()
+  getPosts('_content/posts')
     .tap(writeIndexPage)
     .then(writePosts),
+  getPosts('_content/shorts')
+    .then(writeShortsPage),
   writeProjectsPage(),
+  writeShortsPage(),
   writeContactsPage(),
   writeThanksPage(),
   writeTalksPage()
@@ -62,11 +65,23 @@ function writeIndexPage(posts){
 }
 
 /**
+ * @param Promise<Array[post object]>
+ * @return Promise
+ */
+function writeShortsPage(posts){
+    Promise.resolve(posts)
+      .map(onProp('body')(marked)) //markdown each post
+      .then(posts => tmpl.shorts({shorts: posts}))
+      .tap(()=> mkdirp(join(outDir,'shorts')))
+      .then(rendered => fs.writeFileAsync(join(outDir,'shorts', 'index.html'), rendered));
+}
+
+/**
  * gets posts & adds metadata as needed
  * @return Promise<Array[post object]>
  */
-function getPosts(){
-  return getFiles(root('_content/posts'), {match: /.*\.md/})
+function getPosts(directory){
+  return getFiles(root(directory), {match: /.*\.md/})
     .map(frontmatter) // => { body, attributes }
     //skip posts which yet have no frontmatter/metadata
     .filter(has('frontmatter'))

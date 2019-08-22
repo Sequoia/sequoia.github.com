@@ -1,0 +1,14 @@
+extends ./layout.jade
+block content
+  h1 Shorts
+  p Thoughts and ideas that don't warrant a full post (yet?).
+
+  section.blog-posts
+    for post in shorts
+      // add anchor to header?
+      h2(id=post.slug)= post.title
+        a.header-anchor(href="#"+post.slug): span.header-link
+      time= post.date
+      | !{post.body}
+
+  include ./includes/comment_form.jade

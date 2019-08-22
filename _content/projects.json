@@ -1,5 +1,12 @@
 [
   {
+    "name" : "JS Multimethod",
+    "description": "While studying Clojure I learned about multimethods. They seemed like a very cool approach to parametric polymorphism that I had not seen before! I created a JavaScript implementation of the basic multimethods to better understand how they work.",
+    "links": [
+      ["Repo", "https://github.com/Sequoia/js-multimethod"]
+    ]
+  },
+  {
     "name" : "Github 2 Jira",
     "description": "At work we used Jira to track issue status. We also use Pull Request workflow on Github, where PRs *also* have a status. I grew weary of having to check two places to figure out what status a PR was in (review requested? changes requested? merged?). I created this proof of concept to automatically transition tickets on Jira when the Github PR status changed. This allowed me to see ticket status viewing *only* Jira, which automatically reflected the up-to-date status of PRs on Github.",
     "links": [
@@ -39,6 +46,13 @@
     "links": [
       ["NPM", "https://www.npmjs.com/package/error-throwing-middleware"],
       ["Repo", "https://github.com/Sequoia/error-throwing-middleware"]
+    ]
+  },
+  {
+    "name" : "Event Loop Performance Demo",
+    "description": "I created this ️simulation for a Node.js training in order to explain the benefits of the event loop in Node.js. The purpose is to illustrate the execution times of blocking I/O + threads vs. non-blocking I/O + event loop visually.",
+    "links" : [
+      ["Repo", "https://gist.github.com/Sequoia/94d192908e05f7674423"]
     ]
   },
   {

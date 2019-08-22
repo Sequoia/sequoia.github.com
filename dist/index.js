@@ -70,7 +70,7 @@ function formatDate(d) {
   return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 }
 
-_bluebird2.default.all([getPosts().tap(writeIndexPage).then(writePosts), writeProjectsPage(), writeContactsPage(), writeThanksPage(), writeTalksPage()]).then(function () {
+_bluebird2.default.all([getPosts('_content/posts').tap(writeIndexPage).then(writePosts), getPosts('_content/shorts').then(writeShortsPage), writeProjectsPage(), writeShortsPage(), writeContactsPage(), writeThanksPage(), writeTalksPage()]).then(function () {
   return (0, _util.l)('EVERYTHING done :)');
 });
 
@@ -96,11 +96,26 @@ function writeIndexPage(posts) {
 }
 
 /**
+ * @param Promise<Array[post object]>
+ * @return Promise
+ */
+function writeShortsPage(posts) {
+  _bluebird2.default.resolve(posts).map((0, _util.onProp)('body')(_marker2.default)) //markdown each post
+  .then(function (posts) {
+    return tmpl.shorts({ shorts: posts });
+  }).tap(function () {
+    return mkdirp(join(outDir, 'shorts'));
+  }).then(function (rendered) {
+    return fs.writeFileAsync(join(outDir, 'shorts', 'index.html'), rendered);
+  });
+}
+
+/**
  * gets posts & adds metadata as needed
  * @return Promise<Array[post object]>
  */
-function getPosts() {
-  return (0, _getFiles2.default)((0, _rootPath2.default)('_content/posts'), { match: /.*\.md/ }).map(_frontMatter2.default) // => { body, attributes }
+function getPosts(directory) {
+  return (0, _getFiles2.default)((0, _rootPath2.default)(directory), { match: /.*\.md/ }).map(_frontMatter2.default) // => { body, attributes }
   //skip posts which yet have no frontmatter/metadata
   .filter((0, _ramda.has)('frontmatter'))
   //merge attributes to top level
