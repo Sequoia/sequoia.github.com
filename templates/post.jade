@@ -1,4 +1,7 @@
 extends ./layout.jade
+block header
+  header(role='banner')
+    include ./includes/navigation.jade
 block content
   h1= title
   span.byline Published #{date}
