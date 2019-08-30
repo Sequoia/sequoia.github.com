@@ -47,7 +47,7 @@ item[catalog_id] = 123;
 const symbolProps = Object.getOwnPropertySymbols(item);
 
 // 2. see if that array contains catalog id
-hasCatalogId = symbolProps.contains(cat_id);
+hasCatalogId = symbolProps.includes(cat_id);
 ```
 
 `hasCatalogId` is false! What gives?? The Symbol I defined in `lib/y.js` is supposed to reference the same property as that referenced by the Symbol created in `vendor/x.js`! I created mine to match theirs (they have the same description). There must be a way to see that they are actually "the same"... `Symbol.prototype.description` to the rescue:
@@ -60,7 +60,7 @@ const symbolPropDescriptions = Object.getOwnPropertySymbols(item)
   .map(symb => symb.description);
 
 // 2. see if that array contains catalog id
-hasCatalogId = symbolPropDescriptions.contains(cat_id.description);
+hasCatalogId = symbolPropDescriptions.includes(cat_id.description);
 ```
 
 Problem solved: `hasCatalogId` is now (correctly) `true`!
