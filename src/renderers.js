@@ -12,6 +12,7 @@ module.exports = {
   post : makeRenderer('post.jade'),
   page : makeRenderer('page.jade'),
   index : makeRenderer('index.jade'),
+  rss : makeRenderer('rss.jade'),
   shorts : makeRenderer('shorts.jade'),
   projects : makeRenderer('projects.jade'),
   contact : makeRenderer('contact.jade'),

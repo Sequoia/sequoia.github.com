@@ -31,6 +31,7 @@ var _string2 = _interopRequireDefault(_string);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var join = require('path').join;
+var url = require('url');
 var assert = require('assert');
 
 var fs = _bluebird2.default.promisifyAll(require('fs'));
@@ -70,7 +71,7 @@ function formatDate(d) {
   return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 }
 
-_bluebird2.default.all([getPosts('_content/posts').tap(writeIndexPage).then(writePosts), getPosts('_content/shorts').then(writeShortsPage), writeProjectsPage(), writeShortsPage(), writeContactsPage(), writeThanksPage(), writeTalksPage()]).then(function () {
+_bluebird2.default.all([getPosts('_content/posts').tap(writeIndexPage).tap(writeRssPage).then(writePosts), getPosts('_content/shorts').then(writeShortsPage), writeProjectsPage(), writeShortsPage(), writeContactsPage(), writeThanksPage(), writeTalksPage()]).then(function () {
   return (0, _util.l)('EVERYTHING done :)');
 });
 
@@ -142,6 +143,20 @@ function writePosts(posts) {
     throw err;
   }).finally(function () {
     return (0, _util.l)('all done!');
+  });
+}
+
+function writeRssPage(posts) {
+  var websiteBaseUrl = 'https://sequoia.makes.software/';
+  var lastBuildDate = new Date().toUTCString();
+  return _bluebird2.default.resolve(posts).map((0, _util.addPropFn)('link')(function (post) {
+    return url.resolve(websiteBaseUrl, post.slug);
+  })).map((0, _util.addPropFn)('pubDate')(function (post) {
+    return new Date(post.timestamp).toUTCString();
+  })).then(function (posts) {
+    return tmpl.rss({ posts: posts, websiteBaseUrl: websiteBaseUrl, lastBuildDate: lastBuildDate });
+  }).then(function (rendered) {
+    return fs.writeFileAsync(join(outDir, 'rss.xml'), rendered);
   });
 }
 

@@ -1,0 +1,18 @@
+doctype xml
+rss(version="2.0" xmlns:atom="http://www.w3.org/2005/Atom")
+    channel
+        title Sequoia McDowell's Blog Feed
+        link= websiteBaseUrl
+        //- atom:link(href="https://sequoia.makes.software/rss.xml" rel="self" type="application/rss+xml")
+        description Occassional posts about web programming, software engineering, and JavaScript.
+        
+        lastBuildDate= lastBuildDate
+
+        docs https://validator.w3.org/feed/docs/rss2.html
+        generator These two hands 🙌
+        each post, i in posts
+            item
+                title= post.title
+                link= post.link
+                guid(isPermaLink="true")= post.link
+                pubDate= post.pubDate

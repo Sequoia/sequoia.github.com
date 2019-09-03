@@ -1,4 +1,5 @@
 const join = require('path').join;
+const url = require('url');
 const assert = require('assert');
 import {reverse, compose, curryN, prop, has, sortBy, reject, isEmpty, not} from 'ramda';
 import root from 'root-path';
@@ -37,6 +38,7 @@ function formatDate(d){
 Promise.all([
   getPosts('_content/posts')
     .tap(writeIndexPage)
+    .tap(writeRssPage)
     .then(writePosts),
   getPosts('_content/shorts')
     .then(writeShortsPage),
@@ -105,6 +107,16 @@ function writePosts(posts){
     .each(writePage) //write
     .catch(err => { throw err; })
     .finally(() => l('all done!'));
+}
+
+function writeRssPage(posts){
+  const websiteBaseUrl = 'https://sequoia.makes.software/';
+  const lastBuildDate = (new Date()).toUTCString();
+  return Promise.resolve(posts)
+    .map(addPropFn('link')(post => url.resolve(websiteBaseUrl, post.slug)))
+    .map(addPropFn('pubDate')(post => (new Date(post.timestamp)).toUTCString()))
+    .then(posts => tmpl.rss({ posts, websiteBaseUrl, lastBuildDate }))
+    .then(rendered => fs.writeFileAsync(join(outDir, 'rss.xml'), rendered));
 }
 
 function writeProjectsPage(){
