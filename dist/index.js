@@ -33,6 +33,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var join = require('path').join;
 var url = require('url');
 var assert = require('assert');
+var crypto = require('crypto');
 
 var fs = _bluebird2.default.promisifyAll(require('fs'));
 
@@ -147,6 +148,21 @@ function writePosts(posts) {
 }
 
 function writeRssPage(posts) {
+  // check the last publish hash to determine whether we should publish again (if anything changed)
+  var hashPath = join(outDir, 'rss.hash.json');
+  var newHash = crypto.createHash('md5').update(JSON.stringify(posts)).digest('hex');
+  var oldHash = void 0;
+  try {
+    oldHash = require(hashPath);
+  } catch (e) {
+    oldHash = "file doesn't exist yet 🤷‍";
+  }
+  if (newHash === oldHash) return _bluebird2.default.resolve(null);
+  console.log('something changed!!!');
+  console.log(oldHash);
+  console.log(newHash);
+  fs.writeFileSync(hashPath, JSON.stringify(newHash));
+  // something changed
   var websiteBaseUrl = 'https://sequoia.makes.software/';
   var lastBuildDate = new Date().toUTCString();
   return _bluebird2.default.resolve(posts).map((0, _util.addPropFn)('link')(function (post) {

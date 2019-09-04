@@ -1,6 +1,8 @@
 const join = require('path').join;
 const url = require('url');
 const assert = require('assert');
+const crypto = require('crypto');
+
 import {reverse, compose, curryN, prop, has, sortBy, reject, isEmpty, not} from 'ramda';
 import root from 'root-path';
 import {l, e, onProp, addPropFn, addProp} from './util';
@@ -110,6 +112,19 @@ function writePosts(posts){
 }
 
 function writeRssPage(posts){
+  // check the last publish hash to determine whether we should publish again (if anything changed)
+  const hashPath = join(outDir,'rss.hash.json')
+  const newHash = crypto.createHash('md5').update(JSON.stringify(posts)).digest('hex');
+  let oldHash
+  try {
+    oldHash = require(hashPath);
+  }catch (e){
+    oldHash = "file doesn't exist yet 🤷‍";
+  }
+  if(newHash === oldHash) return Promise.resolve(null);
+  console.log('updating RSS feed....');
+  fs.writeFileSync(hashPath, JSON.stringify(newHash));
+  // something changed
   const websiteBaseUrl = 'https://sequoia.makes.software/';
   const lastBuildDate = (new Date()).toUTCString();
   return Promise.resolve(posts)
