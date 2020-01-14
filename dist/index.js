@@ -158,9 +158,7 @@ function writeRssPage(posts) {
     oldHash = "file doesn't exist yet 🤷‍";
   }
   if (newHash === oldHash) return _bluebird2.default.resolve(null);
-  console.log('something changed!!!');
-  console.log(oldHash);
-  console.log(newHash);
+  console.log('updating RSS feed....');
   fs.writeFileSync(hashPath, JSON.stringify(newHash));
   // something changed
   var websiteBaseUrl = 'https://sequoia.makes.software/';

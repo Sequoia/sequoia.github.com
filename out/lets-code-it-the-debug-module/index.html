@@ -93,7 +93,7 @@ DEBUG = <span class="hljs-literal">undefined</span>;           <span class="hljs
 <pre><code class="hljs lang-js"><span class="hljs-comment">// process.env.DEBUG = 'database,http'</span>
 DEBUG = localEnv.DEBUG.split(<span class="hljs-string">','</span>);
 
-DEBUG === [<span class="hljs-string">'database'</span>, <span class="hljs-string">'http'</span>] <span class="hljs-comment">// =&gt; true </span>
+DEBUG === [<span class="hljs-string">'database'</span>, <span class="hljs-string">'http'</span>] <span class="hljs-comment">// =&gt; true</span>
 </code></pre>
 <p>Now we have an array of keys for debuggers we want enabled. The simplest way to allow us to enable just http or just database debugging would be to add an argument to the <code>log</code> function, specifying which &quot;key&quot; each debug statement should be associated with:</p>
 <pre><code class="hljs lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">log</span>(<span class="hljs-params">key, ...items</span>)</span>{
@@ -127,7 +127,7 @@ logHttp(<span class="hljs-string">'foo'</span>); <span class="hljs-comment">// -
 dbDebug(<span class="hljs-string">'connection established'</span>);     <span class="hljs-comment">// runs if "database" is enabled</span>
 dbDebug(<span class="hljs-string">'Results recieved'</span>);           <span class="hljs-comment">// runs if "database" is enabled</span>
 
-http(<span class="hljs-string">`Request took <span class="hljs-subst">${requestTime}</span>ms`</span>); <span class="hljs-comment">// runs if "http" is enabled </span>
+http(<span class="hljs-string">`Request took <span class="hljs-subst">${requestTime}</span>ms`</span>); <span class="hljs-comment">// runs if "http" is enabled</span>
 </code></pre>
 <h2 id="that-39-s-it-">
     <a class="header-anchor" href="#that-39-s-it-">
@@ -136,4 +136,12 @@ http(<span class="hljs-string">`Request took <span class="hljs-subst">${requestT
     That&#39;s it!</h2><p>That gets us just about all the way to the <a href="https://github.com/visionmedia/debug"><code>debug</code> module</a>! It has a couple more features than what we created here, but this covers the main bits. I use the <code>debug</code> module in basically all projects &amp; typically start using it from day 1: if you <em>never</em> put <code>console.log</code> statements in your code you have nothing to &quot;clean up,&quot; and those debug log statements you make during active development can be useful later on, so why not keep them?</p>
 <p>Next steps: go check out the the <a href="https://github.com/visionmedia/debug"><code>debug</code> module</a>. In the next post I&#39;ll go over some advanced usage. Thanks for reading!</p>
 <p>*<em><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/alert">second oldest</a> ;)</em></p>
-<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="Let's Code It: The `debug` Module"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form></section><footer>&copy; Sequoia McDowell 2019<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div></body></html>
+<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="Let's Code It: The `debug` Module"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="comment">Comment</label><textarea name="comment" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form></section><footer>&copy; Sequoia McDowell 2020<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div><script>(function() {
+	var script = document.createElement('script');
+	window.counter = 'https://sequoia.goatcounter.com/count'
+	script.async = 1;
+	script.src = '//gc.zgo.at/count.js';
+
+	var ins = document.getElementsByTagName('script')[0];
+	ins.parentNode.insertBefore(script, ins)
+})();</script></body></html>
