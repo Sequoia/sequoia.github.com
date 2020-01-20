@@ -1,0 +1,182 @@
+<!DOCTYPE html><html lang="en"><head><title>TBD | Sequoia McDowell</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="TBD"><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><script src="/js/go-to-resume.js"></script><!--does this do anything? who knows--><link href="https://github.com/Sequoia" rel="me"><!--RSS!!!--><link rel="alternate" type="application/rss+xml" href="https://sequoia.makes.software/rss.xml" title="Blog RSS Feed"></head><body><div id="wrap"><header role="banner"><nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></header><aside id="announce" class="row hidden"><h2>News</h2><ul id="news-items"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>TBD</h1><span class="byline">Published January 16, 2020</span><h1 id="outline">
+    <a class="header-anchor" href="#outline">
+      <span class="header-link"></span>
+    </a>
+    Outline</h1><ul>
+<li>What is graphql-codegen?</li>
+<li>What is Apollo? &lt;-- This is sort of tangential. Can talk about the types w/o apollo<ul>
+<li>Just touch on this &amp; react and link out, say it&#39;s a sidebar</li>
+</ul>
+</li>
+<li>GraphQL types vs. Typescript Types</li>
+<li>Using the types from Graphql Codegen<ul>
+<li>Example query + screenshot perhaps</li>
+</ul>
+</li>
+<li>Beauty of GraphQL: only query the fields you want!<ul>
+<li>Trim down query --&gt; Type no longer matches!</li>
+<li>OK For top level items, just use QueryReturnType[&#39;field&#39;]</li>
+<li>But what about for nested fields?</li>
+</ul>
+</li>
+<li>Options:<ol>
+<li>Always query all fields &lt;-- boo yuck</li>
+<li>build a new type with the fields I want from the state &amp; declare that my function returns an item of that type &lt;-- why are we generating types if we&#39;re not going to use them?</li>
+<li>use Partial<TrackingInfo> &amp; just make all fields optional &lt;-- inaccurate &amp; requires null checks everywhere</li>
+<li>break that type into a separate gql fragment, which I believe would then be accessible as a type to use directly</li>
+</ol>
+</li>
+</ul>
+<p>THis works</p>
+<pre><code class="hljs lang-ts"><span class="hljs-keyword">type</span> Foo = {
+  bars: <span class="hljs-built_in">Array</span>&lt;Bar&gt;;
+};
+<span class="hljs-keyword">type</span> Bar = {
+  baz: <span class="hljs-built_in">String</span>;
+};
+
+<span class="hljs-keyword">const</span> x: Foo[<span class="hljs-string">"bars"</span>][<span class="hljs-number">0</span>][<span class="hljs-string">"baz"</span>] = <span class="hljs-string">"123"</span>;
+</code></pre>
+<p>but it&#39;s pretty ugly &amp; won&#39;t be reusable</p>
+<p>Sequoia McDowell 
+7:38 PM
+ I am still mulling over the “how to use types for queries that only query some fields” question…</p>
+<p>❓ WHY NOT JUST ACCESS THE PROPERTY? Like TrackingStatusFragment[‘courier’]
+—&gt; This works for single properties but not for arrays
+7:38 PM
+for example, this is my fragment for the TrackingOrderStatus (which I use in the Order query to get the stuff for that component)
+export type TrackingOrderStatusStuffFragment = (
+{ <strong>typename?: &#39;Job&#39; }
+&amp; { courier: Maybe&lt;(
+{ </strong>typename?: &#39;Courier&#39; }
+&amp; Pick<Courier, 'displayName'>
+&amp; { img: Maybe&lt;(
+{ <strong>typename?: &#39;Image&#39; }
+&amp; Pick<Image, 'templatedUrl'>
+)&gt;, vehicle: Maybe&lt;(
+{ </strong>typename?: &#39;Vehicle&#39; }
+&amp; Pick<Vehicle, 'make' | 'model' | 'color'>
+)&gt; }
+)&gt;, pickupInfo: (
+{ <strong>typename?: &#39;LocationInfo&#39; }
+&amp; Pick<LocationInfo, 'displayName'>
+&amp; { img: Maybe&lt;(
+{ </strong>typename?: &#39;Image&#39; }
+&amp; Pick<Image, 'templatedUrl'>
+)&gt; }
+), trackingDisplayInfo: Maybe<Array<(
+{ **typename?: 'TrackingInfo' }
+& Pick<TrackingInfo, 'active' | 'state' | 'title' | 'subtitle'>
+&amp; { tooltip: Maybe&lt;(
+{ **typename?: &#39;Tooltip&#39; }
+&amp; Pick<Tooltip, 'title' | 'subtitle'>
+)&gt; }
+)&gt;&gt; }
+);</p>
+<p>7:40 PM
+now when I have a function that looks through the trackingDisplayInfo array to pick out the active one (we get all statuses or something, and just find the active one), the type I’m passing to that function getActiveTrackingDisplayInfo is TrackingOrderStatusStuffFragment[&#39;trackingDisplayInfo&#39;] (I think)</p>
+<p>7:40 PM
+but the one status item that gets returned is an item in this array:
+trackingDisplayInfo: Maybe<Array<(
+{ **typename?: 'TrackingInfo' }
+& Pick<TrackingInfo, 'active' | 'state' | 'title' | 'subtitle'>
+&amp; { tooltip: Maybe&lt;(
+{ **typename?: &#39;Tooltip&#39; }
+&amp; Pick<Tooltip, 'title' | 'subtitle'>
+)&gt; }
+)&gt;&gt;</p>
+<p>7:40 PM
+and if it’s possible to reference this type directly, I don’t know how</p>
+<p>7:42 PM
+SentryAPP 
+7:42 PM</p>
+<p>TypeError
+SyntaxError: Unexpected token &#39;&lt;&#39;
+￼
+BUYER-WEB-PROD-1MH7 via Will Sabransky | Jan 10th
+Resolve...
+Ignore</p>
+<p>7:42 PM
+Sequoia McDowell 
+7:42 PM
+ some options:</p>
+<ul>
+<li>build a new type with the fields I want from the state &amp; declare that my function returns an item of that type</li>
+<li>use Partial<TrackingInfo> &amp; just make all fields optional</li>
+<li>break that type into a separate gql fragment, which I believe would then be accessible as a type to use directly</li>
+</ul>
+<p>7:47 PM
+some opinions:</p>
+<ul>
+<li>Building new types all over the place to represent the same data strikes me as a smell. Limits reuse, it’s clutter, and why the heck are we generating all these types just to not use them? We’ve gone to some trouble to have all this autogenerated stuff, let’s use it I say.
+￼</li>
+<li>I don’t like this one either–it forces me to do even more field checks for fields I know to be present (since I’ve marked everything optional) and more importantly it’s inaccurate. I’m marking even more fields as “maybe” being present which I know to not be present… at this point just use any</li>
+<li>This feels a bit like the tail wagging the dog (structuring our fragments just to get certain types) but
+￼</li>
+<li>I think it’s the best of the 3</li>
+</ul>
+<p>7:48 PM
+option 4 is of course “always query all required fields for a type” which would screw up one of the main benefits we’re getting from graphQL now which is tailoring queries to reduce bandwidth usage (I think)</p>
+<p>7:49 PM
+I’m currently doing 2 but I don’t like it. I feel like this is sort of fundamental aspect of using types generated from graphql &amp; I/we are going to run into issues like this a lot as we use the generated types, and that’s why I’m giving it more thought &amp; attention. (if it were just a 1 off I wouldn’t worry about it).</p>
+<p>7:49 PM
+I plan to try 3</p>
+<p>7:58 PM
+Sequoia McDowell 
+7:58 PM
+ OK that worked
+￼</p>
+<p>7:58 PM
+fragment TrackingOrderStatusStuff on Job {
+courier {
+displayName # avatar
+img {
+templatedUrl # avatar
+} # for line 2
+vehicle {
+make
+model
+color
+}
+}
+pickupInfo {
+displayName # avatar title
+img {
+templatedUrl # avatar
+}
+}
+trackingDisplayInfo {
+...orderStatusInfo
+}
+}</p>
+<p>fragment orderStatusInfo on TrackingInfo {
+active
+state # to find &quot;terminal&quot; states for progress bar
+title
+subtitle
+tooltip {
+title # for line 2
+subtitle # for modal
+}
+}</p>
+<p>7:59 PM
+export type OrderStatusInfoFragment = (
+{ <strong>typename?: &#39;TrackingInfo&#39; }
+&amp; Pick<TrackingInfo, 'active' | 'state' | 'title' | 'subtitle'>
+&amp; { tooltip: Maybe&lt;(
+{ </strong>typename?: &#39;Tooltip&#39; }
+&amp; Pick<Tooltip, 'title' | 'subtitle'>
+)&gt; }
+);</p>
+<p>const getActiveStatus = (statuses: Array<OrderStatusInfoFragment>): OrderStatusInfoFragment|undefined =&gt; {
+return statuses.find(status =&gt; status &amp;&amp; status.active);
+}</p>
+<form id="comment-form" action="https://getsimpleform.com/messages?form_api_token=cae7b8346141f64f926807311ce5ea1d" method="POST"><fieldset><legend>Leave a Comment</legend><input type="hidden" name="redirect_to" value="https://sequoia.makes.software/thanks/"><input type="hidden" name="post_title" value="TBD"><div class="row"><div class="six columns"><label for="name">Name</label><input type="text" required="required" name="name" placeholder="Slim Pickens" class="u-full-width"></div><div class="six columns"><label for="website">Website</label><input type="url" name="website" placeholder="www.example.com" class="u-full-width"></div></div><div class="row"><div class="twelve columns"><label for="email">Email</label><input type="email" name="email" placeholder="webmaster@example.com" class="u-full-width"></div></div><label for="message">Comment</label><textarea name="message" required="required" placeholder="I didn't like your post… I LOVED it!" class="u-full-width"></textarea><input type="submit" value="Submit" class="button-primary"></fieldset></form></section><footer>&copy; Sequoia McDowell 2020<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div><script>(function() {
+	var script = document.createElement('script');
+	window.counter = 'https://sequoia.goatcounter.com/count'
+	script.async = 1;
+	script.src = '//gc.zgo.at/count.js';
+
+	var ins = document.getElementsByTagName('script')[0];
+	ins.parentNode.insertBefore(script, ins)
+})();</script></body></html>
