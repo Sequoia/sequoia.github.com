@@ -1,6 +1,6 @@
 ---
 title: "A Fond Farewell to My Greatest Fans"
-date: 2020-05-13
+date: May 13, 2020
 description: "I am removing the comment forms from my website due to spam. But are spam comments all bad? Not necessarily! Some of my best comments have been spam."
 ---
 
