@@ -13,25 +13,26 @@ block content
 
   p My email domain is protonmail.com and my username is sequoiam; feel free to write!
 
-  p You can also write me, here:
-  form(
-    action='https://getsimpleform.com/messages?form_api_token=e223807ca3a8b7a28aaf3d66e306d759'
-    method='POST'
-  )
-    input(type='hidden' name='redirect_to' value='https://sequoia.makes.software/thanks/')
+  //- disabling this 'til I have a solution to spam
+  //- p You can also write me, here:
+  //- form(
+  //-   action='https://getsimpleform.com/messages?form_api_token=e223807ca3a8b7a28aaf3d66e306d759'
+  //-   method='POST'
+  //- )
+  //-   input(type='hidden' name='redirect_to' value='https://sequoia.makes.software/thanks/')
 
-    .row
+  //-   .row
 
-      .six.columns
-        label(for='name') Your name
-        input.u-full-width(type='text', name='name' placeholder='Slim Pickens')
-      .six.columns
-        label(for='email') Your email
-        input.u-full-width(type='email', name='email' placeholder='you@good.stuff')
+  //-     .six.columns
+  //-       label(for='name') Your name
+  //-       input.u-full-width(type='text', name='name' placeholder='Slim Pickens')
+  //-     .six.columns
+  //-       label(for='email') Your email
+  //-       input.u-full-width(type='email', name='email' placeholder='you@good.stuff')
 
-    label(for='message') Message
-    textarea.u-full-width(name='message' placeholder='Hi Sequoia …')
+  //-   label(for='message') Message
+  //-   textarea.u-full-width(name='message' placeholder='Hi Sequoia …')
 
-    input.button-primary(type='submit', value='Submit')
+  //-   input.button-primary(type='submit', value='Submit')
   // Always wrap checkbox and radio inputs in a label and use a <span class="label-body"> inside of it
   // Note: The class .u-full-width is just a utility class shorthand for width: 100%
