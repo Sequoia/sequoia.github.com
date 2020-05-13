@@ -4,7 +4,7 @@ date: May 13, 2020
 description: "I am removing the comment forms from my website due to spam. But are spam comments all bad? Not necessarily! Some of my best comments have been spam."
 ---
 
-I've been using [Simple Form](https://getsimpleform.com/) to power the comment boxes on this (static) site for several years. I was [JAMStack](https://jamstack.org/) before it was cool, who knew? Unfortunately, even with [Akismet](https://akismet.com/) configured, I still get heaps of spam comments. To be honest, it's just about 100% spam. It turns out writing infrequently, deleting ones twitter account, and doing nothing to promote one's writing does not result in a huge amount of user engagement! But I digress.
+I've been using [Simple Form](https://getsimpleform.com/) to power the comment boxes on this (static) site for several years. I was [JAMStack](https://jamstack.org/) before it was cool, who knew? Unfortunately, even with [Akismet](https://akismet.com/) configured, I still get heaps of spam comments. To be honest, it's just about 100% spam. It turns out writing infrequently, deleting ones twitter account, and doing nothing to promote ones writing does not result in a huge amount of user engagement! But I digress.
 
 While the spam comments are bothersome overall, I feel the need to give credit where credit is due: some of the _best_ comments I've recieved have been spam. There have been times when I'm having a bad day, then I check my email and see something like this:
 
@@ -12,7 +12,7 @@ While the spam comments are bothersome overall, I feel the need to give credit w
 > 
 > _- similar internet page, 2017_
 
-Wow! Thank you _similar internet page_!!" I was feeling a bit discouraged, and I can't lie–this comment made me feel a bit better. I know you're only a bot, but I choose to take the encouraging words at face value, and they make me feel appreciated.
+Wow! Thank you _similar internet page_!! I was feeling a bit discouraged, and I can't lie–this comment made me feel a bit better. I know you're only a bot, but I choose to take the encouraging words at face value, and they make me feel appreciated.
 
 So, as a farewell to my loyal spam bots, I will feature and respond to the best comments here.
 
@@ -70,7 +70,7 @@ This type of feedback is what keeps me doing this when it seems "pointless," whi
 > 
 > _- student loans, 2019_
 
-_student loans_! You're back!! How was breakfast? You'll be happy to know, incidentally, that I have added an RSS feed (at the request of a reader!), which you can find [here](/rss.xml);
+_student loans_! You're back!! How was breakfast? You'll be happy to know, incidentally, that I have added an RSS feed (at the request of a reader!), which you can find [here](/rss.xml).
 
 > My brother recommended I might like this blog. He was totally right. This post actually made my day. You can not imagine just how much time I had spent for this info! Thanks!
 > 
