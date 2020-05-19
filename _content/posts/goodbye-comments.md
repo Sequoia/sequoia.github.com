@@ -12,7 +12,7 @@ While the spam comments are bothersome overall, I feel the need to give credit w
 > 
 > _- similar internet page, 2017_
 
-Wow! Thank you _similar internet page_!! I was feeling a bit discouraged, and I can't lie–this comment made me feel a bit better. I know you're only a bot, but I choose to take the encouraging words at face value, and they make me feel appreciated.
+Wow! Thank you _similar internet page_!! I was feeling a discouraged the day I got this, and I can't lie–this comment made me feel a bit better. I know you're only a bot, but I choose to take the encouraging words at face value, and they make me feel appreciated.
 
 So, as a farewell to my loyal spam bots, I will feature and respond to the best comments here.
 
@@ -28,9 +28,9 @@ Hi _buy cial𝚒s_! Thank you for the kinds words, and please give my warm regar
 >
 > _- https://[removed]/sildenafil-generique-forum/, 2017_
 
-Oh my goodness... this comment almost makes me tear up. I do feel underappreciated at times, and it really means a lot to me to have someone notice the care and work I put into the content here. As for why I'm not "much more well-appreciated" despite being "so intelligent" (flattery will get you nowhere!), the fact is it takes much more than intelligence or even good work to succeed. Marketing and branding are hugely important, and for better or worse, those are things I'm not terribly interested in.
+Oh my goodness... this comment almost makes me tear up. I *do* feel underappreciated at times, and it really means a lot to me to have someone notice the care and work I put into the content here. As for why I'm not "much more well-appreciated" despite being "so intelligent" (flattery will get you nowhere!), the fact is it takes much more than intelligence or even good work to succeed. Marketing and branding are hugely important, and for better or worse, those are things I'm not terribly interested in.
 
-It's not unlike the joke about the Jew trying to smuggle coffee into Haifa. When customs asks him to open his bag, they discover the many kilograms of coffee he is trying to sneak in without paying customs duties for. The customs official asks him he's got in his sacks. "Birdseed," the traveller replies. "Since when do birds eat coffee?" asks the incredulous customs officer.
+It's not unlike the joke about the Jew trying to smuggle coffee into Haifa without paying the required duties. The customs official looks in his sacks and asks him what it is he's carrying. "Birdseed," the traveller replies. "Since when do birds eat coffee?" asks the incredulous customs officer.
 
 Whereup the traveller replies with a shrug "they'll eat if they want; if they don't, they won't."
 
