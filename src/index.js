@@ -121,7 +121,7 @@ function writeRssPage(posts) {
   } catch (e) {
     oldHash = "file doesn't exist yet 🤷‍";
   }
-  // if (newHash === oldHash) return Promise.resolve(null);
+  if (newHash === oldHash) return Promise.resolve(null);
   console.log('updating RSS feed....');
   fs.writeFileSync(hashPath, JSON.stringify(newHash));
   // something changed
@@ -131,7 +131,6 @@ function writeRssPage(posts) {
     .filter(post => !post.hidden)
     .map(addPropFn('link')(post => url.resolve(websiteBaseUrl, post.slug)))
     .map(addPropFn('pubDate')(post => (new Date(post.timestamp)).toUTCString()))
-    // .map(onProp('body')(marked))
     .then(posts => tmpl.rss({ posts, websiteBaseUrl, lastBuildDate }))
     .then(rendered => fs.writeFileAsync(join(outDir, 'rss.xml'), rendered));
 }

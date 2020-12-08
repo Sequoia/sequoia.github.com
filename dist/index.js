@@ -159,7 +159,7 @@ function writeRssPage(posts) {
   } catch (e) {
     oldHash = "file doesn't exist yet 🤷‍";
   }
-  // if (newHash === oldHash) return Promise.resolve(null);
+  if (newHash === oldHash) return _bluebird2.default.resolve(null);
   console.log('updating RSS feed....');
   fs.writeFileSync(hashPath, JSON.stringify(newHash));
   // something changed
@@ -171,9 +171,7 @@ function writeRssPage(posts) {
     return url.resolve(websiteBaseUrl, post.slug);
   })).map((0, _util.addPropFn)('pubDate')(function (post) {
     return new Date(post.timestamp).toUTCString();
-  }))
-  // .map(onProp('body')(marked))
-  .then(function (posts) {
+  })).then(function (posts) {
     return tmpl.rss({ posts: posts, websiteBaseUrl: websiteBaseUrl, lastBuildDate: lastBuildDate });
   }).then(function (rendered) {
     return fs.writeFileAsync(join(outDir, 'rss.xml'), rendered);

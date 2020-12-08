@@ -17,7 +17,4 @@ rss(version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http:/
                 description= post.description
                 guid(isPermaLink="true")= post.link
                 pubDate= post.pubDate
-                content:encoded
-                    | <![CDATA[
-                    | !{post.body}
-                    | ]]>
+                content:encoded <![CDATA[!{post.body}]]>

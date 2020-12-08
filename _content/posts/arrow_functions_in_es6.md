@@ -288,3 +288,21 @@ const hasOwnProperty = (obj, propname) =>
 ```
 
 Darcy: why are "more and more people" using `a = Object.create(null)`? Is there some percieved performance benefit? Strikes me as a bit... well it would certainly be better if it weren't necessary.
+
+## Follow-up from Darcy:
+
+> To answer your question about why more and more people are using Object.create(null):
+>
+> `Object.create()` is useful for some types of prototype composition. (ES6 `class` provides nicer syntax for many types of composition... but there is still use for Object.create() for special cases. mixins being one example.)  One use case for Object.create(null) is for when you don't want OOTB methods from Object.prototype on your object.  But I wouldn't do so without thinking about the consequences first. https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create has some discussion on it.
+> 
+> A popular use case is when the object is being used as a hash map where keys are strings (and ES6 Map is not available).  This is what JQuery was doing (it was used as a cache).  By having no prototype, the cache is safe for keys like 'constructor', and other values on prototype chain. In some use cases the object may store user generated keys and someone could create a key like 'hasOwnProperty' that blocks the 'hasOwnProperty' method on prototype chain. In this case, if `cache.hasOwnProperty()` is called, it would throw an error. Of course it really depends on the use cases of the hash map.  If you know there won't be any key collisions, it does not matter.
+> 
+> Performance is arguably better too because with a null prototype, there is one less prototype in the chain to resolve a key's value.  And it could help prevent the need for even using `hasOwnProperty` in some cases.  But I don't think performance is really the motivating reason for `Object.create(null)`.  JS engines are pretty fast (relative to other work) at resolving a value by looking up a key in prototype chain.
+
+Thank you for the follow-up, Darcy! As I suspected, `Object.create(null)` is being used for "something weird" (to wit: trying to create an object that behaves like `Map` where `Map` is not available). Regarding performance, I will quibble slightly here and insist that unless one has actually tested and measured the performance impact, this is not work doing "for performance" (I know you're not strictly suggesting it but still).
+
+1. Some things we think improve performance actually make no difference
+2. The JS JITC & engine are good at optimizing code (so we don't need to do so much manually and may even get in the way of it's optimizations) and
+3. **The performance benefit must be weighed against the cost**, such as, in this case, **breaking normal object behavior** (to wit: `.hasOwnProperty is not a function`).
+
+Thank you for the suggestion and the follow-up!!
