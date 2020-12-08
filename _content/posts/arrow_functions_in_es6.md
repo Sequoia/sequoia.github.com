@@ -262,3 +262,29 @@ Thanks Brent!! Feedback like this makes my day!
 \- [Brian](http://brianbancroft.io), <time datetime="2018-06-06 17:43:14 UTC">June 6, 2018</time>
 
 Nice!! FP is fun, I hope you keep it up!
+
+> * I know this is an older article...
+> * Maybe you have seen this rule/advice? https://eslint.org/docs/rules/no-prototype-builtins
+> * I use this little helper (and similar ones for other Object.prototype methods.)
+>
+> ```typescript
+> type IPropertyKey = string | number | symbol;
+> const h = Object.prototype.hasOwnProperty;
+> export const hasOwnProperty = (obj, property: IPropertyKey): boolean => h.call(obj, property);
+> ```
+> 
+> Another reason to use Object.prototype.hasOwnProperty.call()
+> https://github.com/jquery/jquery/issues/4665
+> 
+> More and more people are using `const a = Object.create(null); a.something = 'abc'`.  There is no prototype... so hasOwnProperty is undefined there.  But you can use Object.prototype. hasOwnProperty.call(a, 'something');
+
+\- Darcy, <time datetime="2020-12-02 18:34:00 UTC">December 2, 2020</time>
+
+That is a good point and one I had not considered. Your comment should serve as ample warning to those considering copy/pasting from this post pell-mell, methinks. Thank you for pointing this out! Here's the JavaScript version for readers not versed in Typescript:
+
+```javascript
+const hasOwnProperty = (obj, propname) =>
+  Object.prototype.hasOwnProperty.call(object, propname);
+```
+
+Darcy: why are "more and more people" using `a = Object.create(null)`? Is there some percieved performance benefit? Strikes me as a bit... well it would certainly be better if it weren't necessary.

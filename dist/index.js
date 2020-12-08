@@ -72,7 +72,8 @@ function formatDate(d) {
   return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 }
 
-_bluebird2.default.all([getPosts('_content/posts').tap(writeIndexPage).tap(writeRssPage).then(writePosts), getPosts('_content/shorts').then(writeShortsPage), writeProjectsPage(), writeContactsPage(), writeThanksPage(), writeTalksPage()]).then(function () {
+_bluebird2.default.all([getPosts('_content/posts').tap(writeIndexPage).map((0, _util.onProp)('body')(_marker2.default)) //markdown
+.tap(writeRssPage).then(writePosts), getPosts('_content/shorts').then(writeShortsPage), writeProjectsPage(), writeContactsPage(), writeThanksPage(), writeTalksPage()]).then(function () {
   return (0, _util.l)('EVERYTHING done :)');
 });
 
@@ -102,7 +103,9 @@ function writeIndexPage(posts) {
  * @return Promise
  */
 function writeShortsPage(posts) {
-  _bluebird2.default.resolve(posts).map((0, _util.onProp)('body')(_marker2.default)) //markdown each post
+  _bluebird2.default.resolve(posts).filter(function (post) {
+    return !post.hidden;
+  }).map((0, _util.onProp)('body')(_marker2.default)) //markdown each post
   .then(function (posts) {
     return tmpl.shorts({ shorts: posts });
   }).tap(function () {
@@ -133,8 +136,7 @@ function getPosts(directory) {
  * @return Promise
  */
 function writePosts(posts) {
-  return _bluebird2.default.resolve(posts).map((0, _util.onProp)('body')(_marker2.default)) //markdown
-  .map(function (page) {
+  return _bluebird2.default.resolve(posts).map(function (page) {
     page.body = tmpl.post(page);return page;
   }) //template
   .each(function (post) {
@@ -157,7 +159,7 @@ function writeRssPage(posts) {
   } catch (e) {
     oldHash = "file doesn't exist yet 🤷‍";
   }
-  if (newHash === oldHash) return _bluebird2.default.resolve(null);
+  // if (newHash === oldHash) return Promise.resolve(null);
   console.log('updating RSS feed....');
   fs.writeFileSync(hashPath, JSON.stringify(newHash));
   // something changed
@@ -169,7 +171,9 @@ function writeRssPage(posts) {
     return url.resolve(websiteBaseUrl, post.slug);
   })).map((0, _util.addPropFn)('pubDate')(function (post) {
     return new Date(post.timestamp).toUTCString();
-  })).then(function (posts) {
+  }))
+  // .map(onProp('body')(marked))
+  .then(function (posts) {
     return tmpl.rss({ posts: posts, websiteBaseUrl: websiteBaseUrl, lastBuildDate: lastBuildDate });
   }).then(function (rendered) {
     return fs.writeFileAsync(join(outDir, 'rss.xml'), rendered);

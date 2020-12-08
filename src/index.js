@@ -3,7 +3,7 @@ const url = require('url');
 const assert = require('assert');
 const crypto = require('crypto');
 
-import { reverse, compose, curryN, prop, has, sortBy, reject, isEmpty, not } from 'ramda';
+import { reverse, compose, curryN, prop, has, sortBy, reject } from 'ramda';
 import root from 'root-path';
 import { l, e, onProp, addPropFn, addProp } from './util';
 import Promise from 'bluebird';
@@ -40,6 +40,7 @@ function formatDate(d) {
 Promise.all([
   getPosts('_content/posts')
     .tap(writeIndexPage)
+    .map(onProp('body')(marked)) //markdown
     .tap(writeRssPage)
     .then(writePosts),
   getPosts('_content/shorts')
@@ -73,6 +74,7 @@ function writeIndexPage(posts) {
  */
 function writeShortsPage(posts) {
   Promise.resolve(posts)
+    .filter(post => !post.hidden)
     .map(onProp('body')(marked)) //markdown each post
     .then(posts => tmpl.shorts({ shorts: posts }))
     .tap(() => mkdirp(join(outDir, 'shorts')))
@@ -102,7 +104,6 @@ function getPosts(directory) {
  */
 function writePosts(posts) {
   return Promise.resolve(posts)
-    .map(onProp('body')(marked)) //markdown
     .map(page => { page.body = tmpl.post(page); return page; }) //template
     .each(post => l(`building... ${post.title}`))
     .each(writePage) //write
@@ -120,7 +121,7 @@ function writeRssPage(posts) {
   } catch (e) {
     oldHash = "file doesn't exist yet 🤷‍";
   }
-  if (newHash === oldHash) return Promise.resolve(null);
+  // if (newHash === oldHash) return Promise.resolve(null);
   console.log('updating RSS feed....');
   fs.writeFileSync(hashPath, JSON.stringify(newHash));
   // something changed
@@ -130,6 +131,7 @@ function writeRssPage(posts) {
     .filter(post => !post.hidden)
     .map(addPropFn('link')(post => url.resolve(websiteBaseUrl, post.slug)))
     .map(addPropFn('pubDate')(post => (new Date(post.timestamp)).toUTCString()))
+    // .map(onProp('body')(marked))
     .then(posts => tmpl.rss({ posts, websiteBaseUrl, lastBuildDate }))
     .then(rendered => fs.writeFileAsync(join(outDir, 'rss.xml'), rendered));
 }

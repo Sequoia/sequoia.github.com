@@ -211,6 +211,26 @@ for cute-looking, <strong>hard to understand</strong> functions. Do yourself and
 </blockquote>
 <p>- <a href="http://brianbancroft.io">Brian</a>, <time datetime="2018-06-06 17:43:14 UTC">June 6, 2018</time></p>
 <p>Nice!! FP is fun, I hope you keep it up!</p>
+<blockquote>
+<ul>
+<li>I know this is an older article...</li>
+<li>Maybe you have seen this rule/advice? <a href="https://eslint.org/docs/rules/no-prototype-builtins">https://eslint.org/docs/rules/no-prototype-builtins</a></li>
+<li>I use this little helper (and similar ones for other Object.prototype methods.)</li>
+</ul>
+<pre><code class="hljs lang-typescript"><span class="hljs-keyword">type</span> IPropertyKey = <span class="hljs-built_in">string</span> | <span class="hljs-built_in">number</span> | symbol;
+<span class="hljs-keyword">const</span> h = <span class="hljs-built_in">Object</span>.prototype.hasOwnProperty;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> hasOwnProperty = (obj, property: IPropertyKey): <span class="hljs-built_in">boolean</span> =&gt; h.call(obj, property);
+</code></pre>
+<p>Another reason to use Object.prototype.hasOwnProperty.call()
+<a href="https://github.com/jquery/jquery/issues/4665">https://github.com/jquery/jquery/issues/4665</a></p>
+<p>More and more people are using <code>const a = Object.create(null); a.something = &#39;abc&#39;</code>.  There is no prototype... so hasOwnProperty is undefined there.  But you can use Object.prototype. hasOwnProperty.call(a, &#39;something&#39;);</p>
+</blockquote>
+<p>- Darcy, <time datetime="2020-12-02 18:34:00 UTC">December 2, 2020</time></p>
+<p>That is a good point and one I had not considered. Your comment should serve as ample warning to those considering copy/pasting from this post pell-mell, methinks. Thank you for pointing this out! Here&#39;s the JavaScript version for readers not versed in Typescript:</p>
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> hasOwnProperty = <span class="hljs-function">(<span class="hljs-params">obj, propname</span>) =&gt;</span>
+  <span class="hljs-built_in">Object</span>.prototype.hasOwnProperty.call(object, propname);
+</code></pre>
+<p>Darcy: why are &quot;more and more people&quot; using <code>a = Object.create(null)</code>? Is there some percieved performance benefit? Strikes me as a bit... well it would certainly be better if it weren&#39;t necessary.</p>
 <em> 
 📝 Comments? Please email them to my <tt>protonmail.com</tt> address, username <tt>sequoiam</tt></em></section><footer>&copy; Sequoia McDowell 2020<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div><script>(function() {
 	var script = document.createElement('script');
