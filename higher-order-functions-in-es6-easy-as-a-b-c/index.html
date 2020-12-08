@@ -231,6 +231,23 @@ for cute-looking, <strong>hard to understand</strong> functions. Do yourself and
   <span class="hljs-built_in">Object</span>.prototype.hasOwnProperty.call(object, propname);
 </code></pre>
 <p>Darcy: why are &quot;more and more people&quot; using <code>a = Object.create(null)</code>? Is there some percieved performance benefit? Strikes me as a bit... well it would certainly be better if it weren&#39;t necessary.</p>
+<h2 id="follow-up-from-darcy-">
+    <a class="header-anchor" href="#follow-up-from-darcy-">
+      <span class="header-link"></span>
+    </a>
+    Follow-up from Darcy:</h2><blockquote>
+<p>To answer your question about why more and more people are using Object.create(null):</p>
+<p><code>Object.create()</code> is useful for some types of prototype composition. (ES6 <code>class</code> provides nicer syntax for many types of composition... but there is still use for Object.create() for special cases. mixins being one example.)  One use case for Object.create(null) is for when you don&#39;t want OOTB methods from Object.prototype on your object.  But I wouldn&#39;t do so without thinking about the consequences first. <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create</a> has some discussion on it.</p>
+<p>A popular use case is when the object is being used as a hash map where keys are strings (and ES6 Map is not available).  This is what JQuery was doing (it was used as a cache).  By having no prototype, the cache is safe for keys like &#39;constructor&#39;, and other values on prototype chain. In some use cases the object may store user generated keys and someone could create a key like &#39;hasOwnProperty&#39; that blocks the &#39;hasOwnProperty&#39; method on prototype chain. In this case, if <code>cache.hasOwnProperty()</code> is called, it would throw an error. Of course it really depends on the use cases of the hash map.  If you know there won&#39;t be any key collisions, it does not matter.</p>
+<p>Performance is arguably better too because with a null prototype, there is one less prototype in the chain to resolve a key&#39;s value.  And it could help prevent the need for even using <code>hasOwnProperty</code> in some cases.  But I don&#39;t think performance is really the motivating reason for <code>Object.create(null)</code>.  JS engines are pretty fast (relative to other work) at resolving a value by looking up a key in prototype chain.</p>
+</blockquote>
+<p>Thank you for the follow-up, Darcy! As I suspected, <code>Object.create(null)</code> is being used for &quot;something weird&quot; (to wit: trying to create an object that behaves like <code>Map</code> where <code>Map</code> is not available). Regarding performance, I will quibble slightly here and insist that unless one has actually tested and measured the performance impact, this is not work doing &quot;for performance&quot; (I know you&#39;re not strictly suggesting it but still).</p>
+<ol>
+<li>Some things we think improve performance actually make no difference</li>
+<li>The JS JITC &amp; engine are good at optimizing code (so we don&#39;t need to do so much manually and may even get in the way of it&#39;s optimizations) and</li>
+<li><strong>The performance benefit must be weighed against the cost</strong>, such as, in this case, <strong>breaking normal object behavior</strong> (to wit: <code>.hasOwnProperty is not a function</code>).</li>
+</ol>
+<p>Thank you for the suggestion and the follow-up!!</p>
 <em> 
 📝 Comments? Please email them to my <tt>protonmail.com</tt> address, username <tt>sequoiam</tt></em></section><footer>&copy; Sequoia McDowell 2020<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div><script>(function() {
 	var script = document.createElement('script');
