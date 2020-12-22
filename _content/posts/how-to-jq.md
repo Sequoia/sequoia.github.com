@@ -191,7 +191,7 @@ Oops! That `app` value (`toodle-app-alpha`) indicates a mistake: I'm only intere
 We're interested in the `task_name` value in the `metric` object, so let's pluck that from **each** item in the array above:
 
 ```sh
-pquery 'async_task_total{app="toodle-app"}' \
+$ pquery 'async_task_total{app="toodle-app"}' \
 | jq '.data.result[].metric.task_name'
 "/charmoffensive/toodle-app/pkg/core/guides/guides.go(411):generateGuideFromDefinition"
 "/charmoffensive/toodle-app/pkg/core/place/place.go(122):FetchPlaceDetailForCollection"
@@ -205,6 +205,15 @@ pquery 'async_task_total{app="toodle-app"}' \
 "/charmoffensive/toodle-app/pkg/web/page/area_category.go(146):(*areaCategoryView).fetchData"
 {... + 18009 more lines}
 ```
+
+> 📝 Update: It was pointed out to me that as this is a post about `jq`, not about `promql`, a `jq` solution is more appropriate here. I'd originally used promql because it's more efficient to filter on the server when possible. Here's the `jq` version which uses the <a href="https://stedolan.github.io/jq/manual/#select(boolean_expression)">`select` filter</a>:
+> 
+> ```sh
+> $ pquery 'async_task_total' \
+> | jq '.data.result[].metric | select(.app == "toodle-app").task_name'
+> ```
+> Back to the post...
+
 
 Eighteen thousand values for that label!? That's bad!! But wait a tic–if other labels are varying, some of these may actually be duplicates. Let's sort them and see:
 
@@ -264,7 +273,7 @@ Techniques and features used in this task:
 *   Concatenating different fields as strings!
 *   Using `-r` to output **raw** output rather than escaped/quoted
 
-```
+```sh
 $ kubectl get deployments toodle-app -o json \
 | jq '.status.conditions[]|(.reason + ": " + .message)' -r
 NewReplicaSetAvailable: ReplicaSet "toodle-app-545b65cfd4" has successfully progressed.
@@ -338,3 +347,15 @@ What do you use `jq` or `yq` for? Will you be adding `pup` to your workflow? Sou
 *   [TFM](https://stedolan.github.io/jq/manual/): The Friendly Manual
 *   [yq](https://github.com/mikefarah/yq): like jq for yaml
 *   [pup](https://github.com/ericchiang/pup): like JQ for HTML!
+
+# Comments
+
+> I needed this tutorial 6 months ago (and 6 months before that, and 6 months before that). :D Highly recommend looking at and maybe including [`gron`](https://github.com/tomnomnom/gron) in this as a very nice complement to jq. It fills in some use cases in a very straightforward way that are pretty cumbersome in jq, such as finding a field deeply nested in an optional parent.
+
+\- heleninboodler, <time datetime="2020-12-21 20:00:00 UTC">December 21, 2020</time>
+
+Thanks helen, I didn't know about that tool & it does look quite useful! I'd probably add it into the "figuring out the structure of the data" step in the workflow described above, to complement `head`. Thanks for the tip!
+
+## More Comments
+
+👉 Some good discussion & lots of tips & links to similar articles on [hackernews](https://news.ycombinator.com/item?id=25498364).

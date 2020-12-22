@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Sequoia McDowell's Blog Feed</title><link>https://sequoia.makes.software/</link><description>Occassional posts about web programming, software engineering, and JavaScript.</description><lastBuildDate>Mon, 21 Dec 2020 18:14:43 GMT</lastBuildDate><docs>https://validator.w3.org/feed/docs/rss2.html</docs><generator>These two hands 🙌</generator><item><title>Parsing JSON at the CLI: A Practical Introduction to `jq` (and more!)</title><link>https://sequoia.makes.software/parsing-json-at-the-cli-a-practical-introduction-to-jq-and-more</link><description>JSON is everywhere you look these days. The `jq` tool makes it easy to slice, dice, and transform JSON from the command line. It can be hard to map the official manual to real-world applications, so let's look at some practical examples of `jq` and its cousins that handle YAML &amp; HTML!</description><guid isPermaLink="true">https://sequoia.makes.software/parsing-json-at-the-cli-a-practical-introduction-to-jq-and-more</guid><pubDate>Mon, 21 Dec 2020 05:00:00 GMT</pubDate><content:encoded><![CDATA[<p><code>jq</code> is a command line tool for parsing and modifying JSON. It is useful for extracting relevant bits of information from tools that output JSON, or REST APIs that return JSON. Mac users can install <code>jq</code> using homebrew (<code>brew install jq</code>); see <a href="https://stedolan.github.io/jq/download/">here</a> for more install options.</p>
+<?xml version="1.0" encoding="utf-8" ?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Sequoia McDowell's Blog Feed</title><link>https://sequoia.makes.software/</link><description>Occassional posts about web programming, software engineering, and JavaScript.</description><lastBuildDate>Tue, 22 Dec 2020 00:10:48 GMT</lastBuildDate><docs>https://validator.w3.org/feed/docs/rss2.html</docs><generator>These two hands 🙌</generator><item><title>Parsing JSON at the CLI: A Practical Introduction to `jq` (and more!)</title><link>https://sequoia.makes.software/parsing-json-at-the-cli-a-practical-introduction-to-jq-and-more</link><description>JSON is everywhere you look these days. The `jq` tool makes it easy to slice, dice, and transform JSON from the command line. It can be hard to map the official manual to real-world applications, so let's look at some practical examples of `jq` and its cousins that handle YAML &amp; HTML!</description><guid isPermaLink="true">https://sequoia.makes.software/parsing-json-at-the-cli-a-practical-introduction-to-jq-and-more</guid><pubDate>Mon, 21 Dec 2020 05:00:00 GMT</pubDate><content:encoded><![CDATA[<p><code>jq</code> is a command line tool for parsing and modifying JSON. It is useful for extracting relevant bits of information from tools that output JSON, or REST APIs that return JSON. Mac users can install <code>jq</code> using homebrew (<code>brew install jq</code>); see <a href="https://stedolan.github.io/jq/download/">here</a> for more install options.</p>
 <p>In this post we&#39;ll examine a couple &quot;real world&quot; examples of using <code>jq</code>, but let&#39;s start with...</p>
 <h2 id="-code-jq-code-basics">
     <a class="header-anchor" href="#-code-jq-code-basics">
@@ -140,7 +140,7 @@ $ <span class="hljs-built_in">echo</span> <span class="hljs-variable">$ORDER</sp
 </code></pre>
 <p>Oops! That <code>app</code> value (<code>toodle-app-alpha</code>) indicates a mistake: I&#39;m only interested in results from the <code>toodle-app</code> app, <em>not</em> from other apps that may also emit this metric (such as the <code>alpha</code> deployment we see here). We could <code>select</code> for this using jq, but <a href="https://prometheus.io/docs/prometheus/latest/querying/basics/"><code>promql</code> already lets us filter by metric names</a> so we&#39;ll do that instead: <code>pquery &#39;async_task_total{app=&quot;toodle-app&quot;}&#39;</code>.</p>
 <p>We&#39;re interested in the <code>task_name</code> value in the <code>metric</code> object, so let&#39;s pluck that from <strong>each</strong> item in the array above:</p>
-<pre><code class="hljs lang-sh">pquery <span class="hljs-string">'async_task_total{app="toodle-app"}'</span> \
+<pre><code class="hljs lang-sh">$ pquery <span class="hljs-string">'async_task_total{app="toodle-app"}'</span> \
 | jq <span class="hljs-string">'.data.result[].metric.task_name'</span>
 <span class="hljs-string">"/charmoffensive/toodle-app/pkg/core/guides/guides.go(411):generateGuideFromDefinition"</span>
 <span class="hljs-string">"/charmoffensive/toodle-app/pkg/core/place/place.go(122):FetchPlaceDetailForCollection"</span>
@@ -154,6 +154,13 @@ $ <span class="hljs-built_in">echo</span> <span class="hljs-variable">$ORDER</sp
 <span class="hljs-string">"/charmoffensive/toodle-app/pkg/web/page/area_category.go(146):(*areaCategoryView).fetchData"</span>
 {... + 18009 more lines}
 </code></pre>
+<blockquote>
+<p>📝 Update: It was pointed out to me that as this is a post about <code>jq</code>, not about <code>promql</code>, a <code>jq</code> solution is more appropriate here. I&#39;d originally used promql because it&#39;s more efficient to filter on the server when possible. Here&#39;s the <code>jq</code> version which uses the <a href="https://stedolan.github.io/jq/manual/#select(boolean_expression)"><code>select</code> filter</a>:</p>
+<pre><code class="hljs lang-sh">$ pquery <span class="hljs-string">'async_task_total'</span> \
+| jq <span class="hljs-string">'.data.result[].metric | select(.app == "toodle-app").task_name'</span>
+</code></pre>
+<p>Back to the post...</p>
+</blockquote>
 <p>Eighteen thousand values for that label!? That&#39;s bad!! But wait a tic–if other labels are varying, some of these may actually be duplicates. Let&#39;s sort them and see:</p>
 <pre><code class="hljs lang-sh">$ pquery <span class="hljs-string">'async_task_total{app="toodle-app"}'</span> \
 | jq <span class="hljs-string">'.data.result[].metric.task_name'</span> | sort | head -n10
@@ -207,11 +214,12 @@ $ <span class="hljs-built_in">echo</span> <span class="hljs-variable">$ORDER</sp
 <li>Concatenating different fields as strings!</li>
 <li>Using <code>-r</code> to output <strong>raw</strong> output rather than escaped/quoted</li>
 </ul>
-<pre><code>$ kubectl get deployments toodle-app -o json \
-| jq &#39;.status.conditions[]|(.reason + &quot;: &quot; + .message)&#39; -r
-NewReplicaSetAvailable: ReplicaSet &quot;toodle-app-545b65cfd4&quot; has successfully progressed.
+<pre><code class="hljs lang-sh">$ kubectl get deployments toodle-app -o json \
+| jq <span class="hljs-string">'.status.conditions[]|(.reason + ": " + .message)'</span> -r
+NewReplicaSetAvailable: ReplicaSet <span class="hljs-string">"toodle-app-545b65cfd4"</span> has successfully progressed.
 MinimumReplicasAvailable: Deployment has minimum availability.
-</code></pre><h3 id="getting-all-kubernetes-annotations-with-the-code-prometheus-code-prefix">
+</code></pre>
+<h3 id="getting-all-kubernetes-annotations-with-the-code-prometheus-code-prefix">
     <a class="header-anchor" href="#getting-all-kubernetes-annotations-with-the-code-prometheus-code-prefix">
       <span class="header-link"></span>
     </a>
@@ -280,6 +288,20 @@ $ yq <span class="hljs-string">'.spec.jobTemplate.spec.template.spec.containers[
 <li><a href="https://github.com/mikefarah/yq">yq</a>: like jq for yaml</li>
 <li><a href="https://github.com/ericchiang/pup">pup</a>: like JQ for HTML!</li>
 </ul>
+<h1 id="comments">
+    <a class="header-anchor" href="#comments">
+      <span class="header-link"></span>
+    </a>
+    Comments</h1><blockquote>
+<p>I needed this tutorial 6 months ago (and 6 months before that, and 6 months before that). :D Highly recommend looking at and maybe including <a href="https://github.com/tomnomnom/gron"><code>gron</code></a> in this as a very nice complement to jq. It fills in some use cases in a very straightforward way that are pretty cumbersome in jq, such as finding a field deeply nested in an optional parent.</p>
+</blockquote>
+<p>- heleninboodler, <time datetime="2020-12-21 20:00:00 UTC">December 21, 2020</time></p>
+<p>Thanks helen, I didn&#39;t know about that tool &amp; it does look quite useful! I&#39;d probably add it into the &quot;figuring out the structure of the data&quot; step in the workflow described above, to complement <code>head</code>. Thanks for the tip!</p>
+<h2 id="more-comments">
+    <a class="header-anchor" href="#more-comments">
+      <span class="header-link"></span>
+    </a>
+    More Comments</h2><p>👉 Some good discussion &amp; lots of tips &amp; links to similar articles on <a href="https://news.ycombinator.com/item?id=25498364">hackernews</a>.</p>
 ]]></content:encoded></item><item><title>A Fond Farewell to My Greatest Fans</title><link>https://sequoia.makes.software/a-fond-farewell-to-my-greatest-fans</link><description>I am removing the comment forms from my website due to spam. But are spam comments all bad? Not necessarily! Some of my best comments have been spam.</description><guid isPermaLink="true">https://sequoia.makes.software/a-fond-farewell-to-my-greatest-fans</guid><pubDate>Wed, 13 May 2020 04:00:00 GMT</pubDate><content:encoded><![CDATA[<p>I&#39;ve been using <a href="https://getsimpleform.com/">Simple Form</a> to power the comment boxes on this (static) site for several years. I was <a href="https://jamstack.org/">JAMStack</a> before it was cool, who knew? Unfortunately, even with <a href="https://akismet.com/">Akismet</a> configured, I still get heaps of spam comments. To be honest, it&#39;s just about 100% spam. It turns out writing infrequently, deleting ones twitter account, and doing nothing to promote ones writing does not result in a huge amount of user engagement! But I digress.</p>
 <p>While the spam comments are bothersome overall, I feel the need to give credit where credit is due: some of the <em>best</em> comments I&#39;ve recieved have been spam. There have been times when I&#39;m having a bad day, then I check my email and see something like this:</p>
 <blockquote>
