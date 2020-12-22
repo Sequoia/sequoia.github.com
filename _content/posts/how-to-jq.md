@@ -9,7 +9,6 @@ tags:
   - JSON
   - YAML
   - HTML
-hidden: true
 ---
 
 `jq` is a command line tool for parsing and modifying JSON. It is useful for extracting relevant bits of information from tools that output JSON, or REST APIs that return JSON. Mac users can install `jq` using homebrew (`brew install jq`); see [here](https://stedolan.github.io/jq/download/) for more install options.
