@@ -13,8 +13,8 @@ rss(version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http:/
         each post, i in posts
             item
                 title= post.title
-                link= post.link
+                link= post.canonicalUrl
                 description= post.description
-                guid(isPermaLink="true")= post.link
+                guid(isPermaLink="true")= post.canonicalUrl
                 pubDate= post.pubDate
                 content:encoded <![CDATA[!{post.body}]]>

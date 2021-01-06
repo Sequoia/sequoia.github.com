@@ -40,6 +40,7 @@ var fs = _bluebird2.default.promisifyAll(require('fs'));
 var mkdirp = _bluebird2.default.promisify(require('mkdirp'));
 var months = require('months');
 var tmpl = require('./renderers');
+var websiteBaseUrl = 'https://sequoia.makes.software/';
 
 var outDir = (0, _rootPath2.default)('out');
 
@@ -47,6 +48,9 @@ var makeTitleSlug = function makeTitleSlug(attrs) {
   return (0, _string2.default)(attrs.title).slugify().s;
 };
 var addSlug = (0, _util.addPropFn)('slug')(makeTitleSlug);
+var addCanonicalUrl = (0, _util.addPropFn)('canonicalUrl')(function (post) {
+  return url.resolve(websiteBaseUrl, post.slug) + '/';
+});
 var addTimestamp = (0, _util.addPropFn)('timestamp')(function (p) {
   return new Date(p.date).getTime();
 });
@@ -73,7 +77,7 @@ function formatDate(d) {
 }
 
 _bluebird2.default.all([getPosts('_content/posts').tap(writeIndexPage).map((0, _util.onProp)('body')(_marker2.default)) //markdown
-.tap(writeRssPage).then(writePosts), getPosts('_content/shorts').then(writeShortsPage), writeProjectsPage(), writeContactsPage(), writeThanksPage(), writeTalksPage()]).then(function () {
+.map(addCanonicalUrl).tap(writeRssPage).then(writePosts), getPosts('_content/shorts').then(writeShortsPage), writeProjectsPage(), writeContactsPage(), writeThanksPage(), writeTalksPage()]).then(function () {
   return (0, _util.l)('EVERYTHING done :)');
 });
 
@@ -163,13 +167,10 @@ function writeRssPage(posts) {
   console.log('updating RSS feed....');
   fs.writeFileSync(hashPath, JSON.stringify(newHash));
   // something changed
-  var websiteBaseUrl = 'https://sequoia.makes.software/';
   var lastBuildDate = new Date().toUTCString();
   return _bluebird2.default.resolve(posts).filter(function (post) {
     return !post.hidden;
-  }).map((0, _util.addPropFn)('link')(function (post) {
-    return url.resolve(websiteBaseUrl, post.slug);
-  })).map((0, _util.addPropFn)('pubDate')(function (post) {
+  }).map((0, _util.addPropFn)('pubDate')(function (post) {
     return new Date(post.timestamp).toUTCString();
   })).then(function (posts) {
     return tmpl.rss({ posts: posts, websiteBaseUrl: websiteBaseUrl, lastBuildDate: lastBuildDate });

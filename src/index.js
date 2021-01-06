@@ -15,11 +15,13 @@ import string from 'string';
 const mkdirp = Promise.promisify(require('mkdirp'));
 const months = require('months');
 const tmpl = require('./renderers');
+const websiteBaseUrl = 'https://sequoia.makes.software/';
 
 const outDir = root('out');
 
 const makeTitleSlug = attrs => string(attrs.title).slugify().s;
 const addSlug = addPropFn('slug')(makeTitleSlug);
+const addCanonicalUrl = addPropFn('canonicalUrl')(post => `${url.resolve(websiteBaseUrl, post.slug)}/`);
 const addTimestamp = addPropFn('timestamp')(p => (new Date(p.date)).getTime());
 
 //creates an index.html file in dirname based on slug
@@ -41,6 +43,7 @@ Promise.all([
   getPosts('_content/posts')
     .tap(writeIndexPage)
     .map(onProp('body')(marked)) //markdown
+    .map(addCanonicalUrl)
     .tap(writeRssPage)
     .then(writePosts),
   getPosts('_content/shorts')
@@ -125,11 +128,9 @@ function writeRssPage(posts) {
   console.log('updating RSS feed....');
   fs.writeFileSync(hashPath, JSON.stringify(newHash));
   // something changed
-  const websiteBaseUrl = 'https://sequoia.makes.software/';
   const lastBuildDate = (new Date()).toUTCString();
   return Promise.resolve(posts)
     .filter(post => !post.hidden)
-    .map(addPropFn('link')(post => url.resolve(websiteBaseUrl, post.slug)))
     .map(addPropFn('pubDate')(post => (new Date(post.timestamp)).toUTCString()))
     .then(posts => tmpl.rss({ posts, websiteBaseUrl, lastBuildDate }))
     .then(rendered => fs.writeFileAsync(join(outDir, 'rss.xml'), rendered));
