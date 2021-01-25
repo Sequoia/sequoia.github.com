@@ -1,0 +1,225 @@
+<!DOCTYPE html><html lang="en"><head><title>Kubernetes Resource Optimization: Just The Basics | Sequoia McDowell</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="How do you write about optimizing Kubernetes clusters without getting into the weeds? The whole thing is just weeds. Nonetheless, there are things you can do to reduce your kubernetes spend and maintain performance without an advanced degree in Kubernetology, and I'll go over some of those things in this post!"><link rel="canonical" href="https://sequoia.makes.software/kubernetes-resource-optimization-just-the-basics/"><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><script src="/js/go-to-resume.js"></script><!--does this do anything? who knows--><link href="https://github.com/Sequoia" rel="me"><!--RSS!!!--><link rel="alternate" type="application/rss+xml" href="https://sequoia.makes.software/rss.xml" title="Blog RSS Feed"></head><body><div id="wrap"><header role="banner"><nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></header><aside id="announce" class="row hidden"><h2>News</h2><ul id="news-items"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>Kubernetes Resource Optimization: Just The Basics</h1><span class="byline">Published January 26, 2021</span><p>One of the promises of container orchestration (e.g. Kubernetes) is that you can automatically scale up and down as needed and <strong>save money.</strong> This <em>can be</em> true with Kubernetes, but that automation doesn&#39;t happen automatically! When you set up your own cluster, you take on the responsibility for tuning it for performance and cost. <strong>If you don&#39;t tune, you don&#39;t save!</strong></p>
+<p>How much can running a Kubernetes cluster cost? As an single example, a friend at a mid-sized company I spoke with recently was spending <strong>250,000 US dollars per month</strong> running applications in Kubernetes (not including storage &amp; network costs!). A company like this has 250,000 reasons (per month) to pay attention to resource usage and work on reducing it. But how?</p>
+<h2 id="pre-r-amble-on-accuracy-and-generalization">
+    <a class="header-anchor" href="#pre-r-amble-on-accuracy-and-generalization">
+      <span class="header-link"></span>
+    </a>
+    Pre(r)amble on Accuracy and Generalization</h2><p>How do you write about optimizing Kubernetes clusters without getting into the weeds? The whole thing is just weeds.</p>
+<p>Basically, every sentence in this post has one or more caveats. I have chosen to omit the &quot;except in the following cases...&quot; and &quot;as long as the following is true...&quot; statements. <strong>To get a more realistic picture, close your eyes and imagine a Kubernetes expert saying, &quot;actually it&#39;s a bit more complicated than that&quot; after every sentence.</strong></p>
+<p>But fear not! There are some &quot;rules of thumb&quot; that can help you realize <em>significant savings</em> without having to become a Kubernetes expert.</p>
+<h2 id="high-level-goals">
+    <a class="header-anchor" href="#high-level-goals">
+      <span class="header-link"></span>
+    </a>
+    High-Level Goals</h2><ul>
+<li><strong>Goal 1: Cost:</strong> Use as few resources as possible to reduce how much we spend renting computers from Google (where our Kubernetes cluster ultimately runs)</li>
+<li><strong>Goal 2: Availability:</strong> Keep our application availability high and keep response times within acceptable ranges</li>
+<li><strong>Goal 3: Scaling</strong> Handle spikes in traffic gracefully (sort of a sub-goal of <strong>Goal 2: Availability</strong>)</li>
+</ul>
+<h2 id="background-how-does-kubernetes-allocate-resources-to-containers-">
+    <a class="header-anchor" href="#background-how-does-kubernetes-allocate-resources-to-containers-">
+      <span class="header-link"></span>
+    </a>
+    Background: How does Kubernetes Allocate Resources to Containers?</h2><p>ℹ️ <em>Skip this section if you&#39;re already familiar with how requests, limits, and <abbr title="Horizonal Pod Autoscaler">HPA</abbr>s work.</em></p>
+<p>In a Kubernetes Cluster, each &quot;workload&quot; (for example, a web server application) runs in one or more pods (<strong>generally</strong> a wrapper around a single docker container). In a Kubernetes &quot;<a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">deployment</a>,&quot; we tell Kubernetes how many instances (pods) of our application to run, and what sort of resources we expect each of those pods to need (<code>requests</code>). We can also tell Kubernetes not to let a pod exceed a certain resource usage limit (<code>limits</code>) and to shut down any pod that does.</p>
+<p>For example, we can tell Kubernetes, &quot;Hey Kubernetes, run 3 Nginx instances; I expect each will use <code>1 CPU</code> and <code>512Mi</code> of RAM, but do not let it use more then <code>1Gi</code> of RAM.&quot;</p>
+<pre><code>apiVersion: apps/v1
+kind: Deployment
+name: my-nginx
+spec:
+  replicas: 3              ⭐️ Run three instances
+  template:
+    spec:
+      containers:
+      - name: my-nginx
+        image: nginx:1.14.2
+        resources:
+          requests:        ⭐️ request = &quot;This is how much my application uses typically&quot;
+            cpu: 1000m        1000 &quot;millicpus&quot; = 1 CPU
+            memory: 512Mi  
+          limits:          ⭐️ limit = &quot;Don&#39;t let the pod use more than this&quot;
+            memory: 1Gi
+</code></pre><p>Telling Kubernetes an exact number of pods to run isn&#39;t very <em>auto</em>-scale-y, though, is it? We want more pods when we need them and fewer when we don&#39;t. We can do this by using a <strong>Horizontal Pod Autoscaler (HPA)</strong>, which <em>automatically</em> increases and decreases the number of pods a deployment has.</p>
+<p>How does the <abbr title="Horizonal Pod Autoscaler">HPA</abbr> know when to add or remove pods? Good question! The simplest way is for it to look at the <strong>average CPU usage</strong> across the pods in the deployment. When average CPU usage gets too high, add pods. When it gets too low, shut some pods down.</p>
+<p>&quot;Hey Kubernetes, run an HPA to scale the deployment we just made above. If the average CPU usage is well above <code>90</code>%, bring more pods online. If it&#39;s much lower, shut some down. Also, don&#39;t let the total number of pods go below <code>2</code> or above <code>10</code>.&quot;</p>
+<pre><code>apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+spec:
+  ⭐️ Scale up or down to keep the pods running ~90% CPU utilization
+  targetCPUUtilizationPercentage: 90
+  maxReplicas: 10  ⭐️ No more than 10 pods
+  minReplicas: 2   ⭐️ No fewer than 2 pods
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: my-nginx
+</code></pre><p>The key to optimizing our resource consumption is to run our pods as &quot;hot&quot; as possible, i.e. use all available CPU &amp; memory. In an ideal world, this would mean allocating exactly as much memory as needed and no more, and consuming approximately 100% of the CPU requested.</p>
+<p>So why not tell the HPA to do this (&quot;Scale up to infinity, scale down to 0&quot;)? We could do this thus:</p>
+<ul>
+<li><code>targetCPUUtilizationPercentage: 100</code></li>
+<li><code>minReplicas: 1</code></li>
+<li><code>maxReplicas: 100000</code></li>
+<li><code>requests.cpu: 1m</code>(&quot;one <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu">millicpu</a>&quot; i.e. 1/1000th of a CPU)</li>
+<li><code>requests.memory 1 Mi</code></li>
+<li>No CPU or RAM limit (infinity CPU &amp; RAM!)</li>
+</ul>
+<p>We&#39;ve done it! Automatic scaling from 0 to inifinity with 100% efficiency––problem solved!</p>
+<p>Unfortunately, It&#39;s Not That Simple...</p>
+<h2 id="why-it-39-s-not-that-simple">
+    <a class="header-anchor" href="#why-it-39-s-not-that-simple">
+      <span class="header-link"></span>
+    </a>
+    Why It&#39;s Not That Simple</h2><p>There are a couple reasons:</p>
+<h3 id="1-your-containers-ultimately-run-on-physical-computers-with-physical-limits">
+    <a class="header-anchor" href="#1-your-containers-ultimately-run-on-physical-computers-with-physical-limits">
+      <span class="header-link"></span>
+    </a>
+    1. Your Containers Ultimately Run On Physical Computers With Physical Limits</h3><p>The machines in a Kubernetes cluster are called &quot;Nodes.&quot;</p>
+<p>The <code>requests</code> you set for your containers tell Kubernetes <strong>how much CPU/RAM your application <em>claims</em> it needs to operate</strong>; Kubernetes uses this information to &quot;schedule&quot; your container to <strong>a node that can meet those requirements</strong>. It finds a node (physical or virtual machine) with the resources available to meet your container&#39;s <strong>requests</strong> and starts the container in that node.</p>
+<p>If you only request <code>cpu: 1m</code> (one millicpu) for your application and Kubernetes has a node with 1 CPU (one thousand millicpu), Kubernetes will say &quot;aha! This node can safely fit <strong>one thousand</strong> instances of your application!&quot; When your 1000 pods start up on that node and each one actually wants <code>100m</code> rather than <code>1m</code>, that Kubernetes node will not be able to meet the pods&#39; demands on that node. The pods will run really slowly or crash repeatedly, and Kubernetes will do nothing about it.</p>
+<p>For this reason, it&#39;s important to tell Kubernetes roughly how much CPU &amp; RAM your application needs so it can &quot;set aside&quot; an adequate amount.</p>
+<h3 id="2-deployments-take-time-to-scale">
+    <a class="header-anchor" href="#2-deployments-take-time-to-scale">
+      <span class="header-link"></span>
+    </a>
+    2. Deployments Take Time To Scale</h3><p>Assume each instance of your application can serve 1000 requests per second (rps). Your traffic is steady around 10,000rps, and you have exactly 10 pods handling it, all of them running at 100% CPU (maximum efficiency, baby!!).</p>
+<p>All of a sudden traffic increases to 15,000rps. No problem, bring another 5 pods online.</p>
+<blockquote>
+<p>Please wait 2-3 minutes to bring additional pods online</p>
+</blockquote>
+<p>Two to three minutes?! Uh-oh! What are you going to do with that extra load for two to three minutes? Latency goes up, overloaded pods start to crash, and you&#39;ve got an incident on your hands.</p>
+<p>To avoid this problem, your deployments should have enough <strong>buffer</strong> (extra resources allocated) to handle spikes in traffic for <a href="https://cloud.google.com/solutions/best-practices-for-running-cost-effective-kubernetes-applications-on-gke"><strong>two or three minutes</strong></a>. This means setting your HPA&#39;s target CPU utilization far enough <em>below</em> 100% to be able to absorb spikes in traffic long enough for Kubernetes to bring more pods online.</p>
+<h2 id="what-things-can-you-fiddle-with-to-increase-efficiency-">
+    <a class="header-anchor" href="#what-things-can-you-fiddle-with-to-increase-efficiency-">
+      <span class="header-link"></span>
+    </a>
+    What Things Can You Fiddle With to Increase Efficiency?</h2><p>A brief review of what <code>requests</code> and <code>limits</code> mean:</p>
+<ul>
+<li><code>requests</code> = &quot;please make sure this much schedulable RAM/CPU is available on a node before putting this pod on that node&quot; (how much your application <em>typically</em> uses.) This is a <strong>target</strong> (e.g. p50 behavior), <strong>not a maximum</strong>.</li>
+<li><code>limits</code> = &quot;don&#39;t let my pod use beyond this amount.<ul>
+<li>In the case of memory <strong>immediately kill it</strong></li>
+<li>In the case of CPU throttle how much time it gets on the CPU</li>
+</ul>
+</li>
+</ul>
+<p>For a more detailed description check out this video, especially the first half:</p>
+<div class="videodetector original youtube"><iframe allow="autoplay; encrypted-media" class="vd_frame youtube" src="//www.youtube.com/embed/xjpHggHKm78?autohide=1&amp;controls=1&amp;showinfo=0" frameborder="0"></iframe><input class="remove-videodetector short" type="button" value="Remove"></div>
+
+<p>With those basics out of the way, let&#39;s look at what settings you can change to Improve Your Efficiency:</p>
+<h3 id="per-container-cpu-code-requests-cpu-code-and-code-limits-cpu-code-">
+    <a class="header-anchor" href="#per-container-cpu-code-requests-cpu-code-and-code-limits-cpu-code-">
+      <span class="header-link"></span>
+    </a>
+    Per Container: CPU (<code>requests.cpu</code> and <code>limits.cpu</code>)</h3><p>Very High Level/General Goal: looking at a Grafana chart of pod resource usage for <strong>a specific deployment</strong> such as the example below, you want the &quot;used&quot; line (blue) to sit at <em>or above</em> the &quot;requested&quot; line (green). (<em>NB: the particulars of this chart are specific to one cluster, but they are generally derived from <a href="https://github.com/google/cadvisor">cadvisor</a></em>)</p>
+<p><img src="/img/k8s-cpu-chart.png" alt="Grafana chart of CPU usage with blue &quot;used&quot; line below green &quot;requested&quot; line"></p>
+<blockquote>
+<p>Used should be at <em>or above</em> requested?! That doesn&#39;t make sense! How do I use more than I requested?</p>
+</blockquote>
+<p>It&#39;s complicated but basically there&#39;s usually extra CPU available on the node beyond the total amount of CPU requested. As explained to me by a smart Kubernetes experts:</p>
+<blockquote>
+<p>Remember, <strong>a pod is not a virtual machine</strong> with a fixed amount of physical CPU and memory; it is a group of &quot;containerized processes&quot; that run on a <strong>shared virtual machine</strong> with other pods.</p>
+</blockquote>
+<p>Anyway just <strong>try to make the blue line sit at or above the green line</strong>.</p>
+<p>Other Rules of thumb:</p>
+<ol>
+<li>Don&#39;t <code>request</code> above <code>1</code> aka <code>&quot;1000m&quot;</code> (unless you have an application specifically designed to make use of multiple cores) <a href="https://cloud.google.com/blog/products/gcp/kubernetes-best-practices-resource-requests-and-limits">more info under &quot;CPU&quot;</a></li>
+<li>Don&#39;t <code>request</code> <em>below</em> <code>1</code>: Assuming your workload is CPU bound (a single process can scale up &#39;til it runs out of CPU) <strong>it probably doesn&#39;t make sense to put this below 1</strong> CPU. Instead, consider increasing the <code>targetCPUUtilizationPercentage</code> on the HPA (see below).</li>
+<li>Set <code>limit</code> to 1.5 times whatever the <code>request</code> is (e.g. <code>requests.cpu: 1</code>;<code>limits.cpu: 1.5</code>)</li>
+</ol>
+<h3 id="per-container-memory-code-requests-memory-code-and-code-limits-memory-code-">
+    <a class="header-anchor" href="#per-container-memory-code-requests-memory-code-and-code-limits-memory-code-">
+      <span class="header-link"></span>
+    </a>
+    Per Container: Memory (<code>requests.memory</code> and <code>limits.memory</code>)</h3><p>Memory you must be a bit more careful with. If a container doesn&#39;t have quite enough CPU it may run slowly. If it requires more memory than allowed by it&#39;s <code>limit</code>, <strong>it will be killed</strong>.</p>
+<p>Very High Level/General Goal: looking at the graph of RAM usage like the one below, you want the blue line (used) to sit <strong>at</strong> the green line (requested). (It&#39;s OK for &quot;used&quot; to go over &quot;requested&quot; for <strong>short periods of time</strong> but not all the time.)</p>
+<p><img src="/img/k8s-ram-chart.png" alt="Grafana chart of RAM usage with blue &quot;used&quot; line far below green &quot;requested&quot; line"></p>
+<p>Rules of thumb:</p>
+<ol>
+<li>Set <code>requests</code> at or just slightly above what you typically observe a container to use</li>
+<li>Set <code>limits</code> <em>above</em> the <code>request</code> value to give your pod some room to handle periods of time where it needs a bit more memory while protecting the node from any one process attempting to use all of the available memory on the node. Without a RAM <code>limit</code>, the Kubernetes controller will not prevent a container from using 100% of the RAM on node, which would cause all other pods on the node to crash.</li>
+</ol>
+<h3 id="horizontal-pod-autoscaler-minimum-replicas">
+    <a class="header-anchor" href="#horizontal-pod-autoscaler-minimum-replicas">
+      <span class="header-link"></span>
+    </a>
+    Horizontal Pod Autoscaler: Minimum Replicas</h3><p>&quot;How many pods do I need running during overnight hours?&quot;</p>
+<ol>
+<li>Turn this very low so your deployment can scale down overnight to a bare minimum (assuming your business is primarily diurnal and your cluster serves a limited number of adjacent timezones)</li>
+<li><strong>Consider scale-up time!</strong> If your application takes several minutes to start up, you should <strong>keep more pods online at minimum traffic</strong> (higher <code>minReplicas</code> value) to handle any unexpected load.</li>
+<li>Scaling below 2 is probably unwise as it leaves no redundancy at all.</li>
+</ol>
+<h3 id="horizontal-pod-autoscaler-maximum-replicas">
+    <a class="header-anchor" href="#horizontal-pod-autoscaler-maximum-replicas">
+      <span class="header-link"></span>
+    </a>
+    Horizontal Pod Autoscaler: Maximum Replicas</h3><p>&quot;Beyond what point of scaling is my deployment obviously malfunctioning and running out of control?&quot;</p>
+<p>The <code>maxReplicas</code> setting allows you to <strong>throttle</strong> your deployment&#39;s horizontal scaling in order to control resource consumption. If yours is a business-to-consumer company, <strong>you probably don&#39;t want to do this with customer-facing services</strong>. If you were to run a TV ad that spiked traffic and website deployment wants to jump from 250 pods up to 650, you probably want to let it do that. <strong>Availability (Goal 2) is typically much more important than platform cost (Goal 1)</strong> when it comes to serving customers.</p>
+<p>For this reason, Maximum Replics should be set to whatever the highest number of pods you&#39;ve observed your deployment needing, plus 50 or 100%. Increasing this number doesn&#39;t cost anything <em>directly</em>.  </p>
+<p>Another consideration is resource constraints of service(s) your service connects to.  For example, if your database can only handle a maximum of 1000 connections you probably want to set your max application replicas so that you do not exceed that capacity.</p>
+<h3 id="horizontal-pod-autoscaler-cpu-utilization-target">
+    <a class="header-anchor" href="#horizontal-pod-autoscaler-cpu-utilization-target">
+      <span class="header-link"></span>
+    </a>
+    Horizontal Pod Autoscaler: CPU Utilization Target</h3><p>This is one of the most important settings, especially for large clusters. You want this value to be as close to 100% as possible: the &quot;hotter&quot; your pods run, the less idle CPU you&#39;re paying for.</p>
+<p><em>On the other hand</em>, if you have <em>no</em> idle CPU, you are unlikely to be able to handle a spike in traffic (Goal 3) while waiting for the deployment to scale up.</p>
+<h4 id="interaction-between-code-requests-cpu-code-and-code-targetcpuutilizationpercentage-code-">
+    <a class="header-anchor" href="#interaction-between-code-requests-cpu-code-and-code-targetcpuutilizationpercentage-code-">
+      <span class="header-link"></span>
+    </a>
+    Interaction between <code>requests.cpu</code> and <code>targetCPUUtilizationPercentage</code></h4><p>Earlier we said &quot;look at CPU efficiency and reduce <code>requests.cpu</code> if you are requesting more than you&#39;re using.&quot; That advice can be misleading when you&#39;re using an HPA that scales your cluster up and down <em>based on average CPU utilization</em>.</p>
+<p>Example: If it looks like you&#39;re only running at 70% CPU efficiency, you may think &quot;<code>requests.cpu</code> is 30% higher than needed, I should turn it down.&quot; But if <code>targetCPUUtilizationPercentage</code> it&#39;s set to <code>70</code>, your CPU <em>isn&#39;t</em> overprovisioned, <strong>the deployment is just getting scaled up every time the average CPU across pods in the deployment goes much over 70%*, so the average usage always hovers around 70%!</strong> If your pods each request 1 CPU, the deployment will scale so they each use approximately 70% of 1 CPU. If your pods each request <code>600m</code>, the deployment will scale so they each use approximately 70% of <code>600m</code>.</p>
+<p>Turn down <code>requests.cpu</code> all you want, utilization will continue to hover at 70%. In this case, you would need to <strong>increase <code>targetCPUUtilizationPercentage</code></strong>, <em>not</em> decrease <code>requests.cpu</code> in order to increase efficiency.</p>
+<ul>
+<li>I&#39;m not sure how much... You set it to &quot;70&quot; and the HPA figures out when to scale up or down to keep the average close to 70.</li>
+</ul>
+<h4 id="how-high-can-you-go-">
+    <a class="header-anchor" href="#how-high-can-you-go-">
+      <span class="header-link"></span>
+    </a>
+    How High Can You Go?</h4><p>That&#39;s the $64 question. The formula for this is <em>basically</em>:</p>
+<blockquote>
+<p>100% - (however much buffer you need to handle traffic spikes for the time it takes additional pods to come online and be ready to serve).</p>
+</blockquote>
+<p>For more information on how to set this, see two places in <a href="https://cloud.google.com/solutions/best-practices-for-running-cost-effective-kubernetes-applications-on-gke">this post</a>:</p>
+<ol>
+<li><a href="https://cloud.google.com/solutions/best-practices-for-running-cost-effective-kubernetes-applications-on-gke#horizontal_pod_autoscaler">The introduction to Horizontal Pod Autoscalers in this section</a></li>
+<li>The bullet point titled &quot;Fine-tune the HPA utilization target&quot;</li>
+</ol>
+<p>As mentioned above, The interplay between <code>requests.cpu</code> and <code>hpa.targetCpuUtilizationPercentage</code> can be hard to grok, but you should make sure you consider both settings when setting either. <strong>As a rule of thumb, increase <code>targetCpuUtilizationPercentage</code> as much as possible <em>before</em> reducing <code>requests.cpu</code></strong>. It&#39;s hard to know much CPU your container <em>can</em> make use of if it&#39;s being aggressively throttled by a low <code>targetCpuUtilizationPercentage</code>.</p>
+<p>You&#39;ll know you&#39;ve set <code>targetCpuUtilizationPercentage</code> too high if response latency starts to climb when you get traffic spikes (or if your pods start crashing and you have an outage 😄).</p>
+<h2 id="other-general-tips">
+    <a class="header-anchor" href="#other-general-tips">
+      <span class="header-link"></span>
+    </a>
+    Other General Tips</h2><h3 id="start-small-">
+    <a class="header-anchor" href="#start-small-">
+      <span class="header-link"></span>
+    </a>
+    Start Small!</h3><p>There&#39;s no need to make big infrastructure changes all at once, and in many ways it&#39;s inadvisable! Instead of turning <code>targetCpuUtilizationPercentage</code> from 70 to 95, consider taking a stepwise approach: step it up to 80 and observe for a few days or a week, then try 90, observe a while, rinse and repeat. This is a safe and easy way to get started if you&#39;re not sure what settings are best!</p>
+<h2 id="conclusion">
+    <a class="header-anchor" href="#conclusion">
+      <span class="header-link"></span>
+    </a>
+    Conclusion</h2><p>Hopefully these &quot;rules of thumb&quot; give you enough information to get started right-sizing your deployments. There is of course more fine-tuning you can do, but following these rules should get you at least 50% of the way there–there&#39;s lots of low-hanging fruit!</p>
+<p>If you want to read more about this fascinating topic, please see the links below.</p>
+<h2 id="further-reading">
+    <a class="header-anchor" href="#further-reading">
+      <span class="header-link"></span>
+    </a>
+    Further Reading</h2><ul>
+<li><a href="https://codeberg.org/hjacobs/kube-resource-report">kube-resource-report</a> <em>Identifying</em> overprovisioned instances is beyond the scope of this post unfortunately, but this </li>
+<li><a href="https://cloud.google.com/blog/products/gcp/kubernetes-best-practices-resource-requests-and-limits">Kubernetes best practices: Resource requests and limits</a>: This is a great intro to the various settings you can change that goes into more detail than this post.</li>
+<li><a href="https://cloud.google.com/solutions/best-practices-for-running-cost-effective-kubernetes-applications-on-gke">Best practices for running cost-optimized Kubernetes applications on GKE</a>: This is a <strong>broader</strong> article that touches on many aspects of scaling, far beyone what I go over in this post. If this post whetted your appetite and you want to learn much more, <em>this is the article for you!</em> ⭐️</li>
+<li><a href="/reducing-docker-image-size-particularly-for-kubernetes-environments/">Reducing Docker Image Size</a></li>
+<li>Addendum to the previous point: <a href="https://cloud.google.com/solutions/best-practices-for-running-cost-effective-kubernetes-applications-on-gke#make_sure_your_container_is_as_lean_as_possible">why reducing docker image size is important in a kubernetes environment</a> if you want to know <em>now</em>)</li>
+</ul>
+<em> 
+📝 Comments? Please email them to my <tt>protonmail.com</tt> address, username <tt>sequoiam</tt></em></section><footer>&copy; Sequoia McDowell 2021<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div><script>(function() {
+	var script = document.createElement('script');
+	window.counter = 'https://sequoia.goatcounter.com/count'
+	script.async = 1;
+	script.src = '//gc.zgo.at/count.js';
+
+	var ins = document.getElementsByTagName('script')[0];
+	ins.parentNode.insertBefore(script, ins)
+})();</script></body></html>

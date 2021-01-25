@@ -56,7 +56,7 @@ When it completes it will show a view like this:
 
 There's a lot going on here!
 
-*   The top-left panel shows you **layers**, each of which corresponds to a Dockerfile command. (If the command if it's truncated, find the _full_ command below in the "Layer Details" section.)
+*   The top-left panel shows you **layers**, each of which corresponds to a Dockerfile command. (If the command is truncated, find the _full_ command below in the "Layer Details" section.)
 *   The right column shows the filesystem tree for the **currently selected layer**–more on this later
 *   The bottom left is **Image Details** and does not change as you navigate through the layers
 
