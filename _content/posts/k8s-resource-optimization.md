@@ -228,7 +228,7 @@ If you want to read more about this fascinating topic, please see the links belo
 
 ## Further Reading
 
-*   [kube-resource-report](https://codeberg.org/hjacobs/kube-resource-report) _Identifying_ overprovisioned instances is beyond the scope of this post unfortunately, but this 
+*   [kube-resource-report](https://codeberg.org/hjacobs/kube-resource-report) _Identifying_ overprovisioned instances is beyond the scope of this post unfortunately, but this tool is a good place to start.
 *   [Kubernetes best practices: Resource requests and limits](https://cloud.google.com/blog/products/gcp/kubernetes-best-practices-resource-requests-and-limits): This is a great intro to the various settings you can change that goes into more detail than this post.
 *   [Best practices for running cost-optimized Kubernetes applications on GKE](https://cloud.google.com/solutions/best-practices-for-running-cost-effective-kubernetes-applications-on-gke): This is a **broader** article that touches on many aspects of scaling, far beyone what I go over in this post. If this post whetted your appetite and you want to learn much more, _this is the article for you!_ ⭐️
 *   [Reducing Docker Image Size](/reducing-docker-image-size-particularly-for-kubernetes-environments/)
