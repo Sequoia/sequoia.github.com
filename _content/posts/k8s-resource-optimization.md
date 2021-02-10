@@ -23,7 +23,7 @@ But fear not! There are some "rules of thumb" that can help you realize _signifi
 
 ## High-Level Goals
 
-*   **Goal 1: Cost:** Use as few resources as possible to reduce how much we spend renting computers from Google (where our Kubernetes cluster ultimately runs)
+*   **Goal 1: Cost:** Use as few resources as possible to reduce how much we spend renting computers (where our Kubernetes cluster ultimately runs)
 *   **Goal 2: Availability:** Keep our application availability high and keep response times within acceptable ranges
 *   **Goal 3: Scaling** Handle spikes in traffic gracefully (sort of a sub-goal of **Goal 2: Availability**)
 
