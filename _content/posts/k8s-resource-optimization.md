@@ -35,7 +35,7 @@ In a Kubernetes Cluster, each "workload" (for example, a web server application)
 
 For example, we can tell Kubernetes, "Hey Kubernetes, run 3 Nginx instances; I expect each will use `1 CPU` and `512Mi` of RAM, but do not let it use more then `1Gi` of RAM."
 
-```
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 name: my-nginx
@@ -60,7 +60,7 @@ How does the <abbr title="Horizonal Pod Autoscaler">HPA</abbr> know when to add 
 
 "Hey Kubernetes, run an HPA to scale the deployment we just made above. If the average CPU usage is well above `90`%, bring more pods online. If it's much lower, shut some down. Also, don't let the total number of pods go below `2` or above `10`."
 
-```
+```yaml
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 spec:
