@@ -109,3 +109,7 @@ Put another way, the best way to ensure you use frameworks properly (as a beginn
 \- <a href="https://leosl.github.io">Leonardo Lima</a>, <time datetime="2019-02-17 18:32:33 UTC">February 16, 2019</time>
 
 Thank you for the generous feedback, and I'm glad to hear this post reflects your experience well. I like your "Ikea" analogy–I kept struggling for analogy around a gas-powered ditch digger vs. a shovel, but Ikea furniture is much better. Cheers!
+
+> Great blog post! If I could contribute one thing to this article it would be that with new frameworks hooking up a debugger and watching the entire stack from the beginning of a request to the end is a tremendous learning experience. This is a great way to get exposed to more complex topics when you are at a more junior level.
+
+\- <a href="https://www.linkedin.com/in/orizigindere">Ori Zigindere</a>, <time datetime="2019-02-17 18:32:34 UTC">February 16, 2019</time>
