@@ -124,9 +124,7 @@ A brief review of what `requests` and `limits` mean:
     *   In the case of memory **immediately kill it**
     *   In the case of CPU throttle how much time it gets on the CPU
 
-For a more detailed description check out this video, especially the first half:
-
-<div class="videodetector original youtube"><iframe allow="autoplay; encrypted-media" class="vd_frame youtube" src="//www.youtube.com/embed/xjpHggHKm78?autohide=1&amp;controls=1&amp;showinfo=0" frameborder="0"></iframe><input class="remove-videodetector short" type="button" value="Remove"></div>
+For a more detailed description [check out this video from google](https://www.youtube.com/v/xjpHggHKm78), especially the first half.
 
 With those basics out of the way, let's look at what settings you can change to Improve Your Efficiency:
 
