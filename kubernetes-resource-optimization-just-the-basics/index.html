@@ -23,37 +23,39 @@
     Background: How does Kubernetes Allocate Resources to Containers?</h2><p>ℹ️ <em>Skip this section if you&#39;re already familiar with how requests, limits, and <abbr title="Horizonal Pod Autoscaler">HPA</abbr>s work.</em></p>
 <p>In a Kubernetes Cluster, each &quot;workload&quot; (for example, a web server application) runs in one or more pods (<strong>generally</strong> a wrapper around a single docker container). In a Kubernetes &quot;<a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">deployment</a>,&quot; we tell Kubernetes how many instances (pods) of our application to run, and what sort of resources we expect each of those pods to need (<code>requests</code>). We can also tell Kubernetes not to let a pod exceed a certain resource usage limit (<code>limits</code>) and to shut down any pod that does.</p>
 <p>For example, we can tell Kubernetes, &quot;Hey Kubernetes, run 3 Nginx instances; I expect each will use <code>1 CPU</code> and <code>512Mi</code> of RAM, but do not let it use more then <code>1Gi</code> of RAM.&quot;</p>
-<pre><code>apiVersion: apps/v1
-kind: Deployment
-name: my-nginx
-spec:
-  replicas: 3              ⭐️ Run three instances
-  template:
-    spec:
-      containers:
-      - name: my-nginx
-        image: nginx:1.14.2
-        resources:
-          requests:        ⭐️ request = &quot;This is how much my application uses typically&quot;
-            cpu: 1000m        1000 &quot;millicpus&quot; = 1 CPU
-            memory: 512Mi  
-          limits:          ⭐️ limit = &quot;Don&#39;t let the pod use more than this&quot;
-            memory: 1Gi
-</code></pre><p>Telling Kubernetes an exact number of pods to run isn&#39;t very <em>auto</em>-scale-y, though, is it? We want more pods when we need them and fewer when we don&#39;t. We can do this by using a <strong>Horizontal Pod Autoscaler (HPA)</strong>, which <em>automatically</em> increases and decreases the number of pods a deployment has.</p>
+<pre><code class="hljs lang-yaml"><span class="hljs-attr">apiVersion:</span> apps/v1
+<span class="hljs-attr">kind:</span> Deployment
+<span class="hljs-attr">name:</span> my-nginx
+<span class="hljs-attr">spec:</span>
+<span class="hljs-attr">  replicas:</span> <span class="hljs-number">3</span>              ⭐️ Run three instances
+<span class="hljs-attr">  template:</span>
+<span class="hljs-attr">    spec:</span>
+<span class="hljs-attr">      containers:</span>
+<span class="hljs-attr">      - name:</span> my-nginx
+<span class="hljs-attr">        image:</span> nginx:<span class="hljs-number">1.14</span><span class="hljs-number">.2</span>
+<span class="hljs-attr">        resources:</span>
+<span class="hljs-attr">          requests:</span>        ⭐️ request = <span class="hljs-string">"This is how much my application uses typically"</span>
+<span class="hljs-attr">            cpu:</span> <span class="hljs-number">1000</span>m        <span class="hljs-number">1000</span> <span class="hljs-string">"millicpus"</span> = <span class="hljs-number">1</span> CPU
+<span class="hljs-attr">            memory:</span> <span class="hljs-number">512</span>Mi  
+<span class="hljs-attr">          limits:</span>          ⭐️ limit = <span class="hljs-string">"Don't let the pod use more than this"</span>
+<span class="hljs-attr">            memory:</span> <span class="hljs-number">1</span>Gi
+</code></pre>
+<p>Telling Kubernetes an exact number of pods to run isn&#39;t very <em>auto</em>-scale-y, though, is it? We want more pods when we need them and fewer when we don&#39;t. We can do this by using a <strong>Horizontal Pod Autoscaler (HPA)</strong>, which <em>automatically</em> increases and decreases the number of pods a deployment has.</p>
 <p>How does the <abbr title="Horizonal Pod Autoscaler">HPA</abbr> know when to add or remove pods? Good question! The simplest way is for it to look at the <strong>average CPU usage</strong> across the pods in the deployment. When average CPU usage gets too high, add pods. When it gets too low, shut some pods down.</p>
 <p>&quot;Hey Kubernetes, run an HPA to scale the deployment we just made above. If the average CPU usage is well above <code>90</code>%, bring more pods online. If it&#39;s much lower, shut some down. Also, don&#39;t let the total number of pods go below <code>2</code> or above <code>10</code>.&quot;</p>
-<pre><code>apiVersion: autoscaling/v1
-kind: HorizontalPodAutoscaler
-spec:
-  ⭐️ Scale up or down to keep the pods running ~90% CPU utilization
-  targetCPUUtilizationPercentage: 90
-  maxReplicas: 10  ⭐️ No more than 10 pods
-  minReplicas: 2   ⭐️ No fewer than 2 pods
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: my-nginx
-</code></pre><p>The key to optimizing our resource consumption is to run our pods as &quot;hot&quot; as possible, i.e. use all available CPU &amp; memory. In an ideal world, this would mean allocating exactly as much memory as needed and no more, and consuming approximately 100% of the CPU requested.</p>
+<pre><code class="hljs lang-yaml"><span class="hljs-attr">apiVersion:</span> autoscaling/v1
+<span class="hljs-attr">kind:</span> HorizontalPodAutoscaler
+<span class="hljs-attr">spec:</span>
+  ⭐️ Scale up or down to keep the pods running ~<span class="hljs-number">90</span>% CPU utilization
+<span class="hljs-attr">  targetCPUUtilizationPercentage:</span> <span class="hljs-number">90</span>
+<span class="hljs-attr">  maxReplicas:</span> <span class="hljs-number">10</span>  ⭐️ <span class="hljs-literal">No</span> more than <span class="hljs-number">10</span> pods
+<span class="hljs-attr">  minReplicas:</span> <span class="hljs-number">2</span>   ⭐️ <span class="hljs-literal">No</span> fewer than <span class="hljs-number">2</span> pods
+<span class="hljs-attr">  scaleTargetRef:</span>
+<span class="hljs-attr">    apiVersion:</span> apps/v1
+<span class="hljs-attr">    kind:</span> Deployment
+<span class="hljs-attr">    name:</span> my-nginx
+</code></pre>
+<p>The key to optimizing our resource consumption is to run our pods as &quot;hot&quot; as possible, i.e. use all available CPU &amp; memory. In an ideal world, this would mean allocating exactly as much memory as needed and no more, and consuming approximately 100% of the CPU requested.</p>
 <p>So why not tell the HPA to do this (&quot;Scale up to infinity, scale down to 0&quot;)? We could do this thus:</p>
 <ul>
 <li><code>targetCPUUtilizationPercentage: 100</code></li>

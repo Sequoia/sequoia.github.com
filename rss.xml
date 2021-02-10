@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Sequoia McDowell's Blog Feed</title><link>https://sequoia.makes.software/</link><description>Occassional posts about web programming, software engineering, and JavaScript.</description><lastBuildDate>Wed, 10 Feb 2021 21:13:23 GMT</lastBuildDate><docs>https://validator.w3.org/feed/docs/rss2.html</docs><generator>These two hands 🙌</generator><item><title>Kubernetes Resource Optimization: Just The Basics</title><link>https://sequoia.makes.software/kubernetes-resource-optimization-just-the-basics/</link><description>How do you write about optimizing Kubernetes clusters without getting into the weeds? The whole thing is just weeds. Nonetheless, there are things you can do to reduce your kubernetes spend and maintain performance without an advanced degree in Kubernetology, and I'll go over some of those things in this post!</description><guid isPermaLink="true">https://sequoia.makes.software/kubernetes-resource-optimization-just-the-basics/</guid><pubDate>Mon, 25 Jan 2021 05:00:00 GMT</pubDate><content:encoded><![CDATA[<p>One of the promises of container orchestration (e.g. Kubernetes) is that you can automatically scale up and down as needed and <strong>save money.</strong> This <em>can be</em> true with Kubernetes, but that automation doesn&#39;t happen automatically! When you set up your own cluster, you take on the responsibility for tuning it for performance and cost. <strong>If you don&#39;t tune, you don&#39;t save!</strong></p>
+<?xml version="1.0" encoding="utf-8" ?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Sequoia McDowell's Blog Feed</title><link>https://sequoia.makes.software/</link><description>Occassional posts about web programming, software engineering, and JavaScript.</description><lastBuildDate>Wed, 10 Feb 2021 21:50:44 GMT</lastBuildDate><docs>https://validator.w3.org/feed/docs/rss2.html</docs><generator>These two hands 🙌</generator><item><title>Kubernetes Resource Optimization: Just The Basics</title><link>https://sequoia.makes.software/kubernetes-resource-optimization-just-the-basics/</link><description>How do you write about optimizing Kubernetes clusters without getting into the weeds? The whole thing is just weeds. Nonetheless, there are things you can do to reduce your kubernetes spend and maintain performance without an advanced degree in Kubernetology, and I'll go over some of those things in this post!</description><guid isPermaLink="true">https://sequoia.makes.software/kubernetes-resource-optimization-just-the-basics/</guid><pubDate>Mon, 25 Jan 2021 05:00:00 GMT</pubDate><content:encoded><![CDATA[<p>One of the promises of container orchestration (e.g. Kubernetes) is that you can automatically scale up and down as needed and <strong>save money.</strong> This <em>can be</em> true with Kubernetes, but that automation doesn&#39;t happen automatically! When you set up your own cluster, you take on the responsibility for tuning it for performance and cost. <strong>If you don&#39;t tune, you don&#39;t save!</strong></p>
 <p>How much can running a Kubernetes cluster cost? As an single example, a friend at a mid-sized company I spoke with recently was spending <strong>250,000 US dollars per month</strong> running applications in Kubernetes (not including storage &amp; network costs!). A company like this has 250,000 reasons (per month) to pay attention to resource usage and work on reducing it. But how?</p>
 <h2 id="pre-r-amble-on-accuracy-and-generalization">
     <a class="header-anchor" href="#pre-r-amble-on-accuracy-and-generalization">
@@ -23,37 +23,39 @@
     Background: How does Kubernetes Allocate Resources to Containers?</h2><p>ℹ️ <em>Skip this section if you&#39;re already familiar with how requests, limits, and <abbr title="Horizonal Pod Autoscaler">HPA</abbr>s work.</em></p>
 <p>In a Kubernetes Cluster, each &quot;workload&quot; (for example, a web server application) runs in one or more pods (<strong>generally</strong> a wrapper around a single docker container). In a Kubernetes &quot;<a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">deployment</a>,&quot; we tell Kubernetes how many instances (pods) of our application to run, and what sort of resources we expect each of those pods to need (<code>requests</code>). We can also tell Kubernetes not to let a pod exceed a certain resource usage limit (<code>limits</code>) and to shut down any pod that does.</p>
 <p>For example, we can tell Kubernetes, &quot;Hey Kubernetes, run 3 Nginx instances; I expect each will use <code>1 CPU</code> and <code>512Mi</code> of RAM, but do not let it use more then <code>1Gi</code> of RAM.&quot;</p>
-<pre><code>apiVersion: apps/v1
-kind: Deployment
-name: my-nginx
-spec:
-  replicas: 3              ⭐️ Run three instances
-  template:
-    spec:
-      containers:
-      - name: my-nginx
-        image: nginx:1.14.2
-        resources:
-          requests:        ⭐️ request = &quot;This is how much my application uses typically&quot;
-            cpu: 1000m        1000 &quot;millicpus&quot; = 1 CPU
-            memory: 512Mi  
-          limits:          ⭐️ limit = &quot;Don&#39;t let the pod use more than this&quot;
-            memory: 1Gi
-</code></pre><p>Telling Kubernetes an exact number of pods to run isn&#39;t very <em>auto</em>-scale-y, though, is it? We want more pods when we need them and fewer when we don&#39;t. We can do this by using a <strong>Horizontal Pod Autoscaler (HPA)</strong>, which <em>automatically</em> increases and decreases the number of pods a deployment has.</p>
+<pre><code class="hljs lang-yaml"><span class="hljs-attr">apiVersion:</span> apps/v1
+<span class="hljs-attr">kind:</span> Deployment
+<span class="hljs-attr">name:</span> my-nginx
+<span class="hljs-attr">spec:</span>
+<span class="hljs-attr">  replicas:</span> <span class="hljs-number">3</span>              ⭐️ Run three instances
+<span class="hljs-attr">  template:</span>
+<span class="hljs-attr">    spec:</span>
+<span class="hljs-attr">      containers:</span>
+<span class="hljs-attr">      - name:</span> my-nginx
+<span class="hljs-attr">        image:</span> nginx:<span class="hljs-number">1.14</span><span class="hljs-number">.2</span>
+<span class="hljs-attr">        resources:</span>
+<span class="hljs-attr">          requests:</span>        ⭐️ request = <span class="hljs-string">"This is how much my application uses typically"</span>
+<span class="hljs-attr">            cpu:</span> <span class="hljs-number">1000</span>m        <span class="hljs-number">1000</span> <span class="hljs-string">"millicpus"</span> = <span class="hljs-number">1</span> CPU
+<span class="hljs-attr">            memory:</span> <span class="hljs-number">512</span>Mi  
+<span class="hljs-attr">          limits:</span>          ⭐️ limit = <span class="hljs-string">"Don't let the pod use more than this"</span>
+<span class="hljs-attr">            memory:</span> <span class="hljs-number">1</span>Gi
+</code></pre>
+<p>Telling Kubernetes an exact number of pods to run isn&#39;t very <em>auto</em>-scale-y, though, is it? We want more pods when we need them and fewer when we don&#39;t. We can do this by using a <strong>Horizontal Pod Autoscaler (HPA)</strong>, which <em>automatically</em> increases and decreases the number of pods a deployment has.</p>
 <p>How does the <abbr title="Horizonal Pod Autoscaler">HPA</abbr> know when to add or remove pods? Good question! The simplest way is for it to look at the <strong>average CPU usage</strong> across the pods in the deployment. When average CPU usage gets too high, add pods. When it gets too low, shut some pods down.</p>
 <p>&quot;Hey Kubernetes, run an HPA to scale the deployment we just made above. If the average CPU usage is well above <code>90</code>%, bring more pods online. If it&#39;s much lower, shut some down. Also, don&#39;t let the total number of pods go below <code>2</code> or above <code>10</code>.&quot;</p>
-<pre><code>apiVersion: autoscaling/v1
-kind: HorizontalPodAutoscaler
-spec:
-  ⭐️ Scale up or down to keep the pods running ~90% CPU utilization
-  targetCPUUtilizationPercentage: 90
-  maxReplicas: 10  ⭐️ No more than 10 pods
-  minReplicas: 2   ⭐️ No fewer than 2 pods
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: my-nginx
-</code></pre><p>The key to optimizing our resource consumption is to run our pods as &quot;hot&quot; as possible, i.e. use all available CPU &amp; memory. In an ideal world, this would mean allocating exactly as much memory as needed and no more, and consuming approximately 100% of the CPU requested.</p>
+<pre><code class="hljs lang-yaml"><span class="hljs-attr">apiVersion:</span> autoscaling/v1
+<span class="hljs-attr">kind:</span> HorizontalPodAutoscaler
+<span class="hljs-attr">spec:</span>
+  ⭐️ Scale up or down to keep the pods running ~<span class="hljs-number">90</span>% CPU utilization
+<span class="hljs-attr">  targetCPUUtilizationPercentage:</span> <span class="hljs-number">90</span>
+<span class="hljs-attr">  maxReplicas:</span> <span class="hljs-number">10</span>  ⭐️ <span class="hljs-literal">No</span> more than <span class="hljs-number">10</span> pods
+<span class="hljs-attr">  minReplicas:</span> <span class="hljs-number">2</span>   ⭐️ <span class="hljs-literal">No</span> fewer than <span class="hljs-number">2</span> pods
+<span class="hljs-attr">  scaleTargetRef:</span>
+<span class="hljs-attr">    apiVersion:</span> apps/v1
+<span class="hljs-attr">    kind:</span> Deployment
+<span class="hljs-attr">    name:</span> my-nginx
+</code></pre>
+<p>The key to optimizing our resource consumption is to run our pods as &quot;hot&quot; as possible, i.e. use all available CPU &amp; memory. In an ideal world, this would mean allocating exactly as much memory as needed and no more, and consuming approximately 100% of the CPU requested.</p>
 <p>So why not tell the HPA to do this (&quot;Scale up to infinity, scale down to 0&quot;)? We could do this thus:</p>
 <ul>
 <li><code>targetCPUUtilizationPercentage: 100</code></li>
@@ -1013,6 +1015,10 @@ log(deserialized[<span class="hljs-number">0</span>].role.description); <span cl
 </blockquote>
 <p>- <a href="https://leosl.github.io">Leonardo Lima</a>, <time datetime="2019-02-17 18:32:33 UTC">February 16, 2019</time></p>
 <p>Thank you for the generous feedback, and I&#39;m glad to hear this post reflects your experience well. I like your &quot;Ikea&quot; analogy–I kept struggling for analogy around a gas-powered ditch digger vs. a shovel, but Ikea furniture is much better. Cheers!</p>
+<blockquote>
+<p>Great blog post! If I could contribute one thing to this article it would be that with new frameworks hooking up a debugger and watching the entire stack from the beginning of a request to the end is a tremendous learning experience. This is a great way to get exposed to more complex topics when you are at a more junior level.</p>
+</blockquote>
+<p>- <a href="https://www.linkedin.com/in/orizigindere">Ori Zigindere</a>, <time datetime="2019-02-17 18:32:34 UTC">February 16, 2019</time></p>
 ]]></content:encoded></item><item><title>The Rabbi and the Open Source Project</title><link>https://sequoia.makes.software/the-rabbi-and-the-open-source-project/</link><description>A rabbi, an élite open source project maintainer, and a workaday developer walk into a tech conference
 </description><guid isPermaLink="true">https://sequoia.makes.software/the-rabbi-and-the-open-source-project/</guid><pubDate>Tue, 30 Oct 2018 04:00:00 GMT</pubDate><content:encoded><![CDATA[<hr>
 <p>A rabbi finds himself at a tech conference, perusing the vendor booths, when he is approached by a Frustrated User who has a pressing need to vent.</p>
@@ -1447,6 +1453,79 @@ $ now --dotenv=../.env
 <p>Thank you Arturo for the thoughtful feedback! I would agree that any time that you share <em>any</em> data between systems, each system will need to be designed to accommodate that format of data, and sessions is no exception. For <em>this</em> example of sharing session data, I think creating a &quot;standard&quot; format for session data would be overkill, as the concept is the same regardless of the format of the session data or the specific tools used in each service.</p>
 <p>Even if this were production, I would use out-of-the-box Express session to start and keep the system as simple as possible. I would consider making a cross-framework session format <a href="https://en.wikipedia.org/wiki/You_aren%27t_gonna_need_it" title="YAGNI">only at the point where that became an actual requirement, and not a minute sooner</a>! At that point, I&#39;d tweak the easiest-to-tweak system to fit the format of the other one. Only once there were three or four different systems that all needed to share sessions would I consider a system as complex as a sidecar container (which, incidentally, would force you off the Node deploys on Now.sh and onto Docker deploys).</p>
 <p>Thank you again for your well-considered feedback, and don&#39;t forget to <a href="https://www.infoq.com/presentations/Simple-Made-Easy" title="Simple Made Easy - Rich Hickey">Keep It Simple</a>!</p>
+]]></content:encoded></item><item><title>What is &quot;JavaScript?&quot; Part 1: The Problem</title><link>https://sequoia.makes.software/what-is-javascript-part-1-the-problem/</link><description>In the age of Babel, babel-plugins, and widespread transpilation, what does it mean for something to be JavaScript, and why does that question matter?
+</description><guid isPermaLink="true">https://sequoia.makes.software/what-is-javascript-part-1-the-problem/</guid><pubDate>Thu, 02 Mar 2017 05:00:00 GMT</pubDate><content:encoded><![CDATA[<p>As <a href="http://babeljs.io/">Babel</a> took over the JavaScript scene, it became possible to use features from the newest ECMAScript specification before browsers (or Node) had implemented them. It <em>also</em> became possible to use <em>proposed</em> ECMAScript features before they&#39;d been finalized and officially incorporated into ECMAScript. While this allowed lots of exciting new developments, it introduced a good bit of confusion as well. Can you tell me which of the following is &quot;just JavaScript/ECMAScript&quot;?</p>
+<ol>
+<li><code>let n = { x, y, ...z };</code></li>
+<li><code>Promise.resolve(123).then(::console.log);</code></li>
+<li><code>Promise.resolve(2).finally(() =&gt; {})</code></li>
+<li><code>@observable title = &quot;&quot;;</code></li>
+<li><code>&#39;[1...10]&#39;.forEach(num =&gt; console.log(num))</code></li>
+</ol>
+<p>If you said &quot;none of these are &#39;just JavaScript&#39;,&quot; you were right! The first four are <em>proposed</em> features. Number five is a feature from another language, but <a href="https://www.npmjs.com/package/babel-plugin-range-operators">you can use it with babel</a>!</p>
+<h2 id="feature-proposals">
+    <a class="header-anchor" href="#feature-proposals">
+      <span class="header-link"></span>
+    </a>
+    Feature Proposals</h2><p>In order for new features to land in the ECMAScript specification, they must go through several proposal stages, as described <a href="https://tc39.github.io/process-document/">here</a>. The difference between JS and most other ecosystems is that in most ecosystems, language features must exist in the specification <em>before</em> they are incorporated into userland code. Not so JavaScript! With babel, you can start using Stage 3 (&quot;Candidate&quot;), Stage 1 (&quot;Proposal&quot;), or even Stage 0 (&quot;Strawman&quot;) features in production right away, before they are finalized.</p>
+<p>What does it mean for a feature proposal to be at Stage 2 (&quot;Draft&quot;)? <a href="https://tc39.github.io/process-document/">According to the TC39</a>, it means the feature implementations are <strong>&quot;experimental,&quot;</strong> and <strong>&quot;incremental&quot; changes</strong> to the feature can be expected. Basically, this means the behavior of the proposed feature <em>may change</em> before the feature is finalized.</p>
+<p>This is great for those who want to live on the edge, but what about those of us who must prioritize stability over bleeding-edgeness? Can we just stick to finalized features and avoid experimental ones? It is possible, but it&#39;s not as simple as you might expect...</p>
+<h2 id="libraries-and-feature-confusion">
+    <a class="header-anchor" href="#libraries-and-feature-confusion">
+      <span class="header-link"></span>
+    </a>
+    Libraries and Feature-Confusion</h2><p>The fuzzy boundary between what &quot;is JavaScript&quot; and what are &quot;JavaScript feature proposals&quot; creates a lot of ambiguity and confusion. It&#39;s common to mistakenly refer to any &quot;new JavaScript feature&quot; as ES6, ES7, ES.Next or ES2016, more or less interchangeably. Unfortunately, authors of many popular JavaScript libraries do just this, exacerbating the misunderstanding. I&#39;ll pick on two lovely library authors here because they are very cool people &amp; I&#39;m sure they know I don&#39;t mean it as a personal criticism. ^_^</p>
+<h3 id="exhibit-a-mobx">
+    <a class="header-anchor" href="#exhibit-a-mobx">
+      <span class="header-link"></span>
+    </a>
+    Exhibit A: Mobx</h3><p>I recently found myself looking into new JavaScript libraries and I <a href="https://mobx.js.org/">encountered</a> some syntax I was not familiar with in JavaScript:</p>
+<pre><code class="hljs lang-js"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Todo</span> </span>{
+    id = <span class="hljs-built_in">Math</span>.random();
+    @observable title = <span class="hljs-string">""</span>;
+    @observable finished = <span class="hljs-literal">false</span>;
+}
+</code></pre>
+<p><code>@observable</code>? Huh! That looks like an <a href="http://docs.oracle.com/javase/tutorial/java/annotations/basics.html">annotation</a> from Java. I didn&#39;t know those existed in the current language specification. It took looking it up to find out that it is in fact <em>not</em> JavaScript as currently specified, but a proposed feature. (In fairness, Mobx does explain that this feature is &quot;ES.Next&quot;, but that term is vaguely defined and often used to refer to ES6 or ES7 features as well.)</p>
+<h3 id="exhibit-b-aurelia">
+    <a class="header-anchor" href="#exhibit-b-aurelia">
+      <span class="header-link"></span>
+    </a>
+    Exhibit B: Aurelia</h3><p>From <a href="http://aurelia.io/hub.html#/doc/article/aurelia/framework/latest/what-is-aurelia/1">the website</a> (<em>emphasis added</em>):</p>
+<blockquote>
+<p>What is it?</p>
+<p>Well, it&#39;s actually simple. Aurelia is <strong>just JavaScript</strong>. However, it&#39;s not yesterday&#39;s JavaScript, but the JavaScript of tomorrow.  By using modern tooling we&#39;ve been able to write Aurelia from the ground up <strong>in ECMAScript 2016</strong>. This means we have native modules, classes, <strong>decorators</strong> and more at our disposal...and you have them too.</p>
+</blockquote>
+<p>Well, now we know: decorators were added to JavaScript in the ES2016 language specification. Just one problem... <strong><em>no they weren&#39;t!!!</em></strong> Decorators are still a <a href="http://tc39.github.io/proposal-decorators">Stage 2</a> feature <strong>proposal</strong>. Aurelia is not &quot;just JavaScript,&quot; it&#39;s &quot;JavaScript <em>[plus some collection of experimental language features]</em>&quot;</p>
+<h2 id="so-what-">
+    <a class="header-anchor" href="#so-what-">
+      <span class="header-link"></span>
+    </a>
+    So What?</h2><p>This matters because as anyone involved the JavaScript ecosystem these days knows, &quot;it&#39;s hard to keep up with all the latest developments&quot; is probably the #1 complaint about the ecosystem. This causes users to throw their hands up, exasperated, and it causes enterprise organizations to <strong>avoid JavaScript altogether</strong>. Why invest in a platform where it&#39;s difficult to even ascertain what the boundaries of the language are?</p>
+<p>Also, as mentioned above, <strong>these features are not officially stable</strong>. This means that if you write code depending on the current (proposed) version of the feature, <strong>that code may stop working when the feature is finalized</strong>. While you may consider this an acceptable risk, I assure you there are many users and organizations that do not. Currently, making an informed decision to opt-in to using these experimental features is difficult and requires a high level of expertise&mdash;users must be able to <strong>identify each new feature</strong> &amp; <strong>manually check</strong> where it is in the proposal or release phase. This is especially challenging for organizations for whom JavaScript is not a core-competency.</p>
+<p>Finally, (this is my own opinion) it&#39;s <strong>just plain annoying</strong> to constantly encounter unfamiliar language syntax and be left wondering &quot;Is this JavaScript? Is this Typescript? Is this JSX? Is this...&quot; I don&#39;t want to have to google &quot;javascript ::&quot; to figure out what the heck that new syntax is and whether it&#39;s current JavaScript, a feature proposal, a super-lang, or Just Some Random Thing Someone Wrote a Babel Transform For.</p>
+<h2 id="why-does-in-matter-if-a-lib-uses-experimental-features-em-internally-em-">
+    <a class="header-anchor" href="#why-does-in-matter-if-a-lib-uses-experimental-features-em-internally-em-">
+      <span class="header-link"></span>
+    </a>
+    Why Does in Matter if a Lib Uses Experimental Features <em>Internally</em>?</h2><p>This probably does not matter if the exposed interfaces do not use or require the use of experimental language features. A library could be written in JavaScript, Coffescript or Typescript as long as the <code>dist/</code> is plain JavaScript. Annotations are an example of an experimental feature that some libraries encourage or require the use of in user code. Further, some libraries do not distribute a build artifact, instead directing users to <code>npm install</code> the source and build locally. In these cases, there is the potential for breakage if draft specifications of experimental features change, and warning users of this is warranted (IMO).</p>
+<h2 id="are-you-saying-no-one-should-use-experimental-features-">
+    <a class="header-anchor" href="#are-you-saying-no-one-should-use-experimental-features-">
+      <span class="header-link"></span>
+    </a>
+    Are You Saying No One Should Use Experimental Features?</h2><p>No! By all means, use them! All I&#39;m saying is that it would be useful to be able to make an <strong>informed choice</strong> to <strong>opt-in</strong> to using experimental features. That way, organizations that prefer stability can say &quot;no thank you&quot; and users who want to be on the bleeding edge can keep bleeding just as they&#39;re doing today.</p>
+<p>Composer has a mechanism to allow users to <a href="https://getcomposer.org/doc/04-schema.md#minimum-stability">allow or disallow unstable versions of dependencies from being installed</a> and it <em>does not</em> prevent people from using unstable releases, it merely gives them the choice to op-in or out.</p>
+<p>An added benefit of increasing visibility into experimental feature use would be to help users understand the TC39 process. Currently there is not enough understanding of what it means for something to be ES6, or ES7, or Proposal Stage 2, as evidenced by the way these terms are thrown around willy-nilly.</p>
+<p>In <a href="/what-is-javascript-part-2-solutions">my next post</a> I&#39;ll go over my proposals for addressing this issue.</p>
+<h1 id="comments">
+    <a class="header-anchor" href="#comments">
+      <span class="header-link"></span>
+    </a>
+    Comments</h1><blockquote>
+<p>Thank you for this post. You are doing the Lord&#39;s work</p>
+</blockquote>
+<p>- <a href="http://designbymobi.us">Uzo Olisemeka</a>, <time datetime="2018-10-25 08:36:45 UTC">October 25, 2018</time></p>
+<p>Thanks Uzo! I really like <a href="http://designbymobi.us/341/">your post on the subject</a> as well, especially this point: &quot;On a language level, overlap is a problem. If there’s more than 3 ways of doing a thing, I must know all three and everyone I’m working with must know all three.&quot;</p>
 ]]></content:encoded></item><item><title>What is &quot;JavaScript?&quot; Part 2: Solutions</title><link>https://sequoia.makes.software/what-is-javascript-part-2-solutions/</link><description>&quot;Bleeding edge&quot; is all well and good, but can't we at least opt-in? Here's one weird trick to bring some transparency into the JavaScript module ecosystem with regard to new language features…
 </description><guid isPermaLink="true">https://sequoia.makes.software/what-is-javascript-part-2-solutions/</guid><pubDate>Thu, 02 Mar 2017 05:00:00 GMT</pubDate><content:encoded><![CDATA[<p>In my <a href="/what-is-javascript-part-1-the-problem">last post</a> I outlined my concerns about lack of visibility into the incorporation of experimental features into popular JavaScript libraries. In short, the problems are:</p>
 <ol>
@@ -1558,79 +1637,6 @@ $ now --dotenv=../.env
 <li>Make JavaScript look a bit less scary to enterprise organizations</li>
 </ol>
 <p>Please let me know what you think with a comment (below) or <a href="https://news.ycombinator.com/item?id=13775534">on hackernews</a>.</p>
-]]></content:encoded></item><item><title>What is &quot;JavaScript?&quot; Part 1: The Problem</title><link>https://sequoia.makes.software/what-is-javascript-part-1-the-problem/</link><description>In the age of Babel, babel-plugins, and widespread transpilation, what does it mean for something to be JavaScript, and why does that question matter?
-</description><guid isPermaLink="true">https://sequoia.makes.software/what-is-javascript-part-1-the-problem/</guid><pubDate>Thu, 02 Mar 2017 05:00:00 GMT</pubDate><content:encoded><![CDATA[<p>As <a href="http://babeljs.io/">Babel</a> took over the JavaScript scene, it became possible to use features from the newest ECMAScript specification before browsers (or Node) had implemented them. It <em>also</em> became possible to use <em>proposed</em> ECMAScript features before they&#39;d been finalized and officially incorporated into ECMAScript. While this allowed lots of exciting new developments, it introduced a good bit of confusion as well. Can you tell me which of the following is &quot;just JavaScript/ECMAScript&quot;?</p>
-<ol>
-<li><code>let n = { x, y, ...z };</code></li>
-<li><code>Promise.resolve(123).then(::console.log);</code></li>
-<li><code>Promise.resolve(2).finally(() =&gt; {})</code></li>
-<li><code>@observable title = &quot;&quot;;</code></li>
-<li><code>&#39;[1...10]&#39;.forEach(num =&gt; console.log(num))</code></li>
-</ol>
-<p>If you said &quot;none of these are &#39;just JavaScript&#39;,&quot; you were right! The first four are <em>proposed</em> features. Number five is a feature from another language, but <a href="https://www.npmjs.com/package/babel-plugin-range-operators">you can use it with babel</a>!</p>
-<h2 id="feature-proposals">
-    <a class="header-anchor" href="#feature-proposals">
-      <span class="header-link"></span>
-    </a>
-    Feature Proposals</h2><p>In order for new features to land in the ECMAScript specification, they must go through several proposal stages, as described <a href="https://tc39.github.io/process-document/">here</a>. The difference between JS and most other ecosystems is that in most ecosystems, language features must exist in the specification <em>before</em> they are incorporated into userland code. Not so JavaScript! With babel, you can start using Stage 3 (&quot;Candidate&quot;), Stage 1 (&quot;Proposal&quot;), or even Stage 0 (&quot;Strawman&quot;) features in production right away, before they are finalized.</p>
-<p>What does it mean for a feature proposal to be at Stage 2 (&quot;Draft&quot;)? <a href="https://tc39.github.io/process-document/">According to the TC39</a>, it means the feature implementations are <strong>&quot;experimental,&quot;</strong> and <strong>&quot;incremental&quot; changes</strong> to the feature can be expected. Basically, this means the behavior of the proposed feature <em>may change</em> before the feature is finalized.</p>
-<p>This is great for those who want to live on the edge, but what about those of us who must prioritize stability over bleeding-edgeness? Can we just stick to finalized features and avoid experimental ones? It is possible, but it&#39;s not as simple as you might expect...</p>
-<h2 id="libraries-and-feature-confusion">
-    <a class="header-anchor" href="#libraries-and-feature-confusion">
-      <span class="header-link"></span>
-    </a>
-    Libraries and Feature-Confusion</h2><p>The fuzzy boundary between what &quot;is JavaScript&quot; and what are &quot;JavaScript feature proposals&quot; creates a lot of ambiguity and confusion. It&#39;s common to mistakenly refer to any &quot;new JavaScript feature&quot; as ES6, ES7, ES.Next or ES2016, more or less interchangeably. Unfortunately, authors of many popular JavaScript libraries do just this, exacerbating the misunderstanding. I&#39;ll pick on two lovely library authors here because they are very cool people &amp; I&#39;m sure they know I don&#39;t mean it as a personal criticism. ^_^</p>
-<h3 id="exhibit-a-mobx">
-    <a class="header-anchor" href="#exhibit-a-mobx">
-      <span class="header-link"></span>
-    </a>
-    Exhibit A: Mobx</h3><p>I recently found myself looking into new JavaScript libraries and I <a href="https://mobx.js.org/">encountered</a> some syntax I was not familiar with in JavaScript:</p>
-<pre><code class="hljs lang-js"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Todo</span> </span>{
-    id = <span class="hljs-built_in">Math</span>.random();
-    @observable title = <span class="hljs-string">""</span>;
-    @observable finished = <span class="hljs-literal">false</span>;
-}
-</code></pre>
-<p><code>@observable</code>? Huh! That looks like an <a href="http://docs.oracle.com/javase/tutorial/java/annotations/basics.html">annotation</a> from Java. I didn&#39;t know those existed in the current language specification. It took looking it up to find out that it is in fact <em>not</em> JavaScript as currently specified, but a proposed feature. (In fairness, Mobx does explain that this feature is &quot;ES.Next&quot;, but that term is vaguely defined and often used to refer to ES6 or ES7 features as well.)</p>
-<h3 id="exhibit-b-aurelia">
-    <a class="header-anchor" href="#exhibit-b-aurelia">
-      <span class="header-link"></span>
-    </a>
-    Exhibit B: Aurelia</h3><p>From <a href="http://aurelia.io/hub.html#/doc/article/aurelia/framework/latest/what-is-aurelia/1">the website</a> (<em>emphasis added</em>):</p>
-<blockquote>
-<p>What is it?</p>
-<p>Well, it&#39;s actually simple. Aurelia is <strong>just JavaScript</strong>. However, it&#39;s not yesterday&#39;s JavaScript, but the JavaScript of tomorrow.  By using modern tooling we&#39;ve been able to write Aurelia from the ground up <strong>in ECMAScript 2016</strong>. This means we have native modules, classes, <strong>decorators</strong> and more at our disposal...and you have them too.</p>
-</blockquote>
-<p>Well, now we know: decorators were added to JavaScript in the ES2016 language specification. Just one problem... <strong><em>no they weren&#39;t!!!</em></strong> Decorators are still a <a href="http://tc39.github.io/proposal-decorators">Stage 2</a> feature <strong>proposal</strong>. Aurelia is not &quot;just JavaScript,&quot; it&#39;s &quot;JavaScript <em>[plus some collection of experimental language features]</em>&quot;</p>
-<h2 id="so-what-">
-    <a class="header-anchor" href="#so-what-">
-      <span class="header-link"></span>
-    </a>
-    So What?</h2><p>This matters because as anyone involved the JavaScript ecosystem these days knows, &quot;it&#39;s hard to keep up with all the latest developments&quot; is probably the #1 complaint about the ecosystem. This causes users to throw their hands up, exasperated, and it causes enterprise organizations to <strong>avoid JavaScript altogether</strong>. Why invest in a platform where it&#39;s difficult to even ascertain what the boundaries of the language are?</p>
-<p>Also, as mentioned above, <strong>these features are not officially stable</strong>. This means that if you write code depending on the current (proposed) version of the feature, <strong>that code may stop working when the feature is finalized</strong>. While you may consider this an acceptable risk, I assure you there are many users and organizations that do not. Currently, making an informed decision to opt-in to using these experimental features is difficult and requires a high level of expertise&mdash;users must be able to <strong>identify each new feature</strong> &amp; <strong>manually check</strong> where it is in the proposal or release phase. This is especially challenging for organizations for whom JavaScript is not a core-competency.</p>
-<p>Finally, (this is my own opinion) it&#39;s <strong>just plain annoying</strong> to constantly encounter unfamiliar language syntax and be left wondering &quot;Is this JavaScript? Is this Typescript? Is this JSX? Is this...&quot; I don&#39;t want to have to google &quot;javascript ::&quot; to figure out what the heck that new syntax is and whether it&#39;s current JavaScript, a feature proposal, a super-lang, or Just Some Random Thing Someone Wrote a Babel Transform For.</p>
-<h2 id="why-does-in-matter-if-a-lib-uses-experimental-features-em-internally-em-">
-    <a class="header-anchor" href="#why-does-in-matter-if-a-lib-uses-experimental-features-em-internally-em-">
-      <span class="header-link"></span>
-    </a>
-    Why Does in Matter if a Lib Uses Experimental Features <em>Internally</em>?</h2><p>This probably does not matter if the exposed interfaces do not use or require the use of experimental language features. A library could be written in JavaScript, Coffescript or Typescript as long as the <code>dist/</code> is plain JavaScript. Annotations are an example of an experimental feature that some libraries encourage or require the use of in user code. Further, some libraries do not distribute a build artifact, instead directing users to <code>npm install</code> the source and build locally. In these cases, there is the potential for breakage if draft specifications of experimental features change, and warning users of this is warranted (IMO).</p>
-<h2 id="are-you-saying-no-one-should-use-experimental-features-">
-    <a class="header-anchor" href="#are-you-saying-no-one-should-use-experimental-features-">
-      <span class="header-link"></span>
-    </a>
-    Are You Saying No One Should Use Experimental Features?</h2><p>No! By all means, use them! All I&#39;m saying is that it would be useful to be able to make an <strong>informed choice</strong> to <strong>opt-in</strong> to using experimental features. That way, organizations that prefer stability can say &quot;no thank you&quot; and users who want to be on the bleeding edge can keep bleeding just as they&#39;re doing today.</p>
-<p>Composer has a mechanism to allow users to <a href="https://getcomposer.org/doc/04-schema.md#minimum-stability">allow or disallow unstable versions of dependencies from being installed</a> and it <em>does not</em> prevent people from using unstable releases, it merely gives them the choice to op-in or out.</p>
-<p>An added benefit of increasing visibility into experimental feature use would be to help users understand the TC39 process. Currently there is not enough understanding of what it means for something to be ES6, or ES7, or Proposal Stage 2, as evidenced by the way these terms are thrown around willy-nilly.</p>
-<p>In <a href="/what-is-javascript-part-2-solutions">my next post</a> I&#39;ll go over my proposals for addressing this issue.</p>
-<h1 id="comments">
-    <a class="header-anchor" href="#comments">
-      <span class="header-link"></span>
-    </a>
-    Comments</h1><blockquote>
-<p>Thank you for this post. You are doing the Lord&#39;s work</p>
-</blockquote>
-<p>- <a href="http://designbymobi.us">Uzo Olisemeka</a>, <time datetime="2018-10-25 08:36:45 UTC">October 25, 2018</time></p>
-<p>Thanks Uzo! I really like <a href="http://designbymobi.us/341/">your post on the subject</a> as well, especially this point: &quot;On a language level, overlap is a problem. If there’s more than 3 ways of doing a thing, I must know all three and everyone I’m working with must know all three.&quot;</p>
 ]]></content:encoded></item><item><title>Let's Code It: Static Site Generator with Rx.js</title><link>https://sequoia.makes.software/lets-code-it-static-site-generator-with-rxjs/</link><description>Watching a filesystem for changes and building an input (markdown) file to output (HTML) on each change? This sounds like a job for... Observables!</description><guid isPermaLink="true">https://sequoia.makes.software/lets-code-it-static-site-generator-with-rxjs/</guid><pubDate>Thu, 19 Jan 2017 05:00:00 GMT</pubDate><content:encoded><![CDATA[<p><a href="https://sequoia.makes.software/lets-code-it-static-site-generator/">Last post</a>, we went over building a Static Site Generator (SSG) in Node.js. We used <a href="http://bluebirdjs.com/docs/why-promises.html">Promises</a> for flow control, and that worked for reading each Markdown input file, transforming it into HTML, and writing that to disk, once per file. What if we instead of running this build process once per input file, we want it to run once per input file <em>every time that input file is created or changed?</em></p>
 <p>If our goal is to map a sequence of events over time (file creation or modification) to one or more operations (building Markdown to HTML and writing to disk), it&#39;s very likely <a href="http://reactivex.io/rxjs/manual/overview.html#observable"><strong>Observables</strong></a> are a good fit! In this blog post, we&#39;ll look at how to use Observables and <a href="http://reactivex.io/rxjs/manual/overview.html#introduction">RX.js</a> to create a SSG with <strong>built-in, incremental watch rebuilds</strong>, and with <strong>with multiple output streams</strong> (individual posts and blog index page).</p>
 <p>This post loosely follows the demo project <a href="https://github.com/Sequoia/rx-static-blog-example/blob/master/index.js">here</a>, so if you prefer to look at all the code at once (or run it) you can do so. </p>
