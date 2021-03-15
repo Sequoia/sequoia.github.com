@@ -32,7 +32,7 @@ Oh my goodness... this comment almost makes me tear up. I *do* feel underappreci
 
 It's not unlike the joke about the traveller trying to smuggle coffee into Haifa without paying the required duties. The customs official looks in his sacks and asks him what it is he's carrying. "Birdseed," the traveller replies. "Since when do birds eat coffee?" asks the incredulous customs officer.
 
-Whereup the traveller replies with a shrug "they'll eat if they want; if they don't, they won't."
+Whereup the traveller replies with a shrug "they'll eat if they want; if they don't want to, they won't."
 
 It's in a similar spirit that I publish my posts.
 
@@ -64,7 +64,7 @@ Ha! Thanks _buycialis_!!
 > 
 > _- importance of education, 2019_
 
-This type of feedback is what keeps me doing this when it seems "pointless," which it does at time. In particular I appreciate what you said about "someone with a bit of originality." _Seriously._ Thank you _importance of education_!
+This type of feedback is what keeps me doing this when it seems "pointless," which it does at times. In particular I appreciate what you said about "someone with a bit of originality." _Seriously._ Thank you _importance of education_!
 
 > This is really fascinating, You're an excessively professional blogger. I've joined your feed and stay up for looking for more of your excellent post. Also, I have shared your website in my social networks
 > 
