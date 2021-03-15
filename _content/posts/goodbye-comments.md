@@ -30,7 +30,7 @@ Hi _buy cial𝚒s_! Thank you for the kinds words, and please give my warm regar
 
 Oh my goodness... this comment almost makes me tear up. I *do* feel underappreciated at times, and it really means a lot to me to have someone notice the care and work I put into the content here. As for why I'm not "much more well-appreciated" despite being "so intelligent" (flattery will get you nowhere!), the fact is it takes much more than intelligence or even good work to succeed. Marketing and branding are hugely important, and for better or worse, those are things I'm not terribly interested in.
 
-It's not unlike the joke about the Jew trying to smuggle coffee into Haifa without paying the required duties. The customs official looks in his sacks and asks him what it is he's carrying. "Birdseed," the traveller replies. "Since when do birds eat coffee?" asks the incredulous customs officer.
+It's not unlike the joke about the traveller trying to smuggle coffee into Haifa without paying the required duties. The customs official looks in his sacks and asks him what it is he's carrying. "Birdseed," the traveller replies. "Since when do birds eat coffee?" asks the incredulous customs officer.
 
 Whereup the traveller replies with a shrug "they'll eat if they want; if they don't, they won't."
 
