@@ -83,10 +83,10 @@ contains(<span class="hljs-string">'Everybody loves types. It is known.'</span>,
 <pre><code class="hljs lang-js"><span class="hljs-comment">/**
  * Checks whether one string contains another string
  * 
- * @param {string} input   - the string to test against
- * @param {string} search  - the string to search for
+ * <span class="hljs-doctag">@param <span class="hljs-type">{string}</span> <span class="hljs-variable">input</span></span>   - the string to test against
+ * <span class="hljs-doctag">@param <span class="hljs-type">{string}</span> <span class="hljs-variable">search</span></span>  - the string to search for
  * 
- * @return {boolean}
+ * <span class="hljs-doctag">@return <span class="hljs-type">{boolean}</span></span>
  */</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">contains</span>(<span class="hljs-params">input, search</span>)</span>{
   <span class="hljs-keyword">return</span> <span class="hljs-built_in">RegExp</span>(search).test(input);
@@ -95,7 +95,7 @@ contains(<span class="hljs-string">'Everybody loves types. It is known.'</span>,
 <p>While writing this, we realized it that this function actually works with regular expressions as the <code>search</code> parameter as well as strings. Let&#39;s update that line to make clear that both types are supported:</p>
 <pre><code class="hljs lang-javascript"><span class="hljs-comment">/** 
  * ...
- * @param {string|RegExp} search  - the string or pattern to search for
+ * <span class="hljs-doctag">@param <span class="hljs-type">{string|RegExp}</span> <span class="hljs-variable">search</span></span>  - the string or pattern to search for
  * ...
  */</span>
 </code></pre>
@@ -103,21 +103,21 @@ contains(<span class="hljs-string">'Everybody loves types. It is known.'</span>,
 <pre><code class="hljs lang-javascript"><span class="hljs-comment">/**
  * Checks whether one string contains another string
  * 
- * @example 
+ * <span class="hljs-doctag">@example </span>
  * ```
  * contains("hello world", "world"); // true
  * ```
- * @example
+ * <span class="hljs-doctag">@example</span>
  * ```
  * const exp = /l{2}/;
  * contains("hello world", exp);  // true
  * ```
- * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
+ * <span class="hljs-doctag">@see </span>https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
  * 
- * @param {string} input          - the string to test against
- * @param {string|RegExp} search  - the string or pattern to search for
+ * <span class="hljs-doctag">@param <span class="hljs-type">{string}</span> <span class="hljs-variable">input</span></span>          - the string to test against
+ * <span class="hljs-doctag">@param <span class="hljs-type">{string|RegExp}</span> <span class="hljs-variable">search</span></span>  - the string or pattern to search for
  * 
- * @return {boolean}
+ * <span class="hljs-doctag">@return <span class="hljs-type">{boolean}</span></span>
  */</span>
 </code></pre>
 <p>...and away we go!</p>
@@ -191,7 +191,7 @@ contains(<span class="hljs-string">'Everybody loves types. It is known.'</span>,
 <li>Exports <code>MapConfig</code> so we can reference it from outside the file.</li>
 </ol>
 <p>VS Code will load the file automatically because it&#39;s in our project, and we&#39;ll use the <code>@type</code> annotation to mark our <code>conf</code> object as a <code>MapConfig</code> when we load it from disk:</p>
-<pre><code class="hljs lang-js"><span class="hljs-comment">/** @type {Demo.MapConfig} */</span>
+<pre><code class="hljs lang-js"><span class="hljs-comment">/** <span class="hljs-doctag">@type <span class="hljs-type">{Demo.MapConfig}</span> </span>*/</span>
 <span class="hljs-keyword">const</span> conf = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./config.js'</span>);
 </code></pre>
 <p>Now we can access properties of the configuration object &amp; get the same code-completion, type info, and documentation hints! Note how in the following gif, VS Code identifies not only that <code>conf.types</code> is an array, but when we call an <code>.filter</code> on it, knows that each element in the array is a <code>MapConfigFeature</code> type object:</p>
@@ -199,7 +199,7 @@ contains(<span class="hljs-string">'Everybody loves types. It is known.'</span>,
 <p>I have been very much enjoying the benefits of JSDoc, Typescript Declarations and the <code>typings</code> repository in my work. Hopefully this article will help you get started up and running with type hinting in JavaScript. If you have any questions or corrections, or if this post was useful to you, <a href="/contact/">please let me know</a>!</p>
 <p>* <em>There is in fact <a href="http://json-schema.org/">a way to document the properties of json files</a>, I hope to write about it in the future!</em></p>
 <em> 
-📝 Comments? Please email them to my <tt>protonmail.com</tt> address, username <tt>sequoiam</tt></em></section><footer>&copy; Sequoia McDowell 2021<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div><script>(function() {
+📝 Comments? Please email them to <tt>sequoiam (at) protonmail.com</tt></em></section><footer>&copy; Sequoia McDowell 2024<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div><script>(function() {
 	var script = document.createElement('script');
 	window.counter = 'https://sequoia.goatcounter.com/count'
 	script.async = 1;

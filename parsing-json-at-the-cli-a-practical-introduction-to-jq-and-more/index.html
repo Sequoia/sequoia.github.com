@@ -85,7 +85,7 @@ $ <span class="hljs-built_in">echo</span> <span class="hljs-variable">$ORDER</sp
     </a>
     1. Getting the label values in production</h3><p>At my company there is a <abbr title="Command Line Interface">CLI</abbr> tool we&#39;ll call <code>pquery</code> that allows prometheus metrics to be queried from the command line, and it outputs JSON–how conventient! I use this tool in the following examples. You don&#39;t have this tool, but fear not: <a href="https://learndevops.substack.com/p/hitting-prometheus-api-with-curl">this wonderful post</a> explains how to query prometheus using <a href="https://curl.se/">curl</a> which is essentially what <code>pquery</code> does.</p>
 <p>Using <code>pquery</code> we can view prometheus metrics from our various clusters. But even if we filter for this exact metric name, it&#39;s more data than we can easily look at. We&#39;ll use <code>wc -l</code> (wordcount: count lines) to get a rough idea of how much data we&#39;re working with:</p>
-<pre><code class="hljs lang-sh">$ pquery <span class="hljs-string">'async_task_total'</span> | wc <span class="hljs-_">-l</span>
+<pre><code class="hljs lang-sh">$ pquery <span class="hljs-string">'async_task_total'</span> | wc -l
 316117
 </code></pre>
 <p>316,117 lines of JSON! Oof! We want to iterate over the metrics. But what jq filter do we need to access the array of metrics? I find <code>head</code> useful for figuring out what the top level keys are for a large json structure:</p>
@@ -197,7 +197,7 @@ $ <span class="hljs-built_in">echo</span> <span class="hljs-variable">$ORDER</sp
     </a>
     How many unique values are there for these labels?</h3><p>Well that&#39;s pretty easy at this point...</p>
 <pre><code class="hljs lang-sh">$ pquery <span class="hljs-string">'async_task_total{app="toodle-app"}'</span> \
-| jq <span class="hljs-string">'.data.result[].metric.task_name'</span> | sort | uniq | wc <span class="hljs-_">-l</span>
+| jq <span class="hljs-string">'.data.result[].metric.task_name'</span> | sort | uniq | wc -l
 92
 </code></pre>
 <p>Ninety-two! Not so bad. Mystery solved, and I can say with reasonable confidence &quot;the cardinality of these labels isn&#39;t terribly high, I&#39;m leaving this alone 😅&quot;</p>
@@ -259,13 +259,13 @@ $ yq <span class="hljs-string">'.spec.jobTemplate.spec.template.spec.containers[
     <a class="header-anchor" href="#and-a-similar-tool-for-html-">
       <span class="header-link"></span>
     </a>
-    And a similar tool for HTML?!</h3><pre><code class="hljs lang-sh">➜ curl <span class="hljs-_">-s</span>L https://postmates.com/feed | pup <span class="hljs-string">'head title'</span>
+    And a similar tool for HTML?!</h3><pre><code class="hljs lang-sh">➜ curl -sL https://postmates.com/feed | pup <span class="hljs-string">'head title'</span>
 &lt;title&gt;
   postmates: Food Delivery, Groceries, Alcohol - Anything from Anywhere
 &lt;/title&gt;
-➜ curl <span class="hljs-_">-s</span>L https://postmates.com/feed | pup <span class="hljs-string">'head meta[charset]'</span>
+➜ curl -sL https://postmates.com/feed | pup <span class="hljs-string">'head meta[charset]'</span>
 &lt;meta charset=<span class="hljs-string">"UTF-8"</span>&gt;
-➜ curl <span class="hljs-_">-s</span>L https://postmates.com/feed | pup <span class="hljs-string">'head meta[charset] json{}'</span>
+➜ curl -sL https://postmates.com/feed | pup <span class="hljs-string">'head meta[charset] json{}'</span>
 [
   {
   <span class="hljs-string">"charset"</span>: <span class="hljs-string">"UTF-8"</span>,
@@ -303,7 +303,7 @@ $ yq <span class="hljs-string">'.spec.jobTemplate.spec.template.spec.containers[
     </a>
     More Comments</h2><p>👉 Some good discussion &amp; lots of tips &amp; links to similar articles on <a href="https://news.ycombinator.com/item?id=25498364">hackernews</a>.</p>
 <em> 
-📝 Comments? Please email them to my <tt>protonmail.com</tt> address, username <tt>sequoiam</tt></em></section><footer>&copy; Sequoia McDowell 2021<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div><script>(function() {
+📝 Comments? Please email them to <tt>sequoiam (at) protonmail.com</tt></em></section><footer>&copy; Sequoia McDowell 2024<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div><script>(function() {
 	var script = document.createElement('script');
 	window.counter = 'https://sequoia.goatcounter.com/count'
 	script.async = 1;

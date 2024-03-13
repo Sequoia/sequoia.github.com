@@ -23,37 +23,37 @@
     Background: How does Kubernetes Allocate Resources to Containers?</h2><p>ℹ️ <em>Skip this section if you&#39;re already familiar with how requests, limits, and <abbr title="Horizonal Pod Autoscaler">HPA</abbr>s work.</em></p>
 <p>In a Kubernetes Cluster, each &quot;workload&quot; (for example, a web server application) runs in one or more pods (<strong>generally</strong> a wrapper around a single docker container). In a Kubernetes &quot;<a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">deployment</a>,&quot; we tell Kubernetes how many instances (pods) of our application to run, and what sort of resources we expect each of those pods to need (<code>requests</code>). We can also tell Kubernetes not to let a pod exceed a certain resource usage limit (<code>limits</code>) and to shut down any pod that does.</p>
 <p>For example, we can tell Kubernetes, &quot;Hey Kubernetes, run 3 Nginx instances; I expect each will use <code>1 CPU</code> and <code>512Mi</code> of RAM, but do not let it use more then <code>1Gi</code> of RAM.&quot;</p>
-<pre><code class="hljs lang-yaml"><span class="hljs-attr">apiVersion:</span> apps/v1
-<span class="hljs-attr">kind:</span> Deployment
-<span class="hljs-attr">name:</span> my-nginx
+<pre><code class="hljs lang-yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span>
+<span class="hljs-attr">name:</span> <span class="hljs-string">my-nginx</span>
 <span class="hljs-attr">spec:</span>
-<span class="hljs-attr">  replicas:</span> <span class="hljs-number">3</span>              ⭐️ Run three instances
-<span class="hljs-attr">  template:</span>
-<span class="hljs-attr">    spec:</span>
-<span class="hljs-attr">      containers:</span>
-<span class="hljs-attr">      - name:</span> my-nginx
-<span class="hljs-attr">        image:</span> nginx:<span class="hljs-number">1.14</span><span class="hljs-number">.2</span>
-<span class="hljs-attr">        resources:</span>
-<span class="hljs-attr">          requests:</span>        ⭐️ request = <span class="hljs-string">"This is how much my application uses typically"</span>
-<span class="hljs-attr">            cpu:</span> <span class="hljs-number">1000</span>m        <span class="hljs-number">1000</span> <span class="hljs-string">"millicpus"</span> = <span class="hljs-number">1</span> CPU
-<span class="hljs-attr">            memory:</span> <span class="hljs-number">512</span>Mi  
-<span class="hljs-attr">          limits:</span>          ⭐️ limit = <span class="hljs-string">"Don't let the pod use more than this"</span>
-<span class="hljs-attr">            memory:</span> <span class="hljs-number">1</span>Gi
+  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span>              <span class="hljs-string">⭐️</span> <span class="hljs-string">Run</span> <span class="hljs-string">three</span> <span class="hljs-string">instances</span>
+  <span class="hljs-attr">template:</span>
+    <span class="hljs-attr">spec:</span>
+      <span class="hljs-attr">containers:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">my-nginx</span>
+        <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:1.14.2</span>
+        <span class="hljs-attr">resources:</span>
+          <span class="hljs-attr">requests:</span>        <span class="hljs-string">⭐️</span> <span class="hljs-string">request</span> <span class="hljs-string">=</span> <span class="hljs-string">"This is how much my application uses typically"</span>
+            <span class="hljs-attr">cpu:</span> <span class="hljs-string">1000m</span>        <span class="hljs-number">1000</span> <span class="hljs-string">"millicpus"</span> <span class="hljs-string">=</span> <span class="hljs-number">1</span> <span class="hljs-string">CPU</span>
+            <span class="hljs-attr">memory:</span> <span class="hljs-string">512Mi</span>  
+          <span class="hljs-attr">limits:</span>          <span class="hljs-string">⭐️</span> <span class="hljs-string">limit</span> <span class="hljs-string">=</span> <span class="hljs-string">"Don't let the pod use more than this"</span>
+            <span class="hljs-attr">memory:</span> <span class="hljs-string">1Gi</span>
 </code></pre>
 <p>Telling Kubernetes an exact number of pods to run isn&#39;t very <em>auto</em>-scale-y, though, is it? We want more pods when we need them and fewer when we don&#39;t. We can do this by using a <strong>Horizontal Pod Autoscaler (HPA)</strong>, which <em>automatically</em> increases and decreases the number of pods a deployment has.</p>
 <p>How does the <abbr title="Horizonal Pod Autoscaler">HPA</abbr> know when to add or remove pods? Good question! The simplest way is for it to look at the <strong>average CPU usage</strong> across the pods in the deployment. When average CPU usage gets too high, add pods. When it gets too low, shut some pods down.</p>
 <p>&quot;Hey Kubernetes, run an HPA to scale the deployment we just made above. If the average CPU usage is well above <code>90</code>%, bring more pods online. If it&#39;s much lower, shut some down. Also, don&#39;t let the total number of pods go below <code>2</code> or above <code>10</code>.&quot;</p>
-<pre><code class="hljs lang-yaml"><span class="hljs-attr">apiVersion:</span> autoscaling/v1
-<span class="hljs-attr">kind:</span> HorizontalPodAutoscaler
+<pre><code class="hljs lang-yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">autoscaling/v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">HorizontalPodAutoscaler</span>
 <span class="hljs-attr">spec:</span>
-  ⭐️ Scale up or down to keep the pods running ~<span class="hljs-number">90</span>% CPU utilization
-<span class="hljs-attr">  targetCPUUtilizationPercentage:</span> <span class="hljs-number">90</span>
-<span class="hljs-attr">  maxReplicas:</span> <span class="hljs-number">10</span>  ⭐️ <span class="hljs-literal">No</span> more than <span class="hljs-number">10</span> pods
-<span class="hljs-attr">  minReplicas:</span> <span class="hljs-number">2</span>   ⭐️ <span class="hljs-literal">No</span> fewer than <span class="hljs-number">2</span> pods
-<span class="hljs-attr">  scaleTargetRef:</span>
-<span class="hljs-attr">    apiVersion:</span> apps/v1
-<span class="hljs-attr">    kind:</span> Deployment
-<span class="hljs-attr">    name:</span> my-nginx
+  <span class="hljs-string">⭐️</span> <span class="hljs-string">Scale</span> <span class="hljs-string">up</span> <span class="hljs-string">or</span> <span class="hljs-string">down</span> <span class="hljs-string">to</span> <span class="hljs-string">keep</span> <span class="hljs-string">the</span> <span class="hljs-string">pods</span> <span class="hljs-string">running</span> <span class="hljs-string">~90%</span> <span class="hljs-string">CPU</span> <span class="hljs-string">utilization</span>
+  <span class="hljs-attr">targetCPUUtilizationPercentage:</span> <span class="hljs-number">90</span>
+  <span class="hljs-attr">maxReplicas:</span> <span class="hljs-number">10</span>  <span class="hljs-string">⭐️</span> <span class="hljs-literal">No</span> <span class="hljs-string">more</span> <span class="hljs-string">than</span> <span class="hljs-number">10</span> <span class="hljs-string">pods</span>
+  <span class="hljs-attr">minReplicas:</span> <span class="hljs-number">2</span>   <span class="hljs-string">⭐️</span> <span class="hljs-literal">No</span> <span class="hljs-string">fewer</span> <span class="hljs-string">than</span> <span class="hljs-number">2</span> <span class="hljs-string">pods</span>
+  <span class="hljs-attr">scaleTargetRef:</span>
+    <span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span>
+    <span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span>
+    <span class="hljs-attr">name:</span> <span class="hljs-string">my-nginx</span>
 </code></pre>
 <p>The key to optimizing our resource consumption is to run our pods as &quot;hot&quot; as possible, i.e. use all available CPU &amp; memory. In an ideal world, this would mean allocating exactly as much memory as needed and no more, and consuming approximately 100% of the CPU requested.</p>
 <p>So why not tell the HPA to do this (&quot;Scale up to infinity, scale down to 0&quot;)? We could do this thus:</p>
@@ -161,7 +161,7 @@
       <span class="header-link"></span>
     </a>
     Horizontal Pod Autoscaler: CPU Utilization Target</h3><p>This is one of the most important settings, especially for large clusters. You want this value to be as close to 100% as possible: the &quot;hotter&quot; your pods run, the less idle CPU you&#39;re paying for.</p>
-<p><em>On the other hand</em>, if you have <em>no</em> idle CPU, you are unlikely to be able to handle a spike in traffic (Goal 3) while waiting for the deployment to scale up.</p>
+<p><em>On the other hand</em>, if you have _no_ idle CPU, you are unlikely to be able to handle a spike in traffic (Goal 3) while waiting for the deployment to scale up.</p>
 <h4 id="interaction-between-code-requests-cpu-code-and-code-targetcpuutilizationpercentage-code-">
     <a class="header-anchor" href="#interaction-between-code-requests-cpu-code-and-code-targetcpuutilizationpercentage-code-">
       <span class="header-link"></span>
@@ -214,7 +214,7 @@
 <li>Addendum to the previous point: <a href="https://cloud.google.com/solutions/best-practices-for-running-cost-effective-kubernetes-applications-on-gke#make_sure_your_container_is_as_lean_as_possible">why reducing docker image size is important in a kubernetes environment</a> if you want to know <em>now</em>)</li>
 </ul>
 <em> 
-📝 Comments? Please email them to my <tt>protonmail.com</tt> address, username <tt>sequoiam</tt></em></section><footer>&copy; Sequoia McDowell 2021<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div><script>(function() {
+📝 Comments? Please email them to <tt>sequoiam (at) protonmail.com</tt></em></section><footer>&copy; Sequoia McDowell 2024<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div><script>(function() {
 	var script = document.createElement('script');
 	window.counter = 'https://sequoia.goatcounter.com/count'
 	script.async = 1;

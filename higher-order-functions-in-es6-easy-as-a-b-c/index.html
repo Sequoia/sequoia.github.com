@@ -17,8 +17,8 @@ post</a> first.</p>
 square(<span class="hljs-number">9</span>) === <span class="hljs-number">81</span>; <span class="hljs-comment">// true</span>
 </code></pre>
 <p>But what’s going on in the code below?</p>
-<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> has = <span class="hljs-function"><span class="hljs-params">p</span> =&gt;</span> o =&gt; o.hasOwnProperty(p);
-<span class="hljs-keyword">const</span> sortBy = <span class="hljs-function"><span class="hljs-params">p</span> =&gt;</span> (a, b) =&gt; a[p] &gt; b[p];
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> has = <span class="hljs-function"><span class="hljs-params">p</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">o</span> =&gt;</span> o.hasOwnProperty(p);
+<span class="hljs-keyword">const</span> sortBy = <span class="hljs-function"><span class="hljs-params">p</span> =&gt;</span> <span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> a[p] &gt; b[p];
 </code></pre>
 <p>What’s this “p returns o returns o.hasOwnProperty…”? How can we use <code>has</code>?</p>
 <h2 id="understanding-the-syntax">
@@ -42,7 +42,7 @@ add(<span class="hljs-number">10</span>)(<span class="hljs-number">11</span>);  
 <li>an arrow function <em>implicitly returns</em> the results of a single expression</li>
 </ol>
 <p>…so all we must do is make the body of our arrow function another arrow function, thus:</p>
-<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> add = <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> y =&gt; y + x;
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> add = <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">y</span> =&gt;</span> y + x;
 <span class="hljs-comment">// outer function: x =&gt; [inner function, uses x]</span>
 <span class="hljs-comment">// inner function: y =&gt; y + x;</span>
 </code></pre>
@@ -58,8 +58,8 @@ function can take an argument <code>(x)</code> and reference it in a function it
       <span class="header-link"></span>
     </a>
     Sorting our users</h2><p>So you’re looking at an ES6 library on github and encounter code that looks like this:</p>
-<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> has = <span class="hljs-function"><span class="hljs-params">p</span> =&gt;</span> o =&gt; o.hasOwnProperty(p);
-<span class="hljs-keyword">const</span> sortBy = <span class="hljs-function"><span class="hljs-params">p</span> =&gt;</span> (a, b) =&gt; a[p] &gt; b[p];
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> has = <span class="hljs-function"><span class="hljs-params">p</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">o</span> =&gt;</span> o.hasOwnProperty(p);
+<span class="hljs-keyword">const</span> sortBy = <span class="hljs-function"><span class="hljs-params">p</span> =&gt;</span> <span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> a[p] &gt; b[p];
 
 <span class="hljs-keyword">let</span> result;
 <span class="hljs-keyword">let</span> users = [
@@ -139,7 +139,7 @@ has(<span class="hljs-string">'age'</span>)(user);       <span class="hljs-comme
     A Step Further</h2><p>Let’s make a function that will produce a filter function that checks that an
 object has a <strong>key</strong> with a certain <strong>value</strong>. Our <code>has</code> function checked for a key, but to check value as well our filter function will need to know two things (key and value), not just one. Let’s take a look at one approach:</p>
 <pre><code class="hljs lang-javascript"><span class="hljs-comment">//[p]roperty, [v]alue, [o]bject:</span>
-<span class="hljs-keyword">const</span> is = <span class="hljs-function"><span class="hljs-params">p</span> =&gt;</span> v =&gt; <span class="hljs-function"><span class="hljs-params">o</span> =&gt;</span> o.hasOwnProperty(p) &amp;&amp; o[p] == v;
+<span class="hljs-keyword">const</span> is = <span class="hljs-function"><span class="hljs-params">p</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">o</span> =&gt;</span> o.hasOwnProperty(p) &amp;&amp; o[p] == v;
 
 <span class="hljs-comment">// broken down:</span>
 <span class="hljs-comment">// outer:  p =&gt; [inner1 function, uses p]</span>
@@ -171,10 +171,10 @@ isContractor(user); <span class="hljs-comment">// false</span>
       <span class="header-link"></span>
     </a>
     A note on style</h2><p>Scan this function, and note the time it takes you to figure out what’s going on:</p>
-<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> i = <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> y =&gt; <span class="hljs-function"><span class="hljs-params">z</span> =&gt;</span> h(x)(y) &amp;&amp; y[x] == z;
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> i = <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">y</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">z</span> =&gt;</span> h(x)(y) &amp;&amp; y[x] == z;
 </code></pre>
 <p>Now take a look at this same function, written slightly differently:</p>
-<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> is = <span class="hljs-function"><span class="hljs-params">prop</span> =&gt;</span> val =&gt; <span class="hljs-function"><span class="hljs-params">obj</span> =&gt;</span> has(prop)(obj) &amp;&amp; obj[prop] == val;
+<pre><code class="hljs lang-javascript"><span class="hljs-keyword">const</span> is = <span class="hljs-function"><span class="hljs-params">prop</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">val</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">obj</span> =&gt;</span> has(prop)(obj) &amp;&amp; obj[prop] == val;
 </code></pre>
 <p>There is a tendency when writing one line functions to be as terse as possible,
 at the expense of readability. Fight this urge! Short, meaningless names make
@@ -185,7 +185,7 @@ for cute-looking, <strong>hard to understand</strong> functions. Do yourself and
     </a>
     One more thing. . .</h2><p>What if you want to sort by age in descending order rather than ascending? Or find out who’s not an employee? Do we have to write new utility functions <code>sortByDesc</code> and <code>notHas</code>? No we do not! We can wrap our functions, which return Booleans, with a function that inverts that boolean, true to false and vice versa:</p>
 <pre><code class="hljs lang-javascript"><span class="hljs-comment">//take args, pass them thru to function x, invert the result of x</span>
-<span class="hljs-keyword">const</span> invert = <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> (...args) =&gt; !x(...args);
+<span class="hljs-keyword">const</span> invert = <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> <span class="hljs-function">(<span class="hljs-params">...args</span>) =&gt;</span> !x(...args);
 <span class="hljs-keyword">const</span> noPets = invert(hasPets);
 
 <span class="hljs-keyword">let</span> petlessUsersOldestFirst = users
@@ -219,7 +219,7 @@ for cute-looking, <strong>hard to understand</strong> functions. Do yourself and
 </ul>
 <pre><code class="hljs lang-typescript"><span class="hljs-keyword">type</span> IPropertyKey = <span class="hljs-built_in">string</span> | <span class="hljs-built_in">number</span> | symbol;
 <span class="hljs-keyword">const</span> h = <span class="hljs-built_in">Object</span>.prototype.hasOwnProperty;
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> hasOwnProperty = (obj, property: IPropertyKey): <span class="hljs-built_in">boolean</span> =&gt; h.call(obj, property);
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> hasOwnProperty = (obj, property: IPropertyKey): <span class="hljs-function"><span class="hljs-params">boolean</span> =&gt;</span> h.call(obj, property);
 </code></pre>
 <p>Another reason to use Object.prototype.hasOwnProperty.call()
 <a href="https://github.com/jquery/jquery/issues/4665">https://github.com/jquery/jquery/issues/4665</a></p>
@@ -249,7 +249,7 @@ for cute-looking, <strong>hard to understand</strong> functions. Do yourself and
 </ol>
 <p>Thank you for the suggestion and the follow-up!!</p>
 <em> 
-📝 Comments? Please email them to my <tt>protonmail.com</tt> address, username <tt>sequoiam</tt></em></section><footer>&copy; Sequoia McDowell 2021<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div><script>(function() {
+📝 Comments? Please email them to <tt>sequoiam (at) protonmail.com</tt></em></section><footer>&copy; Sequoia McDowell 2024<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div><script>(function() {
 	var script = document.createElement('script');
 	window.counter = 'https://sequoia.goatcounter.com/count'
 	script.async = 1;
