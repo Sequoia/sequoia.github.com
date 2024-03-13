@@ -57,6 +57,17 @@ p, li{
   margin:.5em 0;
 }
 
+/* not using this ATM... Think I added it for the jq post */
+#content aside{
+  margin: 10px 0px 1em;
+  padding: 10px 15px 10px 36px;
+  background: rgb(252,252,252);
+  border: 1px solid rgb(170,184,198);
+  border-radius: 5px;
+  color: rgb(51,51,51);
+  min-height: 20px;
+}
+
 li > ul > li, li > ol > li{
   margin:0;
 }
@@ -151,6 +162,37 @@ img{
 	width:100%;
 	/*border:outset 3px #CCC;*/
 }
+
+img.floaty {
+  max-width: 48%; /* Default width for desktop */
+  padding-left: 2%;
+  float: right; /* Default floating for desktop */
+}
+
+.show-on-mobile-only {
+  display: none;
+}
+.show-on-desktop-only {
+  display: inherit;
+}
+
+/* Media query for mobile devices */
+@media only screen and (max-width: 767px) {
+  img.floaty {
+    max-width: 100%; /* Full width for mobile */
+    padding-left:0%;
+    float: none; /* No floating for mobile */
+  }
+  
+  .show-on-mobile-only {
+    display: inherit;
+  }
+  .show-on-desktop-only {
+    display: none;
+  }
+}
+
+
 
 h2+p, h3+p{
 	margin-top:0;

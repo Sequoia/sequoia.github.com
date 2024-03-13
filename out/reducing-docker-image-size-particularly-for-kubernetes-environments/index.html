@@ -83,28 +83,28 @@ Fetching image... (this can take a while for large images)
 <li>A <em>separate</em> runtime <code>Dockerfile</code> contains <em>only</em> runtime dependencies</li>
 </ol>
 <p>Your CI step (e.g. on Google Cloud Build) loads the &quot;Builder&quot; image and <em>runs docker inside that image</em> to produce your runtime image.</p>
-<h3 id="multi-stage-builds-em-current-approach-use-this-one-em-em-em-">
-    <a class="header-anchor" href="#multi-stage-builds-em-current-approach-use-this-one-em-em-em-">
+<h3 id="multi-stage-builds-em-current-approach-use-this-one-em-_-_">
+    <a class="header-anchor" href="#multi-stage-builds-em-current-approach-use-this-one-em-_-_">
       <span class="header-link"></span>
     </a>
-    Multi-Stage Builds ✅ <em>(current approach: use this one</em> 😄<em>)</em></h3><p><a href="https://docs.docker.com/develop/develop-images/multistage-build/">Multi-Stage Builds</a> vastly simplify this process! A multi-stage docker file has multiple <code>FROM</code> commands, the first one for the &quot;builder&quot; and the second one for the &quot;runtime.&quot; Basically you install all the build dependencies in your builder, run your build, then in the runtime build you <code>COPY</code> the build artifact into your runtime image which you can then deploy.</p>
+    Multi-Stage Builds ✅ <em>(current approach: use this one</em> 😄_)_</h3><p><a href="https://docs.docker.com/develop/develop-images/multistage-build/">Multi-Stage Builds</a> vastly simplify this process! A multi-stage docker file has multiple <code>FROM</code> commands, the first one for the &quot;builder&quot; and the second one for the &quot;runtime.&quot; Basically you install all the build dependencies in your builder, run your build, then in the runtime build you <code>COPY</code> the build artifact into your runtime image which you can then deploy.</p>
 <pre><code class="hljs lang-dockerfile"><span class="hljs-comment"># Base image for our "builder" contains the go binary which we</span>
 <span class="hljs-comment"># do NOT need at runtime (only to build the server application binary)</span>
 <span class="hljs-keyword">FROM</span> golang:<span class="hljs-number">1.7</span>.<span class="hljs-number">3</span> AS sequoiasbuilder
-<span class="hljs-keyword">WORKDIR</span><span class="bash"> /tmp/foo
-</span><span class="hljs-keyword">COPY</span><span class="bash"> src/main.go . <span class="hljs-comment"># copy from host into builder</span>
-</span>
+<span class="hljs-keyword">WORKDIR</span><span class="bash"> /tmp/foo</span>
+<span class="hljs-keyword">COPY</span><span class="bash"> src/main.go . <span class="hljs-comment"># copy from host into builder</span></span>
+
 <span class="hljs-comment"># build our go binary</span>
 go build -o my-application ./main.go
 
 <span class="hljs-comment"># The second FROM is a new image!</span>
 <span class="hljs-comment"># (our "runtime" image)</span>
 <span class="hljs-keyword">FROM</span> alpine:latest <span class="hljs-comment"># using a stripped down linux (no go!)</span>
-<span class="hljs-keyword">WORKDIR</span><span class="bash"> /root/
-</span>
+<span class="hljs-keyword">WORKDIR</span><span class="bash"> /root/</span>
+
 <span class="hljs-comment"># This has _nothing_ from the builder unless we copy it in</span>
-<span class="hljs-keyword">COPY</span><span class="bash"> --from=sequoiasbuilder /tmp/foo/my-application .
-</span><span class="hljs-keyword">CMD</span><span class="bash"> [<span class="hljs-string">"./my-application"</span>]</span>
+<span class="hljs-keyword">COPY</span><span class="bash"> --from=sequoiasbuilder /tmp/foo/my-application .</span>
+<span class="hljs-keyword">CMD</span><span class="bash"> [<span class="hljs-string">"./my-application"</span>]</span>
 </code></pre>
 <p>Now only those things necessary for runtime will be shipped to kubernetes, and the go binary (and all the go modules that <code>go build</code> pulled in) etc. are discarded! Read <a href="https://docs.docker.com/develop/develop-images/multistage-build/">this short article</a> for more.</p>
 <h3 id="which-one-to-use-a-note-on-layer-caching">
@@ -166,7 +166,7 @@ drwxr-xr-x         0:0     4.3 MB                  ├── press-releases
     </a>
     Conclusion</h2><p>Making your images smaller is easy, it improves infrastructure performance and it saves money. What&#39;s not to like? If you&#39;ve got more tips for shaving bits off your image size, drop me a line &amp; I&#39;ll add them below!</p>
 <em> 
-📝 Comments? Please email them to my <tt>protonmail.com</tt> address, username <tt>sequoiam</tt></em></section><footer>&copy; Sequoia McDowell 2021<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div><script>(function() {
+📝 Comments? Please email them to <tt>sequoiam (at) protonmail.com</tt></em></section><footer>&copy; Sequoia McDowell 2024<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div><script>(function() {
 	var script = document.createElement('script');
 	window.counter = 'https://sequoia.goatcounter.com/count'
 	script.async = 1;

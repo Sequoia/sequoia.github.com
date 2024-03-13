@@ -76,7 +76,7 @@ _student loans_! You're back!! How was breakfast? You'll be happy to know, incid
 > 
 > _- Recommended website, 2020_
 
-You know what, _Recommended website_? Your comment made _my_ day. Thank you.
+You know what, _Recommended website_? Your comment made *my* day. Thank you.
 
 > Do you mind if I quote a couple of your posts as long as I provide credit and sources back to your webpage? My blog is in the very same niche as yours and my visitors would truly benefit from a lot of the information you provide here. Please let me know if this okay with you. Thanks!
 > 
