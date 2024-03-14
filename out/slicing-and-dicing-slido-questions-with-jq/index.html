@@ -1,0 +1,222 @@
+<!DOCTYPE html><html lang="en"><head><title>Slicing and Dicing Slido Questions with JQ | Sequoia McDowell</title><!--stuff--><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="More examples of using jq to parse json in the shell, this time using Slido for examples.
+"><link rel="canonical" href="https://sequoia.makes.software/slicing-and-dicing-slido-questions-with-jq/"><!--css--><link href="/css/highlight.css" rel="stylesheet" type="text/css" media="all"><link href="/css/normalize.css" rel="stylesheet" type="text/css" media="all"><link href="/css/skeleton.css" rel="stylesheet" type="text/css" media="all"><link href="/css/style.css" rel="stylesheet" type="text/css" media="all"><!--js--><script src="/bower_components/fetch/fetch.js"></script><script src="/js/announce-header.js"></script><script src="/js/go-to-resume.js"></script><!--does this do anything? who knows--><link href="https://github.com/Sequoia" rel="me"><!--RSS!!!--><link rel="alternate" type="application/rss+xml" href="https://sequoia.makes.software/rss.xml" title="Blog RSS Feed"></head><body><div id="wrap"><header role="banner"><nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></header><aside id="announce" class="row hidden"><h2>News</h2><ul id="news-items"><!-- items added via announce-header.js--></ul><span class="clearfix"></span></aside><section id="content"><h1>Slicing and Dicing Slido Questions with JQ</h1><span class="byline">Published November 4, 2021</span><p>TODO: add an intro about having fun during boring all hands meetings.</p>
+<p>In Slido, the web UI shows you something like this:</p>
+<p><img src="/img/slido-question.png" alt="Slido question in the Slido UI"></p>
+<p>But this isn&#39;t the whole story when it comes to this question! The API actually makes many more fields available. This is the JSON for the question above:</p>
+<pre><code class="hljs lang-json">{
+  <span class="hljs-attr">"author"</span>: {
+    <span class="hljs-attr">"attrs"</span>: {},
+    <span class="hljs-attr">"event_user_id"</span>: <span class="hljs-number">171109668</span>,
+    <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Zack Venema"</span>
+  },
+  <span class="hljs-attr">"attrs"</span>: {
+    <span class="hljs-attr">"language"</span>: <span class="hljs-string">"en"</span>,
+    <span class="hljs-attr">"sentiment"</span>: <span class="hljs-string">"Neutral"</span>,
+    <span class="hljs-attr">"author_name"</span>: <span class="hljs-string">"Zack Venema"</span>,
+    <span class="hljs-attr">"is_profane"</span>: <span class="hljs-literal">false</span>,
+    <span class="hljs-attr">"profanity_metadata"</span>: [],
+    <span class="hljs-attr">"is_comment"</span>: <span class="hljs-literal">false</span>
+  },
+  <span class="hljs-attr">"type"</span>: <span class="hljs-string">"Question"</span>,
+  <span class="hljs-attr">"text_formatted"</span>: <span class="hljs-string">"Recent cyberattacks have been targeting US infrastructure. How are we protecting our business from potential attacks?"</span>,
+  <span class="hljs-attr">"event_question_id"</span>: <span class="hljs-number">37141320</span>,
+  <span class="hljs-attr">"event_id"</span>: <span class="hljs-number">4386965</span>,
+  <span class="hljs-attr">"event_section_id"</span>: <span class="hljs-number">4975232</span>,
+  <span class="hljs-attr">"event_user_id"</span>: <span class="hljs-number">171109668</span>,
+  <span class="hljs-attr">"text"</span>: <span class="hljs-string">"Recent cyberattacks have been targeting US infrastructure. How are we protecting our business from potential attacks?"</span>,
+  <span class="hljs-attr">"is_public"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">"is_answered"</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">"is_highlighted"</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">"is_anonymous"</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">"is_bookmarked"</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">"score"</span>: <span class="hljs-number">110</span>,
+  <span class="hljs-attr">"score_positive"</span>: <span class="hljs-number">176</span>,
+  <span class="hljs-attr">"score_negative"</span>: <span class="hljs-number">-66</span>,
+  <span class="hljs-attr">"date_published"</span>: <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">"date_highlighted"</span>: <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">"path"</span>: <span class="hljs-string">"/questions"</span>,
+  <span class="hljs-attr">"date_created"</span>: <span class="hljs-string">"2021-06-09T22:18:54.000Z"</span>,
+  <span class="hljs-attr">"date_updated"</span>: <span class="hljs-string">"2021-06-09T22:18:54.000Z"</span>,
+  <span class="hljs-attr">"date_deleted"</span>: <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">"labels"</span>: [],
+  <span class="hljs-attr">"pinned_replies"</span>: []
+}
+</code></pre>
+<p>Upvote count, downvote count, sentiment... very interesting! The Slido API returns an array of objects like this to the browser–shall we scrape this data out and use <a href="https://stedolan.github.io/jq/"><code>jq</code></a> to examine it? Let&#39;s shall!</p>
+<h2 id="getting-the-data">
+    <a class="header-anchor" href="#getting-the-data">
+      <span class="header-link"></span>
+    </a>
+    Getting the data</h2><p>I&#39;m not sure if Slido offers a programatic third party API for this data, but we don&#39;t care! We&#39;re piggybacking off the web application, which is already permitted to fetch this data. There are two ways to get the data we want to process in the terminal with <code>jq</code>:</p>
+<ol>
+<li>In the browser console &quot;network&quot; tab, <strong>copy the response</strong></li>
+<li>In the browser console &quot;network&quot; tab, <strong>copy the request &quot;as curl&quot;</strong> and re-submit the request in your terminal</li>
+</ol>
+<p>The first approach is simplest, the second is required if you want to get the freshest data or to watch changes over time (e.g. by running a command with <a href="https://linux.die.net/man/1/watch"><code>watch</code></a>).</p>
+<p>For either approach, you&#39;ll follow these steps first</p>
+<ol>
+<li>Navigate to the Slido page for the event in question (I use the Chrome browser here)</li>
+<li>Open the developer console</li>
+<li>Click the &quot;network&quot; tab</li>
+<li>Refresh the page</li>
+<li>Scroll down &#39;til you can&#39;t scroll no more (it loads more questions &quot;infinite scroll&quot; style)</li>
+</ol>
+<p>Then pick one of these two approaches to get the data:</p>
+<h3 id="copying-the-response-data">
+    <a class="header-anchor" href="#copying-the-response-data">
+      <span class="header-link"></span>
+    </a>
+    Copying the response data</h3><p>Right click on the request to <code>/questions</code> (ideally the one with <code>sort=top</code> and <code>limit=50</code>) then click Copy &gt; Response</p>
+<p><img src="/img/slido-copy-response.png" alt="copying the question json data from the Firefox devtools network pane"></p>
+<p>You can now paste these into a file, such as ~/questions.json for example (that&#39;s the approach I use below).</p>
+<h3 id="copy-request-quot-copy-as-curl-quot-and-run-the-request-in-your-terminal">
+    <a class="header-anchor" href="#copy-request-quot-copy-as-curl-quot-and-run-the-request-in-your-terminal">
+      <span class="header-link"></span>
+    </a>
+    Copy request (&quot;Copy as cURL&quot;) and run the request in your terminal</h3><p>Right click the request and click &quot;Copy &gt; Copy as cURL&quot;</p>
+<p><img src="/img/slido-copy-curl.png" alt="copying the question request &quot;as curl&quot; from the Firefox devtools network pane"></p>
+<p>Then you can run the request in your terminal and pipe the output to jq:</p>
+<pre><code class="hljs lang-nohilight">❯ curl &#39;https://app.sli.do/api/v0.5/events/4763ff50-520f-4753-a165-c7db45ee52b5/questions?path=%2Fquestions&amp;eventSectionId=3195394&amp;sort=newest&amp;highlighted_first=true&amp;limit=50&#39; \
+  -H &#39;authority: app.sli.do&#39; \
+  -H ... additional headers omitted...
+  --compressed | jq
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  2893    0  2893    0     0  16072      0 --:--:-- --:--:-- --:--:-- 16072
+[
+  {
+    &quot;author&quot;: {},
+    &quot;attrs&quot;: {
+      &quot;language&quot;: &quot;pt&quot;
+    },
+    &quot;type&quot;: &quot;Question&quot;,
+    &quot;text_formatted&quot;: &quot;Como lidar com o medo de engravidar, medo de ter outro filho com o destino especial. &quot;,
+    &quot;event_question_id&quot;: 26473370,
+    &quot;event_id&quot;: 2815079,
+    &quot;event_section_id&quot;: 3195394,
+    &quot;text&quot;: &quot;Como lidar com o medo de engravidar, medo de ter outro filho com o destino especial. &quot;,
+    &quot;is_public&quot;: true,
+    &quot;is_answered&quot;: false,
+    &quot;is_highlighted&quot;: false,
+    &quot;is_anonymous&quot;: true,
+    &quot;is_bookmarked&quot;: false,
+    &quot;score&quot;: 0,
+    &quot;score_positive&quot;: 0,
+    &quot;score_negative&quot;: 0,
+    &quot;date_published&quot;: null,
+    &quot;date_highlighted&quot;: null,
+    &quot;path&quot;: &quot;/questions&quot;,
+    &quot;date_created&quot;: &quot;2020-10-31T18:10:17.000Z&quot;,
+    &quot;date_updated&quot;: &quot;2020-10-31T18:10:17.000Z&quot;,
+    &quot;date_deleted&quot;: null,
+    &quot;labels&quot;: [],
+    &quot;pinned_replies&quot;: []
+  },
+
+...
+</code></pre>
+<p>Using curl has the advantage of fresh data but the <strong>disadvantage</strong> of disappearing questions! Questions that you saw on the web view may be deleted or closed by the time you run curl again.</p>
+<p>🎶 Now that we&#39;ve got <del>love</del> data 🎶  what are we gonna do... 🎶  with it? 🎶 </p>
+<h2 id="stuff-you-can-do-with-the-data-with-jq-">
+    <a class="header-anchor" href="#stuff-you-can-do-with-the-data-with-jq-">
+      <span class="header-link"></span>
+    </a>
+    Stuff You Can Do With The Data With jq :</h2><aside class="info">
+
+<p><em>NB: For the following examples, I used the &quot;copy response&quot; method described above &amp; pasted the results into a file using the following Mac OSX command:</em></p>
+
+<pre>
+<code class="hljs lang-nohilight">❯ pbpaste &gt; ~/questions.json </code>
+</pre>
+
+</aside>
+
+<h3 id="votes-summary">
+    <a class="header-anchor" href="#votes-summary">
+      <span class="header-link"></span>
+    </a>
+    Votes Summary</h3><p>I like using versions of this to see how many up &amp; down votes each question has. Here I also:</p>
+<pre><code>Use the -r  (raw) switch to strip the quotes of the resulting string
+Limit to the first 5 results with head 
+</code></pre><p>❯ cat ~/questions.json \
+| jq -e &#39;.[] | &quot;(.score) ((.score_positive),(.score_negative)) (.text)&quot;&#39; -r | head -n 5
+187 (+221,-34) DiDi SEC filling reports $565M non-GAAP EBITA on Q121 only on their China Mobility business, this is almost twice our Global Mobility EBITDA on Q121, thoughts?
+186 (+222,-36) Rides is double digit $ &gt; Lyft (sometimes $30+) on many routes in NYC. We just lost a big corporate account to Lyft bc of this. Why would riders stay with Uber?
+154 (+209,-55) DoorDash is launching in Japan; what steps can we take to remain on top after they surpassed us in the US?
+110 (+176,-66) Recent cyberattacks have been targeting US infrastructure. How are we protecting our business from potential attacks?
+97 (+129,-32) What is the status of Eats for Business?  If there is a strong value prop, why are we not using it in our own offices?</p>
+<p>Building strings in JQ</p>
+<p>.text_field + &quot; literal string &quot; + (.number_field|tostring) 👈 The general form building your own output string from fields. NB: numeric fields must be piped (in parens!) to tostring  before they can be &quot;added&quot; to string values. 
+Update: A better way to build output strings</p>
+<p>&quot;(.text_field) literal string (.number_field)&quot; 👈 The general form of building your own strings using string interpolation. (Thanks Johan Jensenfor pointing this out!)
+Finding questions containing a pattern or string</p>
+<p>How many questions mention Doordash? There&#39;s a few ways to find this out. If you just want the text, it&#39;s simplest to extract the .text  string then select based on a regular expression:</p>
+<p>select(test(&quot;your pattern&quot;, &quot;i&quot;))  👈  how to filter strings based on case insensitive regex. Example:
+❯ cat ~/questions.json \
+| jq -e &#39;.[].text | select(test(&quot;DoorDash&quot;; &quot;i&quot;))&#39;
+&quot;DoorDash is launching in Japan; what steps can we take to remain on top after they surpassed us in the US?&quot;
+&quot;DoorDash has same day background check for drivers. On our app- it takes 3-5 business days for our delivery drivers. How are we working towards expediting this?&quot;</p>
+<p>If you want other fields as well, you need to pass the whole object through and extract the .text  field in your select  expression:
+❯ cat ~/questions.json \
+| jq -e &#39;.[] | select(.text | test(&quot;DoorDash&quot;; &quot;i&quot;)) | &quot;(.score): (.text)&quot;&#39;
+&quot;154: DoorDash is launching in Japan; what steps can we take to remain on top after they surpassed us in the US?&quot;
+&quot;97: DoorDash has same day background check for drivers. On our app- it takes 3-5 business days for our delivery drivers. How are we working towards expediting this?&quot;</p>
+<p>Finally, if you prefer to do things The Unix Way 
+, you can extract the text and pipe it to another tool. In this case I&#39;m extracting .text  then using ack to do my filtering.
+❯ cat ~/questions.json \
+| jq -e &#39;.[].text&#39; \
+| ack -i &quot;(Doordash|\bDD\b)&quot;
+&quot;DoorDash has same day background check for drivers. On our app- it takes 3-5 business days for our delivery drivers. How are we working towards expediting this?&quot;
+&quot;DoorDash is launching in Japan; what steps can we take to remain on top after they surpassed us in the US?&quot;</p>
+<p>This approach is of course useful if you want to compose your command with other unix programs such as sort, uniq, wc  etc.
+Top 10 most downvoted questions</p>
+<p>sort_by can take a field name and sort by its value.
+❯ cat ~/questions.json \
+| jq -e &#39;sort_by(.score_negative) | .[] | &quot;(.score_negative) (.text)&quot;&#39; -r | head -n 10
+-134 Nelson, how do we make Uber a meme stock?
+-97 Global All Hands often feels and looks like US All Hands. How can we keep &#39;living locally&#39; in that aspect?
+-87 All signs point to an even worse fire season in the U.S. this year. Does this change the thinking on return to work in September?
+-75 Bo, only 0.4% of F500 board director roles are held by LGBTQ+ (vs. 7% of population). In the spirit of Pride, have we considered diversity targets for LGBTQ+?
+-66 Recent cyberattacks have been targeting US infrastructure. How are we protecting our business from potential attacks?
+-62 As thousands of us return to open office plans in the US, can we make it company policy to require employees to submit their covid-19 vaccination status to HR?
+-55 DoorDash is launching in Japan; what steps can we take to remain on top after they surpassed us in the US?
+-53 Will UberPool be back any time soon?
+-50 What is business risk of having David Weil run the U.S. Labor Department division overseeing gig worker rights? What would we do differently if he is nominated?
+-50 What&#39;s the best way Uber employees can help get our favorite restaurants on Eats? My restaurant-owner friend won&#39;t sign up b/c he believes it&#39;s too expensive.
+Count by sentiment</p>
+<p>reduce semantics in jq  are a bit confusing and the docs don&#39;t help much.</p>
+<p>The following examples says:</p>
+<pre><code>Iterate over &quot;each item&quot;: .[] 
+as $question 
+Initialize our accumulator to an object: {} 
+With our accumulator object: . 
+    Increment: +=1 ...
+    ...the value at the key corresponding to this question&#39;s sentiment: [$question.attrs.sentiment] 
+Return the accumulator (implicit)
+</code></pre><p>❯ cat ~/questions.json \
+| jq &#39;reduce .[] as $question ({}; .[$question.attrs.sentiment] += 1)&#39;
+{
+  &quot;Neutral&quot;: 31,
+  &quot;Negative&quot;: 4,
+  &quot;Positive&quot;: 2
+}
+Text of questions with &quot;Negative&quot; sentiment</p>
+<p>My curiosity is peeked! Let&#39;s pique at those &quot;negative&quot; questions:
+❯ cat ~/questions.json \
+| jq &#39;.[] | select(.attrs.sentiment==&quot;Negative&quot;)| .text&#39;
+&quot;What is the status of Eats for Business?  If there is a strong value prop, why are we not using it in our own offices? &quot;
+&quot;What&#39;s the best way Uber employees can help get our favorite restaurants on Eats? My restaurant-owner friend won&#39;t sign up b/c he believes it&#39;s too expensive.&quot;
+&quot;Can we please have a clear and unequivocal condemnation of antisemitism?&quot;
+&quot;All signs point to an even worse fire season in the U.S. this year. Does this change the thinking on return to work in September?&quot;
+Conclusion</p>
+<p>That&#39;s our whirlwind tour of using jq  to squeeze a bit more context out of the data Slido makes available! If you have other fun ways to &quot;slice and dice&quot; this info (find questions with profanity perhaps?) sound off in the comments!</p>
+<em> 
+📝 Comments? Please email them to my <tt>protonmail.com</tt> address, username <tt>sequoiam</tt></em></section><footer>&copy; Sequoia McDowell 2024<nav><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/contact/">Contact</a></li><li><a href="/talks-and-trainings/">Talks</a></li><li><a href="/shorts/">Shorts</a></li><li><a href="https://sequoia.makes.software/rss.xml">RSS</a></li></ul></nav><div class="clearfix"></div></footer></div><script>(function() {
+	var script = document.createElement('script');
+	window.counter = 'https://sequoia.goatcounter.com/count'
+	script.async = 1;
+	script.src = '//gc.zgo.at/count.js';
+
+	var ins = document.getElementsByTagName('script')[0];
+	ins.parentNode.insertBefore(script, ins)
+})();</script></body></html>

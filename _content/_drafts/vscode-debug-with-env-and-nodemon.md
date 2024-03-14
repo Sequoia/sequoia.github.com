@@ -1,0 +1,1 @@
+https://stackoverflow.com/questions/53352303/how-to-debug-a-nodemon-project-in-vscode
